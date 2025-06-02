@@ -12,7 +12,7 @@ namespace Car_Pooling.Models
         [Required, StringLength (20)]
         public string Color { get; set; }
         [Required]
-        public int DriverId { get; set; }
+        public string DriverId { get; set; }
         [ForeignKey (nameof (DriverId))]
         public User Driver { get; set; }
 

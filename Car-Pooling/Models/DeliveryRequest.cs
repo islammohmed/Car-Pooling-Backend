@@ -8,7 +8,7 @@ public class DeliveryRequest
     public int Request_ID { get; set; }
 
     [ForeignKey("Sender")]
-    public int Sender_ID { get; set; }
+    public string Sender_ID { get; set; }
 
     [Required, Phone]
     public string Receiver_Phone { get; set; }

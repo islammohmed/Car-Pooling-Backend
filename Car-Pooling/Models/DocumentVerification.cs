@@ -17,12 +17,11 @@ public class DocumentVerification
     public string Document_Type {  get; set; }
 
     [ForeignKey("User")]
-    public int User_ID { get; set; }
+    public string User_ID { get; set; }
 
     [ForeignKey("Admin")]
-    public int Verified_By_Admin_ID { get; set; }
-
+    public string Verified_By_Admin_ID { get; set; }
+    public User Admin { get; set; }
 
     public User User { get; set; }
-    public User Admin { get; set; }
 }

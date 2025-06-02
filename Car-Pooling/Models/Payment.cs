@@ -19,10 +19,10 @@ public class Payment
     public string Transaction_Ref { get; set; }
 
     [ForeignKey("Payer")]
-    public int Payer_ID { get; set; }
+    public string Payer_ID { get; set; }
 
     [ForeignKey("Receiver")]
-    public int Receiver_User_ID { get; set; }
+    public string Receiver_User_ID { get; set; }
 
     public string Payment_Type { get; set; }
 

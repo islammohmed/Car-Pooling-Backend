@@ -16,10 +16,10 @@ public class Feedback
     public int Rating { get; set; }
 
     [ForeignKey("Receiver")]
-    public int Receiver_User_ID { get; set; }
+    public string Receiver_User_ID { get; set; }
 
     [ForeignKey("Sender")]
-    public int Sender_User_ID { get; set; }
+    public string Sender_User_ID { get; set; }
 
     public Trip Trip { get; set; }
     public User Sender { get; set; }
