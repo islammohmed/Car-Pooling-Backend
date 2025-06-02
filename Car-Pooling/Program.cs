@@ -1,4 +1,10 @@
 
+using Car_Pooling.Data;
+using Car_Pooling.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System;
+
 namespace Car_Pooling
 {
     public class Program
@@ -10,10 +16,14 @@ namespace Car_Pooling
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddDbContext<AppDbContext> (options => options.UseSqlServer (builder.Configuration.GetConnectionString ("DefaultConnection")));
+            // make email unigue to ignore  username
+            builder.Services.AddIdentity<User, IdentityRole> (options =>
+            {
+                options.User.RequireUniqueEmail = true; 
+            }).AddEntityFrameworkStores<AppDbContext> ().AddDefaultTokenProviders ();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
