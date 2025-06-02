@@ -10,7 +10,7 @@ namespace Car_Pooling.Models
         public int TripParticipantId { get; set; }
         public int TripId { get; set; }
         [Required]
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         [Required]
         public JoinStatus Status { get; set; } 
         public DateTime JoinedAt { get; set; }

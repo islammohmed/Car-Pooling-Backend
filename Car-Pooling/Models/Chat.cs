@@ -12,10 +12,10 @@ public class Chat
     public int Trip_ID { get; set; }
 
     [ForeignKey("Sender")]
-    public int Sender_ID { get; set; }
+    public string Sender_ID { get; set; }
 
     [ForeignKey("Receiver")]
-    public int Receiver_ID { get; set; }
+    public string Receiver_ID { get; set; }
 
     [Required]
     public string Message { get; set; }
