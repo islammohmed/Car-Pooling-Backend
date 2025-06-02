@@ -30,5 +30,9 @@ namespace Car_Pooling.Models
         [StringLength (10)]
         public string ConfirmNumber { get; set; }
 
+        public ICollection<Car> Cars { get; set; }
+
+        public ICollection<TripParticipant> TripParticipations { get; set; }
+
     }
 }
