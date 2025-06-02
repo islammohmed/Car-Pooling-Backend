@@ -15,11 +15,13 @@ namespace Car_Pooling.Data
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Car> Cars { get; set; }
         public DbSet<TripParticipant> TripParticipants { get; set; }
+
         public DbSet<Chat> Chats { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<DeliveryRequest> DeliveryRequests { get; set; }
         public DbSet<DocumentVerification> DocumentVerifications { get; set; }
+
 
 
         protected override void OnModelCreating (ModelBuilder modelBuilder)
