@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Car_Pooling.Data.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Car_Pooling.Models
 {
