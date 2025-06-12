@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "xLThunIgrguhaPs0WAEYMBqWWGrAxSmIgo5bnhIGIOs=",
+  "Source": "CarPooling.API",
+  "BasePath": "_content/CarPooling.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
