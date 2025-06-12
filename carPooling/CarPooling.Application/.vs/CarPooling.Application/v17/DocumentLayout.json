@@ -1,0 +1,68 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\ITI\\design pattern\\CarPooling\\car pooling\\CarPooling.Application\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{19B3C69D-8B46-40EA-BB67-5FF10D1F82CF}|CarPooling.Application\\CarPooling.Application.csproj|d:\\iti\\design pattern\\carpooling\\car pooling\\carpooling.application\\carpooling.application\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{19B3C69D-8B46-40EA-BB67-5FF10D1F82CF}|CarPooling.Application\\CarPooling.Application.csproj|solutionrelative:carpooling.application\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0ad07096-bba9-4900-a651-0598d26f6d24}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Class1.cs",
+              "DocumentMoniker": "D:\\ITI\\design pattern\\CarPooling\\car pooling\\CarPooling.Application\\CarPooling.Application\\Class1.cs",
+              "RelativeDocumentMoniker": "CarPooling.Application\\Class1.cs",
+              "ToolTip": "D:\\ITI\\design pattern\\CarPooling\\car pooling\\CarPooling.Application\\CarPooling.Application\\Class1.cs",
+              "RelativeToolTip": "CarPooling.Application\\Class1.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-08T02:59:12.225Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1498,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1055,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

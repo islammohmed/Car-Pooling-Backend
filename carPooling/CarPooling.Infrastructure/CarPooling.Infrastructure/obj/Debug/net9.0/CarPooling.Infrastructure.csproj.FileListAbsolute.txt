@@ -1,0 +1,30 @@
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Infrastructure.deps.json
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Infrastructure.dll
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Infrastructure.pdb
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.csproj.AssemblyReference.cache
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.AssemblyInfoInputs.cache
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.AssemblyInfo.cs
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.csproj.CoreCompileInputs.cache
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooli.EDEB1290.Up2Date
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.dll
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\refint\CarPooling.Infrastructure.dll
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.pdb
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\ref\CarPooling.Infrastructure.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Infrastructure.deps.json
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Infrastructure.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Infrastructure.pdb
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\bin\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.csproj.AssemblyReference.cache
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.AssemblyInfoInputs.cache
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.AssemblyInfo.cs
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.csproj.CoreCompileInputs.cache
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooli.EDEB1290.Up2Date
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\refint\CarPooling.Infrastructure.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\CarPooling.Infrastructure.pdb
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Infrastructure\CarPooling.Infrastructure\obj\Debug\net9.0\ref\CarPooling.Infrastructure.dll

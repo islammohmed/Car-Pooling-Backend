@@ -1,6 +1,0 @@
-@Car_Pooling_HostAddress = http://localhost:5095
-
-GET {{Car_Pooling_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
