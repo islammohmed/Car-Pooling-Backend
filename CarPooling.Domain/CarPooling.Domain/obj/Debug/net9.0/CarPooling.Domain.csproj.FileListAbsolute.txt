@@ -1,0 +1,50 @@
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.deps.json
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.csproj.AssemblyReference.cache
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.AssemblyInfoInputs.cache
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.AssemblyInfo.cs
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.csproj.CoreCompileInputs.cache
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\refint\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\design pattern\CarPooling\car pooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\ref\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.deps.json
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.csproj.AssemblyReference.cache
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.AssemblyInfoInputs.cache
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.AssemblyInfo.cs
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.csproj.CoreCompileInputs.cache
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\refint\CarPooling.Domain.dll
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\design pattern\CarPooling\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\ref\CarPooling.Domain.dll
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.deps.json
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.csproj.AssemblyReference.cache
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.AssemblyInfoInputs.cache
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.AssemblyInfo.cs
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.csproj.CoreCompileInputs.cache
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.sourcelink.json
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\refint\CarPooling.Domain.dll
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\Graduation Project\BackendRepo\carPooling\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\ref\CarPooling.Domain.dll
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.deps.json
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\bin\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.csproj.AssemblyReference.cache
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.AssemblyInfoInputs.cache
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.AssemblyInfo.cs
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.csproj.CoreCompileInputs.cache
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.sourcelink.json
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.dll
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\refint\CarPooling.Domain.dll
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\CarPooling.Domain.pdb
+D:\ITI\Graduation Project\BackendRepo\CarPooling.Domain\CarPooling.Domain\obj\Debug\net9.0\ref\CarPooling.Domain.dll
