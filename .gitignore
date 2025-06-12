@@ -1,3 +1,54 @@
-.vs/*
-Car-Pooling/obj/*
-Car-Pooling/bin/*
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+.vs/
+*.user
+*.suo
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Rider & JetBrains
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Logs
+*.log
+
+# Database
+*.mdf
+*.ldf
+
+# EF Core Migrations (optional - keep if part of repo)
+# Migrations/
+
+# Secrets
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+# Environment files
+.env
+
+# Publish outputs
+publish/
+*.db
+
+# Others
+*.cache
+*.pid
