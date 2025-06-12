@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CarPooling.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+abbe747227873608083280e7b4a4cc01287f8e93")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a4fd32a9d9aa4e8944e382ca8446ffd6ed0c9793")]
 [assembly: System.Reflection.AssemblyProductAttribute("CarPooling.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CarPooling.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
