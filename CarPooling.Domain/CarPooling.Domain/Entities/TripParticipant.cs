@@ -9,7 +9,6 @@ using CarPooling.Domain.Enums;
 
 namespace CarPooling.Domain.Entities
 {
-
     public class TripParticipant
     {
         [Key]
