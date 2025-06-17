@@ -18,11 +18,14 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\CarPooling.Domain\CarPooling.Domain\CarPooling.Domain.csproj" />
+    <ProjectReference Include="..\..\CarPooling.Infrastructure\CarPooling.Infrastructure\CarPooling.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -15,9 +15,6 @@ namespace CarPooling.Application.Extensions
 
             services.AddMediatR(cfg=>cfg.RegisterServicesFromAssemblies(appAssembly));
             services.AddAutoMapper(appAssembly);
-
-
-
         }
     }
 }
