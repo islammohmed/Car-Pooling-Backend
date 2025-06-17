@@ -10,10 +10,13 @@ namespace CarPooling.API.Controllers
     public class TripController : ControllerBase
     {
         private IMediator _mediator;
+        private IBookTripService _bookTripService;
 
-        public TripController(IMediator mediator)
+        public TripController(IMediator mediator, IBookTripService bookTripService)
         {
             _mediator = mediator;
+                        _bookTripService = bookTripService;
+
         }
 
         [HttpPost]
@@ -23,5 +26,15 @@ namespace CarPooling.API.Controllers
             return Ok(id);
            // return CreatedAtAction(nameof(GetByID), new { id }, null);
         }
+
+        //bookig a trip
+
+        [HttpPost("book")]
+        public async Task<IActionResult> BookTrip([FromBody] BookTripDto dto)
+        {
+            var bookingTrip = await _bookTripService.BookTripAsync(dto);
+            return bookingTrip.Success ? Ok(bookingTrip) : BadRequest(bookingTrip);
+        }
+
     }
 }
