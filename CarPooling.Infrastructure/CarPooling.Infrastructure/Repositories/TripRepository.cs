@@ -14,19 +14,20 @@ namespace CarPooling.Infrastructure.Repositories
             return trip.TripId;
         }
 
-        public async Task<Trip> GetTripWithParticipants(int tripId)
+        public async Task<Trip?> GetTripWithParticipants(int tripId)
         {
-            var GetTripWithParticipants= await context.Trips
+            return await context.Trips
                 .Include(t => t.Participants)
                 .FirstOrDefaultAsync(t => t.TripId == tripId);
-            return GetTripWithParticipants;
         }
 
-
-        public async Task<bool> TripExists(int tripId)
+        public async Task UpdateTripAsync(Trip trip)
         {
-            return await context.Trips.AnyAsync(t => t.TripId == tripId);
+            context.Trips.Update(trip);
+            await context.SaveChangesAsync();
         }
+       
+
 
     }
 }

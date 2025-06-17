@@ -10,6 +10,8 @@ namespace CarPooling.Application.Trips.DTOs
         public TripProfile()
         {
             CreateMap<CreateTripCommand, Trip>();
+            CreateMap<TripParticipant, TripParticipantDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿using CarPooling.Application.Trips.Commands.CreateRequest;
+﻿using Azure.Core;
+using CarPooling.Application.Trips;
+using CarPooling.Application.Trips.Commands.CreateRequest;
+using CarPooling.Application.Trips.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +18,7 @@ namespace CarPooling.API.Controllers
         public TripController(IMediator mediator, IBookTripService bookTripService)
         {
             _mediator = mediator;
-                        _bookTripService = bookTripService;
+          _bookTripService = bookTripService;
 
         }
 
@@ -32,9 +35,8 @@ namespace CarPooling.API.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookTrip([FromBody] BookTripDto dto)
         {
-            var bookingTrip = await _bookTripService.BookTripAsync(dto);
-            return bookingTrip.Success ? Ok(bookingTrip) : BadRequest(bookingTrip);
+            var result = await _bookTripService.BookTripAsync(dto);
+            return Ok(result);
         }
-
     }
 }

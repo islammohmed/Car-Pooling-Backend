@@ -1,15 +1,13 @@
 ﻿
+
 namespace CarPooling.Application.Trips.DTOs
 {
-    public class BookTripDto
+    public class TripParticipantDto
     {
         public int TripId { get; set; }
         public string UserId { get; set; }
         public int SeatCount { get; set; }
-    }
-    public class BookTripResponseDto
-    {
-        public bool Success { get; set; }
-        public string Message { get; set; }
+        public string Status { get; set; }
+        public DateTime JoinedAt { get; set; }
     }
 }

@@ -1,9 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CarPooling.Application.Trips;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CarPooling.Application.Extensions
 {
@@ -12,6 +8,8 @@ namespace CarPooling.Application.Extensions
         public static void AddApplication(this IServiceCollection services)
         {
             var appAssembly=typeof(ServiceCollectionExtensions).Assembly;
+            services.AddScoped<IBookTripService, BookTripService>();
+
 
             services.AddMediatR(cfg=>cfg.RegisterServicesFromAssemblies(appAssembly));
             services.AddAutoMapper(appAssembly);
