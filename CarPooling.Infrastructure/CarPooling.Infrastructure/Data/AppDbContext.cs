@@ -2,7 +2,7 @@
 using CarPooling.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace Car_Pooling.Data
+namespace CarPooling.Data
 {
     public class AppDbContext : IdentityDbContext<User>
     {

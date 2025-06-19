@@ -1,14 +1,10 @@
-﻿using Car_Pooling.Data;
+﻿using CarPooling.Data;
 using CarPooling.Domain.Repositories;
 using CarPooling.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CarPooling.Infrastructure.Seeders;
 
 namespace CarPooling.Infrastructure.Extensions
 {
@@ -22,7 +18,7 @@ namespace CarPooling.Infrastructure.Extensions
             services.AddDbContext<AppDbContext>(options =>
               options.UseSqlServer(connectionString));
 
-
+            services.AddScoped<ISeeder, Seeder>();
             services.AddScoped<ITripRepository, TripRepository>();
         }
     }
