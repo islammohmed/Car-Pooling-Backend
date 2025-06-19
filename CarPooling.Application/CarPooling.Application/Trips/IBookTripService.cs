@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using CarPooling.Application.Trips.DTOs;
 
 namespace CarPooling.Application.Trips
 {
-    internal interface IRestaurantsService
+    public interface IBookTripService
     {
+        Task<TripParticipantDto> BookTripAsync(BookTripDto request);
     }
 }
