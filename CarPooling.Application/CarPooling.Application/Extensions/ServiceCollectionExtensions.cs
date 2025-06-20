@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CarPooling.Application.Trips;
+using CarPooling.Application.Trips.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CarPooling.Application.Extensions
 {
@@ -11,10 +10,16 @@ namespace CarPooling.Application.Extensions
     {
         public static void AddApplication(this IServiceCollection services)
         {
-            var appAssembly=typeof(ServiceCollectionExtensions).Assembly;
+            var appAssembly = typeof(ServiceCollectionExtensions).Assembly;
 
-            services.AddMediatR(cfg=>cfg.RegisterServicesFromAssemblies(appAssembly));
+            services.AddScoped<IBookTripService, BookTripService>();
             services.AddAutoMapper(appAssembly);
+
+            // Register validators
+            services.AddValidatorsFromAssemblyContaining<BookTripDtoValidator>();
+            services.AddFluentValidationClientsideAdapters();
+
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(appAssembly));
         }
     }
 }

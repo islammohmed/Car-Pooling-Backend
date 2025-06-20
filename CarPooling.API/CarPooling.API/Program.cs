@@ -6,12 +6,13 @@ using CarPooling.Domain.Entities;
 using CarPooling.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using CarPooling.Data;
+using CarPooling.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using CarPooling.Infrastructure.Interfaces;
 using Microsoft.OpenApi.Models;
 using CarPooling.Application.Interfaces;
-using Car_Pooling.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -94,6 +95,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
+
+var scope = app.Services.CreateScope();
+var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
+await seeder.Seed();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CarPooling.Domain.Enums;
-using Microsoft.AspNetCore.Identity;  // Changed this line
+using Microsoft.AspNetCore.Identity;  
 
 namespace CarPooling.Domain.Entities
 {
@@ -14,8 +14,11 @@ namespace CarPooling.Domain.Entities
         public UserRole UserRole { get; set; }
         [Required, StringLength(14)]
         public string SSN { get; set; }
-        public string DrivingLicenseImage { get; set; }
-        public string National_ID_Image { get; set; }
+
+        public Gender Gender { get; set; }
+
+        public string? DrivingLicenseImage { get; set; } 
+        public string NationalIDImage { get; set; }
         [Range(0, 5)]
         public float AvgRating { get; set; }
         public bool IsVerified { get; set; }
