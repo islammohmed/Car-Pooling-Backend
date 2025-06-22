@@ -11,14 +11,14 @@ namespace CarPooling.Infrastructure.Repositories
         {
             context.Trips.Add(trip);
             await context.SaveChangesAsync();
-            return trip.TripId;
+            return trip.Id;
         }
 
         public async Task<Trip?> GetTripWithParticipants(int tripId)
         {
             return await context.Trips
                 .Include(t => t.Participants)
-                .FirstOrDefaultAsync(t => t.TripId == tripId);
+                .FirstOrDefaultAsync(t => t.Id == tripId);
         }
 
         public async Task UpdateTripAsync(Trip trip)
@@ -32,7 +32,7 @@ namespace CarPooling.Infrastructure.Repositories
                 {
                     foreach (var participant in trip.Participants)
                     {
-                        if (participant.TripParticipantId == 0) // New participant
+                        if (participant.Id == 0) // New participant
                         {
                             bool userExists = await context.Users.AnyAsync(u => u.Id == participant.UserId);
                             if (!userExists)

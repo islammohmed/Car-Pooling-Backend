@@ -1,31 +1,26 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using CarPooling.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
-
 
 namespace CarPooling.Domain.Entities
 {
     public class DocumentVerification
     {
-        [Key]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
-        public DateTime Submitted_At { get; set; }
-        public DateTime Verified_At { get; set; }
+        public DateTime VerifiedAt { get; set; }
 
-        public string Verification_Status { get; set; }
+        public VerificationStatus VerificationStatus { get; set; } = VerificationStatus.Pending;
 
-        public string Rejection_Reason { get; set; }
-        public string Document_Type { get; set; }
+        public string? RejectionReason { get; set; }
 
-        [ForeignKey("User")]
-        public string User_ID { get; set; }
+        public string DocumentType { get; set; }
 
-        [ForeignKey("Admin")]
-        public string Verified_By_Admin_ID { get; set; }
-        public User Admin { get; set; }
+        // Foreign Keys
+        public string UserId { get; set; }
+        public string AdminId { get; set; }
 
+        // Navigation Properties
         public User User { get; set; }
+        public User Admin { get; set; }
     }
-
 }

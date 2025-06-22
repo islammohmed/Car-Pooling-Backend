@@ -20,6 +20,6 @@ namespace CarPooling.Application.Trips.Commands.CreateRequest
         public string Destination { get; set; }
         public DateTime StartTime { get; set; }
         public string TripDescription { get; set; }
-        public string GenderRequired { get; set; }
+        public Gender GenderPreference { get; set; }
     }
 }
