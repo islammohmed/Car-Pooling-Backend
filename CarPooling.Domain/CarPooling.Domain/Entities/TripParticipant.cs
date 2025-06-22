@@ -7,21 +7,17 @@ namespace CarPooling.Domain.Entities
 {
     public class TripParticipant
     {
-        [Key]
-        public int TripParticipantId { get; set; }
-        public int TripId { get; set; }
-        [Required]
-        public string UserId { get; set; }
-        [Required]
+        public int Id { get; set; }
         public JoinStatus Status { get; set; }
         public DateTime JoinedAt { get; set; }
-        [ForeignKey(nameof(TripId))]
-        public Trip Trip { get; set; }
-        [ForeignKey(nameof(UserId))]
-        public User User { get; set; }
-        [Required, Range(1, 10)]
+        [Range(1, 10)]
         public int SeatCount { get; set; }
 
 
+        public int TripId { get; set; }
+        public string UserId { get; set; }
+        public Trip Trip { get; set; }
+        public User User { get; set; }
+  
     }
 }
