@@ -1,6 +1,6 @@
-﻿using CarPooling.Data;
+﻿using CarPooling.Application.Repositories;
+using CarPooling.Data;
 using CarPooling.Domain.Entities;
-using CarPooling.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarPooling.Infrastructure.Repositories

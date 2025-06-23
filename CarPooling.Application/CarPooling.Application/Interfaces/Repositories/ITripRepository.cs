@@ -1,7 +1,7 @@
 ﻿using CarPooling.Domain.Entities;
 
 
-namespace CarPooling.Domain.Repositories
+namespace CarPooling.Application.Repositories
 {
     public interface ITripRepository
     {
