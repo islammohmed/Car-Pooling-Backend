@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\CarPooling.Domain\CarPooling.Domain\CarPooling.Domain.csproj" />
-    <ProjectReference Include="..\..\CarPooling.Infrastructure\CarPooling.Infrastructure\CarPooling.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
