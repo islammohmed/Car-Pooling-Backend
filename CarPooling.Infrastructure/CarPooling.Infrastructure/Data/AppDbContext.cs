@@ -2,6 +2,7 @@
 using CarPooling.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
+
 namespace CarPooling.Data
 {
     public class AppDbContext : IdentityDbContext<User>
@@ -19,7 +20,7 @@ namespace CarPooling.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<DeliveryRequest> DeliveryRequests { get; set; }
         public DbSet<DocumentVerification> DocumentVerifications { get; set; }
-
+        public DbSet<User> Users { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

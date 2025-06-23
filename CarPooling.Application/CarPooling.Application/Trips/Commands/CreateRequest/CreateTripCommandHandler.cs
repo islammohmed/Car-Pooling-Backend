@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using CarPooling.Application.Repositories;
 using CarPooling.Domain.Entities;
-using CarPooling.Domain.Repositories;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System;
