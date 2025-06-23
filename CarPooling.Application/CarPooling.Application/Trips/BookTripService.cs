@@ -3,8 +3,8 @@ using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using CarPooling.Domain.Exceptions;
 using AutoMapper;
-using CarPooling.Domain.Repositories;
 using FluentValidation;
+using CarPooling.Application.Repositories;
 
 namespace CarPooling.Application.Trips
 {
