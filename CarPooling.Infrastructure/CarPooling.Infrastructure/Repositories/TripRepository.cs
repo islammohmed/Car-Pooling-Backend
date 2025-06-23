@@ -23,34 +23,9 @@ namespace CarPooling.Infrastructure.Repositories
 
         public async Task UpdateTripAsync(Trip trip)
         {
-            // Use transaction to ensure data consistency
-            using var transaction = await context.Database.BeginTransactionAsync();
-            try
-            {
-                // If adding participants, validate all user IDs exist
-                if (trip.Participants != null)
-                {
-                    foreach (var participant in trip.Participants)
-                    {
-                        if (participant.Id == 0) // New participant
-                        {
-                            bool userExists = await context.Users.AnyAsync(u => u.Id == participant.UserId);
-                            if (!userExists)
-                                throw new InvalidOperationException(
-                                    $"User with ID {participant.UserId} does not exist.");
-                        }
-                    }
-                }
+            context.Trips.Update(trip);
+            await context.SaveChangesAsync();
 
-                context.Trips.Update(trip);
-                await context.SaveChangesAsync();
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw; // Re-throw to handle at service level
-            }
         }
         public async Task<bool> UserExists(string userId)
         {
