@@ -10,7 +10,6 @@
     <Folder Include="Features\Trips\Commands\" />
     <Folder Include="Features\Trips\Handlers\" />
     <Folder Include="Features\Trips\Queries\" />
-    <Folder Include="Interfaces\" />
     <Folder Include="Validation\" />
   </ItemGroup>
 
