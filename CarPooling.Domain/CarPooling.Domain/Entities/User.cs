@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CarPooling.Domain.Enums;
-using Microsoft.AspNetCore.Identity;  
+using Microsoft.AspNetCore.Identity;
 
 namespace CarPooling.Domain.Entities
 {

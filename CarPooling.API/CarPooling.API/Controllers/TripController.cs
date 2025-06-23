@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using CarPooling.Application.Trips;
+﻿using CarPooling.Application.Trips;
 using CarPooling.Application.Trips.Commands.CreateRequest;
 using CarPooling.Application.Trips.DTOs;
 using MediatR;
@@ -34,15 +33,8 @@ namespace CarPooling.API.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookTrip([FromBody] BookTripDto dto)
         {
-            try
-            {
                 var result = await _bookTripService.BookTripAsync(dto);
                 return Ok(result);
-            }
-            catch (Exception ex) when (ex.Message == "Trip not found.")
-            {
-                return NotFound(new { error = ex.Message });
-            }
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-
-namespace CarPooling.Domain.Entities
+﻿namespace CarPooling.Domain.Entities
 {
     public class Chat
     {
