@@ -60,7 +60,7 @@ namespace CarPooling.Application.Services
                     UserRole = request.UserRole,
                     SSN = request.SSN,
                     DrivingLicenseImage = request.DrivingLicenseImage,
-                    NationalIDImage = request.National_ID_Image,
+                    NationalIdImage = request.National_ID_Image,
                     AvgRating = 0,
                     IsVerified = false,
                     ConfirmNumber = GenerateConfirmationNumber(),

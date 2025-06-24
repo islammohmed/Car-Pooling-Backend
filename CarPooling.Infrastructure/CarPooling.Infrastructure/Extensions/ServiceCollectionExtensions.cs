@@ -1,10 +1,10 @@
 ﻿using CarPooling.Data;
-using CarPooling.Domain.Repositories;
 using CarPooling.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using CarPooling.Infrastructure.Seeders;
+using CarPooling.Application.Repositories;
 
 namespace CarPooling.Infrastructure.Extensions
 {

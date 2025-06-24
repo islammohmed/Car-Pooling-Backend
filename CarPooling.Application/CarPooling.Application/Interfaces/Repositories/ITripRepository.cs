@@ -1,7 +1,7 @@
 ﻿using CarPooling.Domain.Entities;
 
 
-namespace CarPooling.Domain.Repositories
+namespace CarPooling.Application.Repositories
 {
     public interface ITripRepository
     {
@@ -10,6 +10,7 @@ namespace CarPooling.Domain.Repositories
         Task UpdateTripAsync(Trip trip);
         Task<bool> UserExists(string userId);
         Task<string> GetUserGender(string userId);
+
 
 
 

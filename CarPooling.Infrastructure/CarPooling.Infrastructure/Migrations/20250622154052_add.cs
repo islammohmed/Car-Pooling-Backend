@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CarPooling.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class add : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,10 +32,11 @@ namespace CarPooling.Infrastructure.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    UserRole = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserRole = table.Column<int>(type: "int", nullable: false),
                     SSN = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
-                    DrivingLicenseImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    National_ID_Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: false),
+                    DrivingLicenseImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NationalIdImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AvgRating = table.Column<float>(type: "real", nullable: false),
                     IsVerified = table.Column<bool>(type: "bit", nullable: false),
                     ConfirmNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
@@ -169,240 +170,234 @@ namespace CarPooling.Infrastructure.Migrations
                 name: "Cars",
                 columns: table => new
                 {
-                    CarId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Model = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Color = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PlateNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    PlateNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cars", x => x.CarId);
+                    table.PrimaryKey("PK_Cars", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Cars_AspNetUsers_DriverId",
                         column: x => x.DriverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "DocumentVerifications",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Submitted_At = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Verified_At = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Verification_Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Rejection_Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Document_Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    User_ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Verified_By_Admin_ID = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    VerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VerificationStatus = table.Column<int>(type: "int", nullable: false),
+                    RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DocumentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AdminId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DocumentVerifications", x => x.ID);
+                    table.PrimaryKey("PK_DocumentVerifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DocumentVerifications_AspNetUsers_User_ID",
-                        column: x => x.User_ID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DocumentVerifications_AspNetUsers_Verified_By_Admin_ID",
-                        column: x => x.Verified_By_Admin_ID,
+                        name: "FK_DocumentVerifications_AspNetUsers_AdminId",
+                        column: x => x.AdminId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DocumentVerifications_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Trips",
                 columns: table => new
                 {
-                    TripId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PricePerSeat = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     EstimatedDuration = table.Column<TimeSpan>(type: "time", nullable: false),
                     AvailableSeats = table.Column<int>(type: "int", nullable: false),
+                    TripDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     SourceLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Destination = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TripDescription = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Created_At = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    GenderRequired = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    Created_At = table.Column<DateTime>(type: "datetime2", maxLength: 500, nullable: false),
+                    GenderPreference = table.Column<int>(type: "int", maxLength: 10, nullable: false),
+                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Trips", x => x.TripId);
+                    table.PrimaryKey("PK_Trips", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Trips_AspNetUsers_DriverId",
                         column: x => x.DriverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Chats",
                 columns: table => new
                 {
-                    Chat_ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Trip_ID = table.Column<int>(type: "int", nullable: false),
-                    Sender_ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Receiver_ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Sent_At = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsRead = table.Column<bool>(type: "bit", nullable: false)
+                    SentAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    TripId = table.Column<int>(type: "int", nullable: false),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Chats", x => x.Chat_ID);
+                    table.PrimaryKey("PK_Chats", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Chats_AspNetUsers_Receiver_ID",
-                        column: x => x.Receiver_ID,
+                        name: "FK_Chats_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Chats_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Chats_AspNetUsers_Sender_ID",
-                        column: x => x.Sender_ID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Chats_Trips_Trip_ID",
-                        column: x => x.Trip_ID,
+                        name: "FK_Chats_Trips_TripId",
+                        column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "TripId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "DeliveryRequests",
                 columns: table => new
                 {
-                    Request_ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Sender_ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Receiver_Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Dropoff_Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Source_Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReceiverPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DropoffLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SourceLocation = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Weight = table.Column<float>(type: "real", nullable: false),
-                    Item_Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ItemDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Assigned_Trip_ID = table.Column<int>(type: "int", nullable: true)
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TripId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DeliveryRequests", x => x.Request_ID);
+                    table.PrimaryKey("PK_DeliveryRequests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DeliveryRequests_AspNetUsers_Sender_ID",
-                        column: x => x.Sender_ID,
+                        name: "FK_DeliveryRequests_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DeliveryRequests_Trips_Assigned_Trip_ID",
-                        column: x => x.Assigned_Trip_ID,
+                        name: "FK_DeliveryRequests_Trips_TripId",
+                        column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "TripId");
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Feedbacks",
                 columns: table => new
                 {
-                    Feedback_ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Trip_ID = table.Column<int>(type: "int", nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
-                    Receiver_User_ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Sender_User_ID = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    TripId = table.Column<int>(type: "int", nullable: false),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Feedbacks", x => x.Feedback_ID);
+                    table.PrimaryKey("PK_Feedbacks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Feedbacks_AspNetUsers_Receiver_User_ID",
-                        column: x => x.Receiver_User_ID,
+                        name: "FK_Feedbacks_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Feedbacks_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Feedbacks_AspNetUsers_Sender_User_ID",
-                        column: x => x.Sender_User_ID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Feedbacks_Trips_Trip_ID",
-                        column: x => x.Trip_ID,
+                        name: "FK_Feedbacks_Trips_TripId",
+                        column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "TripId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Payments",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Trip_ID = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Transaction_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Transaction_Ref = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Payer_ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Receiver_User_ID = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Payment_Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Payment_Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    TransactionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TransactionRef = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PaymentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TripId = table.Column<int>(type: "int", nullable: false),
+                    PayerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReceiveId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payments", x => x.ID);
+                    table.PrimaryKey("PK_Payments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Payments_AspNetUsers_Payer_ID",
-                        column: x => x.Payer_ID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Payments_AspNetUsers_Receiver_User_ID",
-                        column: x => x.Receiver_User_ID,
+                        name: "FK_Payments_AspNetUsers_PayerId",
+                        column: x => x.PayerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Payments_Trips_Trip_ID",
-                        column: x => x.Trip_ID,
+                        name: "FK_Payments_AspNetUsers_ReceiveId",
+                        column: x => x.ReceiveId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Payments_Trips_TripId",
+                        column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "TripId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "TripParticipants",
                 columns: table => new
                 {
-                    TripId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TripParticipantId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     JoinedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SeatCount = table.Column<int>(type: "int", nullable: false)
+                    SeatCount = table.Column<int>(type: "int", nullable: false),
+                    TripId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TripParticipants", x => new { x.TripId, x.UserId });
+                    table.PrimaryKey("PK_TripParticipants", x => x.Id);
                     table.ForeignKey(
                         name: "FK_TripParticipants_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -413,8 +408,7 @@ namespace CarPooling.Infrastructure.Migrations
                         name: "FK_TripParticipants_Trips_TripId",
                         column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "TripId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -462,69 +456,74 @@ namespace CarPooling.Infrastructure.Migrations
                 column: "DriverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_Receiver_ID",
+                name: "IX_Chats_ReceiverId",
                 table: "Chats",
-                column: "Receiver_ID");
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_Sender_ID",
+                name: "IX_Chats_SenderId",
                 table: "Chats",
-                column: "Sender_ID");
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chats_Trip_ID",
+                name: "IX_Chats_TripId",
                 table: "Chats",
-                column: "Trip_ID");
+                column: "TripId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeliveryRequests_Assigned_Trip_ID",
+                name: "IX_DeliveryRequests_SenderId",
                 table: "DeliveryRequests",
-                column: "Assigned_Trip_ID");
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeliveryRequests_Sender_ID",
+                name: "IX_DeliveryRequests_TripId",
                 table: "DeliveryRequests",
-                column: "Sender_ID");
+                column: "TripId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DocumentVerifications_User_ID",
+                name: "IX_DocumentVerifications_AdminId",
                 table: "DocumentVerifications",
-                column: "User_ID");
+                column: "AdminId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DocumentVerifications_Verified_By_Admin_ID",
+                name: "IX_DocumentVerifications_UserId",
                 table: "DocumentVerifications",
-                column: "Verified_By_Admin_ID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Feedbacks_Receiver_User_ID",
+                name: "IX_Feedbacks_ReceiverId",
                 table: "Feedbacks",
-                column: "Receiver_User_ID");
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Feedbacks_Sender_User_ID",
+                name: "IX_Feedbacks_SenderId",
                 table: "Feedbacks",
-                column: "Sender_User_ID");
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Feedbacks_Trip_ID",
+                name: "IX_Feedbacks_TripId",
                 table: "Feedbacks",
-                column: "Trip_ID");
+                column: "TripId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_Payer_ID",
+                name: "IX_Payments_PayerId",
                 table: "Payments",
-                column: "Payer_ID");
+                column: "PayerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_Receiver_User_ID",
+                name: "IX_Payments_ReceiveId",
                 table: "Payments",
-                column: "Receiver_User_ID");
+                column: "ReceiveId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_Trip_ID",
+                name: "IX_Payments_TripId",
                 table: "Payments",
-                column: "Trip_ID");
+                column: "TripId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TripParticipants_TripId",
+                table: "TripParticipants",
+                column: "TripId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TripParticipants_UserId",

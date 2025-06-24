@@ -1,29 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-
-namespace CarPooling.Domain.Entities
+﻿namespace CarPooling.Domain.Entities
 {
     public class Chat
     {
-        [Key]
-        public int Chat_ID { get; set; }
-
-        [ForeignKey("Trip")]
-        public int Trip_ID { get; set; }
-
-        [ForeignKey("Sender")]
-        public string Sender_ID { get; set; }
-
-        [ForeignKey("Receiver")]
-        public string Receiver_ID { get; set; }
-
-        [Required]
+        public int Id { get; set; }
         public string Message { get; set; }
-
-        public DateTime Sent_At { get; set; }
-
+        public DateTime SentAt { get; set; }
         public bool IsRead { get; set; }
+
+        public int TripId { get; set; }
+        public string SenderId { get; set; }
+        public string ReceiverId { get; set; }
 
         public Trip Trip { get; set; }
         public User Sender { get; set; }

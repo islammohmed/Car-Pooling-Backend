@@ -33,7 +33,7 @@ namespace CarPooling.Infrastructure.Seeders
                 ConfirmNumber = "123456",
                 Gender = Gender.Male,
                 DrivingLicenseImage = "license1.jpg",
-                NationalIDImage = "nationalid1.jpg"
+                NationalIdImage = "nationalid1.jpg"
             };
 
             var user2 = new User
@@ -48,7 +48,7 @@ namespace CarPooling.Infrastructure.Seeders
                 IsVerified = true,
                 Gender = Gender.Female,
                 ConfirmNumber = "654321",
-                NationalIDImage = "nationalid2.jpg"
+                NationalIdImage = "nationalid2.jpg"
             };
 
             // Additional users
@@ -65,7 +65,7 @@ namespace CarPooling.Infrastructure.Seeders
                 Gender = Gender.Male,
                 ConfirmNumber = "789012",
                 DrivingLicenseImage = "license2.jpg",
-                NationalIDImage = "nationalid3.jpg"
+                NationalIdImage = "nationalid3.jpg"
             };
 
             var user4 = new User
@@ -80,7 +80,7 @@ namespace CarPooling.Infrastructure.Seeders
                 SSN = "22233344455566",
                 IsVerified = true,
                 ConfirmNumber = "345678",
-                NationalIDImage = "nationalid4.jpg"
+                NationalIdImage = "nationalid4.jpg"
             };
 
             var user5 = new User
@@ -95,7 +95,7 @@ namespace CarPooling.Infrastructure.Seeders
                 SSN = "99988877766655",
                 IsVerified = true,
                 ConfirmNumber = "111222",
-                NationalIDImage = "nationalid5.jpg"
+                NationalIdImage = "nationalid5.jpg"
             };
 
             // Create Cars
@@ -136,7 +136,7 @@ namespace CarPooling.Infrastructure.Seeders
                 Created_At = DateTime.UtcNow,
                 EstimatedDuration = TimeSpan.FromHours(3),
                 Notes = "No smoking please",
-                GenderRequired = null,  // Any gender
+                GenderPreference = Gender.Female,  
                 TripDescription = "A comfortable ride from Cairo to Alexandria."
             };
 
@@ -152,7 +152,7 @@ namespace CarPooling.Infrastructure.Seeders
                 Created_At = DateTime.UtcNow,
                 EstimatedDuration = TimeSpan.FromHours(2),
                 Notes = "No pets allowed please",
-                GenderRequired = "Female",  // Female only - capitalized to match enum
+                GenderPreference = Gender.Female,
                 TripDescription = "A comfortable ride from Cairo to Giza."
             };
 
@@ -168,7 +168,7 @@ namespace CarPooling.Infrastructure.Seeders
                 Created_At = DateTime.UtcNow.AddDays(-1),
                 EstimatedDuration = TimeSpan.FromHours(10),
                 Notes = "Long journey, bring snacks",
-                GenderRequired = null,  // Any gender
+                GenderPreference = Gender.Female,
                 TripDescription = "Road trip to Aswan with stops at interesting locations."
             };
 
@@ -184,7 +184,7 @@ namespace CarPooling.Infrastructure.Seeders
                 Created_At = DateTime.UtcNow,
                 EstimatedDuration = TimeSpan.FromHours(3.5),
                 Notes = "Return trip",
-                GenderRequired = null,  // Any gender
+                GenderPreference = Gender.Female,
                 TripDescription = "Return trip from Alexandria to Cairo."
             };
 
@@ -200,7 +200,7 @@ namespace CarPooling.Infrastructure.Seeders
                 Created_At = DateTime.UtcNow.AddDays(-5),
                 EstimatedDuration = TimeSpan.FromHours(6),
                 Notes = "Beach trip",
-                GenderRequired = "Male", // Male only - capitalized to match enum
+                GenderPreference = Gender.Female,
                 TripDescription = "Weekend getaway to Hurghada."
             };
 
@@ -213,7 +213,7 @@ namespace CarPooling.Infrastructure.Seeders
             // Create Trip Participants
             var participant1 = new TripParticipant
             {
-                TripId = trip1.TripId,
+                TripId = trip1.Id,
                 UserId = user2.Id,
                 SeatCount = 1,
                 Status = JoinStatus.Confirmed,
@@ -222,7 +222,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var participant2 = new TripParticipant
             {
-                TripId = trip2.TripId,
+                TripId = trip2.Id,
                 UserId = user4.Id,
                 SeatCount = 2,
                 Status = JoinStatus.Pending,
@@ -231,7 +231,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var participant3 = new TripParticipant
             {
-                TripId = trip3.TripId,
+                TripId = trip3.Id,
                 UserId = user2.Id,
                 SeatCount = 1,
                 Status = JoinStatus.Pending,
@@ -240,7 +240,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var participant4 = new TripParticipant
             {
-                TripId = trip5.TripId,
+                TripId = trip5.Id,
                 UserId = user4.Id,
                 SeatCount = 2,
                 Status = JoinStatus.Cancelled,
@@ -249,7 +249,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var participant5 = new TripParticipant
             {
-                TripId = trip5.TripId,
+                TripId = trip5.Id,
                 UserId = user2.Id,
                 SeatCount = 1,
                 Status = JoinStatus.Confirmed,
@@ -259,73 +259,73 @@ namespace CarPooling.Infrastructure.Seeders
             // Create Payments
             var payment1 = new Payment
             {
-                Trip_ID = trip1.TripId,
-                Payer_ID = user2.Id,
-                Receiver_User_ID = user1.Id,
+                TripId = trip1.Id,
+                PayerId = user2.Id,
+                ReceiveId = user1.Id,
                 Amount = 150,
-                Transaction_Date = DateTime.UtcNow,
-                Payment_Status = "Completed",
-                Payment_Type = "Cash",
-                Transaction_Ref = "PAY123"
+                TransactionDate = DateTime.UtcNow,
+                PaymentStatus = "Completed",
+                PaymentType = "Cash",
+                TransactionRef = "PAY123"
             };
 
             var payment2 = new Payment
             {
-                Trip_ID = trip5.TripId,
-                Payer_ID = user4.Id,
-                Receiver_User_ID = user3.Id,
+                TripId = trip5.Id,
+                PayerId = user4.Id,
+                ReceiveId = user3.Id,
                 Amount = 800,
-                Transaction_Date = DateTime.UtcNow.AddDays(-3),
-                Payment_Status = "Completed",
-                Payment_Type = "Online",
-                Transaction_Ref = "PAY456"
+                TransactionDate = DateTime.UtcNow.AddDays(-3),
+                PaymentStatus = "Completed",
+                PaymentType = "Online",
+                TransactionRef = "PAY456"
             };
 
             var payment3 = new Payment
             {
-                Trip_ID = trip5.TripId,
-                Payer_ID = user2.Id,
-                Receiver_User_ID = user3.Id,
+                TripId = trip5.Id,
+                PayerId = user2.Id,
+                ReceiveId = user3.Id,
                 Amount = 400,
-                Transaction_Date = DateTime.UtcNow.AddDays(-3),
-                Payment_Status = "Completed",
-                Payment_Type = "Online",
-                Transaction_Ref = "PAY789"
+                TransactionDate = DateTime.UtcNow.AddDays(-3),
+                PaymentStatus = "Completed",
+                PaymentType = "Online",
+                TransactionRef = "PAY789"
             };
 
             // Create Feedback entries
             var feedback1 = new Feedback
             {
-                Trip_ID = trip1.TripId,
-                Sender_User_ID = user2.Id,
-                Receiver_User_ID = user1.Id,
+                TripId = trip1.Id,
+                SenderId = user2.Id,
+                ReceiverId = user1.Id,
                 Rating = 5,
                 Comment = "Great ride!"
             };
 
             var feedback2 = new Feedback
             {
-                Trip_ID = trip1.TripId,
-                Sender_User_ID = user1.Id,
-                Receiver_User_ID = user2.Id,
+                TripId = trip1.Id,
+                SenderId = user1.Id,
+                ReceiverId = user2.Id,
                 Rating = 4,
                 Comment = "Pleasant passenger."
             };
 
             var feedback3 = new Feedback
             {
-                Trip_ID = trip5.TripId,
-                Sender_User_ID = user4.Id,
-                Receiver_User_ID = user3.Id,
+                TripId = trip5.Id,
+                SenderId = user4.Id,
+                ReceiverId = user3.Id,
                 Rating = 3,
                 Comment = "Good driver but car was a bit messy."
             };
 
             var feedback4 = new Feedback
             {
-                Trip_ID = trip5.TripId,
-                Sender_User_ID = user3.Id,
-                Receiver_User_ID = user4.Id,
+                TripId = trip5.Id,
+                SenderId = user3.Id,
+                ReceiverId = user4.Id,
                 Rating = 5,
                 Comment = "Great passengers, very punctual."
             };
@@ -333,80 +333,78 @@ namespace CarPooling.Infrastructure.Seeders
             // Create Chat messages with IsRead property
             var chat1 = new Chat
             {
-                Trip_ID = trip1.TripId,
-                Sender_ID = user2.Id,
-                Receiver_ID = user1.Id,
+                TripId = trip1.Id,
+                SenderId = user2.Id,
+                ReceiverId = user1.Id,
                 Message = "Hi, what time exactly will we depart?",
-                Sent_At = DateTime.UtcNow.AddDays(-1),
+                SentAt = DateTime.UtcNow.AddDays(-1),
                 IsRead = true
             };
 
             var chat2 = new Chat
             {
-                Trip_ID = trip1.TripId,
-                Sender_ID = user1.Id,
-                Receiver_ID = user2.Id,
+                TripId = trip1.Id,
+                SenderId = user1.Id,
+                ReceiverId = user2.Id,
                 Message = "We'll depart at 9:00 AM sharp.",
-                Sent_At = DateTime.UtcNow.AddDays(-1).AddHours(1),
+                SentAt = DateTime.UtcNow.AddDays(-1).AddHours(1),
                 IsRead = true
             };
 
             var chat3 = new Chat
             {
-                Trip_ID = trip3.TripId,
-                Sender_ID = user2.Id,
-                Receiver_ID = user3.Id,
+                TripId = trip3.Id,
+                SenderId = user2.Id,
+                ReceiverId = user3.Id,
                 Message = "Can I bring a small suitcase?",
-                Sent_At = DateTime.UtcNow.AddHours(-12),
+                SentAt = DateTime.UtcNow.AddHours(-12),
                 IsRead = false
             };
 
             // Create Delivery Requests with Weight property
             var delivery1 = new DeliveryRequest
             {
-                Sender_ID = user2.Id,
-                Receiver_Phone = "01012345678",
-                Source_Location = "Cairo",
-                Dropoff_Location = "Alexandria",
-                Item_Description = "Small package, 2kg",
+                SenderId = user2.Id,
+                ReceiverPhone = "01012345678",
+                SourceLocation = "Cairo",
+                DropoffLocation = "Alexandria",
+                ItemDescription = "Small package, 2kg",
                 Weight = 2.0f,
-                price = 100,
+                Price = 100,
                 Status = "Pending",
-                Assigned_Trip_ID = trip1.TripId
+                TripId = trip1.Id
             };
 
             var delivery2 = new DeliveryRequest
             {
-                Sender_ID = user4.Id,
-                Receiver_Phone = "01098765432",
-                Source_Location = "Cairo",
-                Dropoff_Location = "Hurghada",
-                Item_Description = "Documents envelope",
+                SenderId = user4.Id,
+                ReceiverPhone = "01098765432",
+                SourceLocation = "Cairo",
+                DropoffLocation = "Hurghada",
+                ItemDescription = "Documents envelope",
                 Weight = 0.5f,
-                price = 150,
+                Price = 150,
                 Status = "Completed",
-                Assigned_Trip_ID = trip5.TripId
+                TripId = trip5.Id
             };
 
             // Add document verification
             var verification1 = new DocumentVerification
             {
-                User_ID = user1.Id,
-                Verified_By_Admin_ID = user5.Id,
-                Document_Type = "Driving License",
-                Submitted_At = DateTime.UtcNow.AddDays(-10),
-                Verified_At = DateTime.UtcNow.AddDays(-8),
-                Verification_Status = "Approved"
+                UserId = user1.Id,
+                AdminId = user5.Id,
+                DocumentType = "Driving License",
+                VerifiedAt = DateTime.UtcNow.AddDays(-8),
+                VerificationStatus = VerificationStatus.Approved
             };
 
             var verification2 = new DocumentVerification
             {
-                User_ID = user3.Id,
-                Verified_By_Admin_ID = user5.Id,
-                Document_Type = "Driving License",
-                Submitted_At = DateTime.UtcNow.AddDays(-7),
-                Verified_At = DateTime.UtcNow.AddDays(-5),
-                Verification_Status = "Approved"
+                UserId = user3.Id,
+                AdminId = user5.Id, 
+                DocumentType= "Driving License",
+                VerifiedAt = DateTime.UtcNow.AddDays(-5),
+                VerificationStatus =VerificationStatus.Approved
             };
 
             // Save all related entities
