@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using CarPooling.Domain.DTOs;
+using CarPooling.Application.DTOs;
 using CarPooling.Domain.Entities;
 using AutoMapper;
 using CarPooling.Application.Interfaces;
-using CarPooling.Infrastructure.Interfaces;
 using System.Security.Claims;
+using CarPooling.Application.DTOs.AuthDto;
 
 namespace CarPooling.Application.Services
 {
@@ -60,7 +60,7 @@ namespace CarPooling.Application.Services
                     UserRole = request.UserRole,
                     SSN = request.SSN,
                     DrivingLicenseImage = request.DrivingLicenseImage,
-                    NationalIDImage = request.National_ID_Image,
+                    NationalIDImage = request.NationalIDImage,
                     AvgRating = 0,
                     IsVerified = false,
                     ConfirmNumber = GenerateConfirmationNumber(),
@@ -351,5 +351,6 @@ namespace CarPooling.Application.Services
             var random = new Random();
             return random.Next(100000, 999999).ToString();
         }
+
     }
 }

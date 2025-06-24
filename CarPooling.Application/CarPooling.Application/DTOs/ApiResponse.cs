@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CarPooling.Domain.DTOs
+namespace CarPooling.Application.DTOs
 {
     public class ApiResponse<T>
     {

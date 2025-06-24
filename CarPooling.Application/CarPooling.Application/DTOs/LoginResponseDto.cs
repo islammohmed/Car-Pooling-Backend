@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CarPooling.Domain.Enums;
 
-namespace CarPooling.Domain.DTOs
+namespace CarPooling.Application.DTOs
 {
  
         public class LoginResponseDto

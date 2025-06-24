@@ -8,8 +8,8 @@ namespace CarPooling.Domain.Enums
 {
     public enum UserRole
     {
-        Admin,
+        Passenger,
         Driver,
-        Passenger
+        Admin
     }
 }

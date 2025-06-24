@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CarPooling.Domain.DTOs;
+using CarPooling.Application.DTOs;
+using CarPooling.Application.DTOs.AuthDto;
 
 namespace CarPooling.Application.Interfaces
 {

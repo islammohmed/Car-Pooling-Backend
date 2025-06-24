@@ -4,8 +4,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CarPooling.Domain.Entities;
-using CarPooling.Infrastructure.Interfaces;
 using System.Security.Cryptography;
+using CarPooling.Application.Interfaces;
 
 namespace CarPooling.Infrastructure.Services
 {
