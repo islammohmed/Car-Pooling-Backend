@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using CarPooling.Domain.DTOs;
+using CarPooling.Application.DTOs;
 using CarPooling.Application.Interfaces;
 using System.Security.Claims;
+using CarPooling.Application.DTOs.AuthDto;
 
 namespace CarPooling.API.Controllers
 {
@@ -206,36 +207,5 @@ namespace CarPooling.API.Controllers
         {
             return Ok(ApiResponse<bool>.SuccessResponse(true, "Token is valid"));
         }
-    }
-
-    // Additional DTOs needed for the controller
-    public class RefreshTokenRequestDto
-    {
-        public string Token { get; set; }
-    }
-
-    public class ConfirmEmailRequestDto
-    {
-        public string UserId { get; set; }
-        public string Code { get; set; }
-    }
-
-    public class ResendConfirmationRequestDto
-    {
-        public string Email { get; set; }
-    }
-
-    public class ForgotPasswordRequestDto
-    {
-        public string Email { get; set; }
-    }
-
-    public class CurrentUserDto
-    {
-        public string UserId { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Role { get; set; }
     }
 }
