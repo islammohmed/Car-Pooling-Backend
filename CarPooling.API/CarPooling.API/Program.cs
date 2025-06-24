@@ -1,17 +1,17 @@
 using System.Text;
 using CarPooling.Application.Extensions;
 using CarPooling.Infrastructure.Extensions;
+using CarPooling.Data;
 using CarPooling.Application.Services;
 using CarPooling.Domain.Entities;
 using CarPooling.Infrastructure.Services;
+using CarPooling.Application.Interfaces;
+using CarPooling.Infrastructure.Seeders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using CarPooling.Data;
-using CarPooling.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using CarPooling.Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,9 +66,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<SignInManager<User>>();
 
-// AutoMapper is already configured in AddApplication() extension method
-builder.Services.AddEndpointsApiExplorer();
-
 // Configure CORS
 builder.Services.AddCors(options =>
 {
@@ -89,15 +86,20 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddEndpointsApiExplorer();
+
 // Extension methods for Infrastructure and Application layers
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
 
-var scope = app.Services.CreateScope();
-var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
-await seeder.Seed();
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
+    await seeder.Seed();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -109,7 +111,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Enable CORS - MUST be after UseHttpsRedirection and before UseAuthentication
-app.UseCors("AllowAngularApp"); // Use the correct policy name
+app.UseCors("AllowAngularApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
