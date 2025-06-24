@@ -27,7 +27,7 @@ namespace CarPooling.Domain.Entities
         [StringLength(500)]
         public DateTime Created_At { get; set; }
         [StringLength(10)]
-        public Gender  GenderPreference { get; set; }
+        public Gender?  GenderPreference { get; set; }
 
         public string DriverId { get; set; }
         [ForeignKey(nameof(DriverId))]

@@ -4,8 +4,9 @@ using CarPooling.Domain.DTOs;
 using CarPooling.Domain.Entities;
 using AutoMapper;
 using CarPooling.Application.Interfaces;
-using CarPooling.Infrastructure.Interfaces;
 using System.Security.Claims;
+using CarPooling.Application.DTOs.AuthDto;
+using CarPooling.Infrastructure.Interfaces;
 
 namespace CarPooling.Application.Services
 {

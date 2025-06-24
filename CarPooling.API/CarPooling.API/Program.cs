@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using CarPooling.Data;
 using CarPooling.Infrastructure.Seeders;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using CarPooling.Application.Interfaces;
+using CarPooling.Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,10 +19,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
-
-// Database Context
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//connection string from appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Configure Entity Framework Core with SQL Server
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.MigrationsAssembly("CarPooling.Data");
+        sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+    }));
 
 // Configure Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
