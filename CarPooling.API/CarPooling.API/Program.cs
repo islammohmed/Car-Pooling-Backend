@@ -10,7 +10,6 @@ using CarPooling.Data;
 using CarPooling.Infrastructure.Seeders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using CarPooling.Infrastructure.Interfaces;
 using Microsoft.OpenApi.Models;
 using CarPooling.Application.Interfaces;
 
