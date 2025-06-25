@@ -1,4 +1,4 @@
-﻿using CarPooling.Data;
+﻿using CarPooling.Infrastructure.Data;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using Microsoft.EntityFrameworkCore;

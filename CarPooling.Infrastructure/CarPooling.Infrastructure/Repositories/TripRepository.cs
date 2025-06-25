@@ -1,5 +1,5 @@
 ﻿using CarPooling.Application.Repositories;
-using CarPooling.Data;
+using CarPooling.Infrastructure.Data;
 using CarPooling.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

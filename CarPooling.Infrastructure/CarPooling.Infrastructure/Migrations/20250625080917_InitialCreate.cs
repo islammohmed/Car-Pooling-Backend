@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CarPooling.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class add : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,9 +32,9 @@ namespace CarPooling.Infrastructure.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    UserRole = table.Column<int>(type: "int", nullable: false),
+                    UserRole = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SSN = table.Column<string>(type: "nvarchar(14)", maxLength: 14, nullable: false),
-                    Gender = table.Column<int>(type: "int", nullable: false),
+                    Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DrivingLicenseImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NationalIdImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AvgRating = table.Column<float>(type: "real", nullable: false),
@@ -222,24 +222,24 @@ namespace CarPooling.Infrastructure.Migrations
                 name: "Trips",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    TripId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PricePerSeat = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     EstimatedDuration = table.Column<TimeSpan>(type: "time", nullable: false),
                     AvailableSeats = table.Column<int>(type: "int", nullable: false),
-                    TripDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    TripDescription = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     SourceLocation = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Destination = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Created_At = table.Column<DateTime>(type: "datetime2", maxLength: 500, nullable: false),
-                    GenderPreference = table.Column<int>(type: "int", maxLength: 10, nullable: false),
-                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    GenderPreference = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Trips", x => x.Id);
+                    table.PrimaryKey("PK_Trips", x => x.TripId);
                     table.ForeignKey(
                         name: "FK_Trips_AspNetUsers_DriverId",
                         column: x => x.DriverId,
@@ -279,7 +279,7 @@ namespace CarPooling.Infrastructure.Migrations
                         name: "FK_Chats_Trips_TripId",
                         column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "Id");
+                        principalColumn: "TripId");
                 });
 
             migrationBuilder.CreateTable(
@@ -311,7 +311,7 @@ namespace CarPooling.Infrastructure.Migrations
                         name: "FK_DeliveryRequests_Trips_TripId",
                         column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "Id");
+                        principalColumn: "TripId");
                 });
 
             migrationBuilder.CreateTable(
@@ -344,7 +344,7 @@ namespace CarPooling.Infrastructure.Migrations
                         name: "FK_Feedbacks_Trips_TripId",
                         column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "Id");
+                        principalColumn: "TripId");
                 });
 
             migrationBuilder.CreateTable(
@@ -380,7 +380,7 @@ namespace CarPooling.Infrastructure.Migrations
                         name: "FK_Payments_Trips_TripId",
                         column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "Id");
+                        principalColumn: "TripId");
                 });
 
             migrationBuilder.CreateTable(
@@ -408,7 +408,7 @@ namespace CarPooling.Infrastructure.Migrations
                         name: "FK_TripParticipants_Trips_TripId",
                         column: x => x.TripId,
                         principalTable: "Trips",
-                        principalColumn: "Id");
+                        principalColumn: "TripId");
                 });
 
             migrationBuilder.CreateIndex(

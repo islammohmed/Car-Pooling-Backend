@@ -1,4 +1,4 @@
-﻿using CarPooling.Data;
+﻿using CarPooling.Infrastructure.Data;
 using CarPooling.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

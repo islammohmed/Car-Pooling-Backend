@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using CarPooling.Application.Extensions;
 using CarPooling.Infrastructure.Extensions;
-using CarPooling.Data;
+using CarPooling.Infrastructure.Data;
 using CarPooling.Application.Services;
 using CarPooling.Domain.Entities;
 using CarPooling.Application.Interfaces;
@@ -61,7 +61,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
     {
-        sqlOptions.MigrationsAssembly("CarPooling.Data");
+        sqlOptions.MigrationsAssembly("CarPooling.Infrastructure");
         sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
     }));
 
