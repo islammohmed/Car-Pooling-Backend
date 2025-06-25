@@ -4,8 +4,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CarPooling.Domain.Entities;
-using CarPooling.Infrastructure.Interfaces;
 using System.Security.Cryptography;
+using CarPooling.Application.Interfaces;
 
 namespace CarPooling.Infrastructure.Services
 {
@@ -30,7 +30,6 @@ namespace CarPooling.Infrastructure.Services
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_secretKey);
-
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
@@ -59,7 +58,6 @@ namespace CarPooling.Infrastructure.Services
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.ASCII.GetBytes(_secretKey);
-
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,

@@ -2,7 +2,6 @@
 using CarPooling.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-
 namespace CarPooling.Data
 {
     public class AppDbContext : IdentityDbContext<User>
@@ -12,7 +11,6 @@ namespace CarPooling.Data
         {
         }
 
-        
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Car> Cars { get; set; }
         public DbSet<TripParticipant> TripParticipants { get; set; }
@@ -26,6 +24,15 @@ namespace CarPooling.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Configure enum storage - ADD THIS SECTION
+            modelBuilder.Entity<User>()
+                .Property(e => e.UserRole)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<User>()
+                .Property(e => e.Gender)
+                .HasConversion<string>();
 
             // Fix for DocumentVerification - prevent multiple cascade paths
             modelBuilder.Entity<DocumentVerification>()

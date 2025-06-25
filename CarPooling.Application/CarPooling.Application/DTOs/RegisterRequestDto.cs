@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CarPooling.Domain.Enums;
 
-namespace CarPooling.Domain.DTOs
+namespace CarPooling.Application.DTOs
 {
     public class RegisterRequestDto
     {
@@ -32,6 +32,8 @@ namespace CarPooling.Domain.DTOs
         public string SSN { get; set; }
 
         public string? DrivingLicenseImage { get; set; }
-        public string? National_ID_Image { get; set; }
+        public string? NationalIDImage { get; set; }
+        public Gender? Gender { get; set; } 
+
     }
 }

@@ -4,6 +4,7 @@ using CarPooling.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarPooling.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250624150439_AddDisplayNameToUser")]
+    partial class AddDisplayNameToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,11 +27,11 @@ namespace CarPooling.Infrastructure.Migrations
 
             modelBuilder.Entity("CarPooling.Domain.Entities.Car", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CarId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarId"));
 
                     b.Property<string>("Color")
                         .IsRequired()
@@ -49,7 +52,7 @@ namespace CarPooling.Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("Id");
+                    b.HasKey("CarId");
 
                     b.HasIndex("DriverId");
 
@@ -58,11 +61,11 @@ namespace CarPooling.Infrastructure.Migrations
 
             modelBuilder.Entity("CarPooling.Domain.Entities.Chat", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("Chat_ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Chat_ID"));
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
@@ -71,60 +74,59 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReceiverId")
+                    b.Property<string>("Receiver_ID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SenderId")
+                    b.Property<string>("Sender_ID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("SentAt")
+                    b.Property<DateTime>("Sent_At")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TripId")
+                    b.Property<int>("Trip_ID")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("Chat_ID");
 
-                    b.HasIndex("ReceiverId");
+                    b.HasIndex("Receiver_ID");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("Sender_ID");
 
-                    b.HasIndex("TripId");
+                    b.HasIndex("Trip_ID");
 
                     b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("CarPooling.Domain.Entities.DeliveryRequest", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("Request_ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Request_ID"));
 
-                    b.Property<string>("DropoffLocation")
+                    b.Property<int?>("Assigned_Trip_ID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Dropoff_Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ItemDescription")
+                    b.Property<string>("Item_Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ReceiverPhone")
+                    b.Property<string>("Receiver_Phone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SenderId")
+                    b.Property<string>("Sender_ID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SourceLocation")
+                    b.Property<string>("Source_Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -132,66 +134,72 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TripId")
-                        .HasColumnType("int");
-
                     b.Property<float>("Weight")
                         .HasColumnType("real");
 
-                    b.HasKey("Id");
+                    b.Property<decimal>("price")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
-                    b.HasIndex("SenderId");
+                    b.HasKey("Request_ID");
 
-                    b.HasIndex("TripId");
+                    b.HasIndex("Assigned_Trip_ID");
+
+                    b.HasIndex("Sender_ID");
 
                     b.ToTable("DeliveryRequests");
                 });
 
             modelBuilder.Entity("CarPooling.Domain.Entities.DocumentVerification", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
-                    b.Property<string>("AdminId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("DocumentType")
+                    b.Property<string>("Document_Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RejectionReason")
+                    b.Property<string>("Rejection_Reason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("VerificationStatus")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("VerifiedAt")
+                    b.Property<DateTime>("Submitted_At")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<string>("User_ID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasIndex("AdminId");
+                    b.Property<string>("Verification_Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("UserId");
+                    b.Property<DateTime>("Verified_At")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Verified_By_Admin_ID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("User_ID");
+
+                    b.HasIndex("Verified_By_Admin_ID");
 
                     b.ToTable("DocumentVerifications");
                 });
 
             modelBuilder.Entity("CarPooling.Domain.Entities.Feedback", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("Feedback_ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Feedback_ID"));
 
                     b.Property<string>("Comment")
                         .IsRequired()
@@ -200,90 +208,89 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<string>("ReceiverId")
+                    b.Property<string>("Receiver_User_ID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SenderId")
+                    b.Property<string>("Sender_User_ID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("TripId")
+                    b.Property<int>("Trip_ID")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("Feedback_ID");
 
-                    b.HasIndex("ReceiverId");
+                    b.HasIndex("Receiver_User_ID");
 
-                    b.HasIndex("SenderId");
+                    b.HasIndex("Sender_User_ID");
 
-                    b.HasIndex("TripId");
+                    b.HasIndex("Trip_ID");
 
                     b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("CarPooling.Domain.Entities.Payment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
                     b.Property<decimal>("Amount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("PayerId")
+                    b.Property<string>("Payer_ID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("PaymentStatus")
+                    b.Property<string>("Payment_Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PaymentType")
+                    b.Property<string>("Payment_Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReceiveId")
+                    b.Property<string>("Receiver_User_ID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("TransactionDate")
+                    b.Property<DateTime>("Transaction_Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("TransactionRef")
+                    b.Property<string>("Transaction_Ref")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TripId")
+                    b.Property<int>("Trip_ID")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("ID");
 
-                    b.HasIndex("PayerId");
+                    b.HasIndex("Payer_ID");
 
-                    b.HasIndex("ReceiveId");
+                    b.HasIndex("Receiver_User_ID");
 
-                    b.HasIndex("TripId");
+                    b.HasIndex("Trip_ID");
 
                     b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("CarPooling.Domain.Entities.Trip", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("TripId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TripId"));
 
                     b.Property<int>("AvailableSeats")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Created_At")
-                        .HasMaxLength(500)
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Destination")
@@ -298,12 +305,13 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<TimeSpan>("EstimatedDuration")
                         .HasColumnType("time");
 
-
                     b.Property<string>("GenderRequired")
+                        .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -319,15 +327,16 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TripDescription")
-
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.HasKey("Id");
+                    b.HasKey("TripId");
 
                     b.HasIndex("DriverId");
 
@@ -336,11 +345,11 @@ namespace CarPooling.Infrastructure.Migrations
 
             modelBuilder.Entity("CarPooling.Domain.Entities.TripParticipant", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("TripId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("JoinedAt")
                         .HasColumnType("datetime2");
@@ -348,19 +357,14 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<int>("SeatCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TripId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
+                    b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.Property<int>("TripParticipantId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("TripId");
+                    b.HasKey("TripId", "UserId");
 
                     b.HasIndex("UserId");
 
@@ -419,7 +423,7 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("NationalIdImage")
+                    b.Property<string>("NationalIDImage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -455,8 +459,9 @@ namespace CarPooling.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("UserRole")
-                        .HasColumnType("int");
+                    b.Property<string>("UserRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -609,7 +614,7 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.User", "Driver")
                         .WithMany("Cars")
                         .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Driver");
@@ -619,20 +624,20 @@ namespace CarPooling.Infrastructure.Migrations
                 {
                     b.HasOne("CarPooling.Domain.Entities.User", "Receiver")
                         .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Receiver_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.User", "Sender")
                         .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("Sender_ID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
                         .WithMany()
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Trip_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Receiver");
@@ -644,35 +649,33 @@ namespace CarPooling.Infrastructure.Migrations
 
             modelBuilder.Entity("CarPooling.Domain.Entities.DeliveryRequest", b =>
                 {
+                    b.HasOne("CarPooling.Domain.Entities.Trip", "AssignedTrip")
+                        .WithMany()
+                        .HasForeignKey("Assigned_Trip_ID");
+
                     b.HasOne("CarPooling.Domain.Entities.User", "Sender")
                         .WithMany()
-                        .HasForeignKey("SenderId")
+                        .HasForeignKey("Sender_ID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
-                        .WithMany()
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                    b.Navigation("AssignedTrip");
 
                     b.Navigation("Sender");
-
-                    b.Navigation("Trip");
                 });
 
             modelBuilder.Entity("CarPooling.Domain.Entities.DocumentVerification", b =>
                 {
-                    b.HasOne("CarPooling.Domain.Entities.User", "Admin")
-                        .WithMany()
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("CarPooling.Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("User_ID")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CarPooling.Domain.Entities.User", "Admin")
+                        .WithMany()
+                        .HasForeignKey("Verified_By_Admin_ID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Admin");
@@ -684,20 +687,20 @@ namespace CarPooling.Infrastructure.Migrations
                 {
                     b.HasOne("CarPooling.Domain.Entities.User", "Receiver")
                         .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Receiver_User_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.User", "Sender")
                         .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("Sender_User_ID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
                         .WithMany()
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Trip_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Receiver");
@@ -711,20 +714,20 @@ namespace CarPooling.Infrastructure.Migrations
                 {
                     b.HasOne("CarPooling.Domain.Entities.User", "Payer")
                         .WithMany()
-                        .HasForeignKey("PayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("Payer_ID")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.User", "Receiver")
                         .WithMany()
-                        .HasForeignKey("ReceiveId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Receiver_User_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
                         .WithMany()
-                        .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .HasForeignKey("Trip_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Payer");
@@ -739,7 +742,7 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.User", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Driver");
@@ -750,7 +753,7 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
                         .WithMany("Participants")
                         .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.User", "User")

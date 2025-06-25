@@ -133,7 +133,6 @@ namespace CarPooling.Infrastructure.Seeders
                 AvailableSeats = 4,
                 StartTime = DateTime.UtcNow.AddDays(1),
                 Status = TripStatus.Confirmed,
-                Created_At = DateTime.UtcNow,
                 EstimatedDuration = TimeSpan.FromHours(3),
                 Notes = "No smoking please",
                 GenderPreference = Gender.Female,  
@@ -149,7 +148,6 @@ namespace CarPooling.Infrastructure.Seeders
                 AvailableSeats = 3,
                 StartTime = DateTime.UtcNow.AddDays(2),
                 Status = TripStatus.Confirmed,
-                Created_At = DateTime.UtcNow,
                 EstimatedDuration = TimeSpan.FromHours(2),
                 Notes = "No pets allowed please",
                 GenderPreference = Gender.Female,
@@ -165,7 +163,6 @@ namespace CarPooling.Infrastructure.Seeders
                 AvailableSeats = 2,
                 StartTime = DateTime.UtcNow.AddDays(3),
                 Status = TripStatus.Pending,
-                Created_At = DateTime.UtcNow.AddDays(-1),
                 EstimatedDuration = TimeSpan.FromHours(10),
                 Notes = "Long journey, bring snacks",
                 GenderPreference = Gender.Female,
@@ -181,7 +178,6 @@ namespace CarPooling.Infrastructure.Seeders
                 AvailableSeats = 3,
                 StartTime = DateTime.UtcNow.AddDays(5),
                 Status = TripStatus.Confirmed,
-                Created_At = DateTime.UtcNow,
                 EstimatedDuration = TimeSpan.FromHours(3.5),
                 Notes = "Return trip",
                 GenderPreference = Gender.Female,
@@ -197,7 +193,6 @@ namespace CarPooling.Infrastructure.Seeders
                 AvailableSeats = 4,
                 StartTime = DateTime.UtcNow.AddDays(-2),
                 Status = TripStatus.Completed,
-                Created_At = DateTime.UtcNow.AddDays(-5),
                 EstimatedDuration = TimeSpan.FromHours(6),
                 Notes = "Beach trip",
                 GenderPreference = Gender.Female,
@@ -213,7 +208,7 @@ namespace CarPooling.Infrastructure.Seeders
             // Create Trip Participants
             var participant1 = new TripParticipant
             {
-                TripId = trip1.Id,
+                TripId = trip1.TripId,
                 UserId = user2.Id,
                 SeatCount = 1,
                 Status = JoinStatus.Confirmed,
@@ -222,7 +217,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var participant2 = new TripParticipant
             {
-                TripId = trip2.Id,
+                TripId = trip2.TripId,
                 UserId = user4.Id,
                 SeatCount = 2,
                 Status = JoinStatus.Pending,
@@ -231,7 +226,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var participant3 = new TripParticipant
             {
-                TripId = trip3.Id,
+                TripId = trip3.TripId,
                 UserId = user2.Id,
                 SeatCount = 1,
                 Status = JoinStatus.Pending,
@@ -240,7 +235,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var participant4 = new TripParticipant
             {
-                TripId = trip5.Id,
+                TripId = trip5.TripId,
                 UserId = user4.Id,
                 SeatCount = 2,
                 Status = JoinStatus.Cancelled,
@@ -249,7 +244,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var participant5 = new TripParticipant
             {
-                TripId = trip5.Id,
+                TripId = trip5.TripId,
                 UserId = user2.Id,
                 SeatCount = 1,
                 Status = JoinStatus.Confirmed,
@@ -259,7 +254,7 @@ namespace CarPooling.Infrastructure.Seeders
             // Create Payments
             var payment1 = new Payment
             {
-                TripId = trip1.Id,
+                TripId = trip1.TripId,
                 PayerId = user2.Id,
                 ReceiveId = user1.Id,
                 Amount = 150,
@@ -271,7 +266,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var payment2 = new Payment
             {
-                TripId = trip5.Id,
+                TripId = trip5.TripId,
                 PayerId = user4.Id,
                 ReceiveId = user3.Id,
                 Amount = 800,
@@ -283,7 +278,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var payment3 = new Payment
             {
-                TripId = trip5.Id,
+                TripId = trip5.TripId,
                 PayerId = user2.Id,
                 ReceiveId = user3.Id,
                 Amount = 400,
@@ -296,7 +291,7 @@ namespace CarPooling.Infrastructure.Seeders
             // Create Feedback entries
             var feedback1 = new Feedback
             {
-                TripId = trip1.Id,
+                TripId = trip1.TripId,
                 SenderId = user2.Id,
                 ReceiverId = user1.Id,
                 Rating = 5,
@@ -305,7 +300,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var feedback2 = new Feedback
             {
-                TripId = trip1.Id,
+                TripId = trip1.TripId,
                 SenderId = user1.Id,
                 ReceiverId = user2.Id,
                 Rating = 4,
@@ -314,7 +309,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var feedback3 = new Feedback
             {
-                TripId = trip5.Id,
+                TripId = trip5.TripId,
                 SenderId = user4.Id,
                 ReceiverId = user3.Id,
                 Rating = 3,
@@ -323,7 +318,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var feedback4 = new Feedback
             {
-                TripId = trip5.Id,
+                TripId = trip5.TripId,
                 SenderId = user3.Id,
                 ReceiverId = user4.Id,
                 Rating = 5,
@@ -333,7 +328,7 @@ namespace CarPooling.Infrastructure.Seeders
             // Create Chat messages with IsRead property
             var chat1 = new Chat
             {
-                TripId = trip1.Id,
+                TripId = trip1.TripId,
                 SenderId = user2.Id,
                 ReceiverId = user1.Id,
                 Message = "Hi, what time exactly will we depart?",
@@ -343,7 +338,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var chat2 = new Chat
             {
-                TripId = trip1.Id,
+                TripId = trip1.TripId,
                 SenderId = user1.Id,
                 ReceiverId = user2.Id,
                 Message = "We'll depart at 9:00 AM sharp.",
@@ -353,7 +348,7 @@ namespace CarPooling.Infrastructure.Seeders
 
             var chat3 = new Chat
             {
-                TripId = trip3.Id,
+                TripId = trip3.TripId,
                 SenderId = user2.Id,
                 ReceiverId = user3.Id,
                 Message = "Can I bring a small suitcase?",
@@ -372,7 +367,7 @@ namespace CarPooling.Infrastructure.Seeders
                 Weight = 2.0f,
                 Price = 100,
                 Status = "Pending",
-                TripId = trip1.Id
+                TripId = trip1.TripId
             };
 
             var delivery2 = new DeliveryRequest
@@ -385,7 +380,7 @@ namespace CarPooling.Infrastructure.Seeders
                 Weight = 0.5f,
                 Price = 150,
                 Status = "Completed",
-                TripId = trip5.Id
+                TripId = trip5.TripId
             };
 
             // Add document verification

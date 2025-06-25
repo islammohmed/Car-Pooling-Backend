@@ -11,14 +11,14 @@ namespace CarPooling.Infrastructure.Repositories
         {
             context.Trips.Add(trip);
            // await context.SaveChangesAsync();
-            return trip.Id;
+            return trip.TripId;
         }
 
         public async Task<Trip?> GetTripWithParticipants(int tripId)
         {
             return await context.Trips
                 .Include(t => t.Participants)
-                .FirstOrDefaultAsync(t => t.Id == tripId);
+                .FirstOrDefaultAsync(t => t.TripId == tripId);
         }
 
         public async Task UpdateTripAsync(Trip trip)

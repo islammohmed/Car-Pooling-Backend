@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CarPooling.Domain.Entities;
 
-namespace CarPooling.Infrastructure.Interfaces
+namespace CarPooling.Application.Interfaces
 {
     public interface IJwtService
     {

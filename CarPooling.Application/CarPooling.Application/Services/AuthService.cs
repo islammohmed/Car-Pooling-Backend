@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using CarPooling.Domain.DTOs;
+using CarPooling.Application.DTOs;
 using CarPooling.Domain.Entities;
 using AutoMapper;
 using CarPooling.Application.Interfaces;
 using System.Security.Claims;
 using CarPooling.Application.DTOs.AuthDto;
-using CarPooling.Infrastructure.Interfaces;
 
 namespace CarPooling.Application.Services
 {
@@ -61,7 +60,7 @@ namespace CarPooling.Application.Services
                     UserRole = request.UserRole,
                     SSN = request.SSN,
                     DrivingLicenseImage = request.DrivingLicenseImage,
-                    NationalIdImage = request.National_ID_Image,
+                    NationalIdImage = request.NationalIDImage,
                     AvgRating = 0,
                     IsVerified = false,
                     ConfirmNumber = GenerateConfirmationNumber(),
@@ -107,14 +106,20 @@ namespace CarPooling.Application.Services
         {
             try
             {
+                _logger.LogInformation("=== LOGIN DEBUG START ===");
+
                 // Find user by email
+                _logger.LogInformation("Step 1: Finding user by email: {Email}", request.Email);
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
                 {
+                    _logger.LogWarning("Step 1: User not found for email: {Email}", request.Email);
                     return ApiResponse<LoginResponseDto>.ErrorResponse("Invalid email or password");
                 }
+                _logger.LogInformation("Step 1: User found - ID: {UserId}, Email: {Email}", user.Id, user.Email);
 
                 // Check password
+                _logger.LogInformation("Step 2: Checking password for user: {Email}", request.Email);
                 var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: true);
 
                 if (result.IsLockedOut)
@@ -122,23 +127,38 @@ namespace CarPooling.Application.Services
                     _logger.LogWarning("User {Email} account locked out", request.Email);
                     return ApiResponse<LoginResponseDto>.ErrorResponse("Account is locked out due to multiple failed attempts");
                 }
-
                 if (result.IsNotAllowed)
                 {
                     _logger.LogWarning("User {Email} not allowed to sign in", request.Email);
                     return ApiResponse<LoginResponseDto>.ErrorResponse("Account is not allowed to sign in");
                 }
-
                 if (!result.Succeeded)
                 {
                     _logger.LogWarning("Failed login attempt for user {Email}", request.Email);
                     return ApiResponse<LoginResponseDto>.ErrorResponse("Invalid email or password");
                 }
+                _logger.LogInformation("Step 2: Password check successful for user: {Email}", request.Email);
+
+                // Debug user properties
+                _logger.LogInformation("Step 3: User properties debug:");
+                _logger.LogInformation("- User.Id: {UserId} (Type: {Type})", user.Id, user.Id?.GetType().Name);
+                _logger.LogInformation("- User.Email: {Email} (Type: {Type})", user.Email, user.Email?.GetType().Name);
+                _logger.LogInformation("- User.FirstName: {FirstName} (Type: {Type})", user.FirstName, user.FirstName?.GetType().Name);
+                _logger.LogInformation("- User.LastName: {LastName} (Type: {Type})", user.LastName, user.LastName?.GetType().Name);
+                _logger.LogInformation("- User.UserRole: {UserRole} (Type: {Type})", user.UserRole, user.UserRole.GetType().Name);
+                _logger.LogInformation("- User.IsVerified: {IsVerified} (Type: {Type})", user.IsVerified, user.IsVerified.GetType().Name);
+                _logger.LogInformation("- User.EmailConfirmed: {EmailConfirmed} (Type: {Type})", user.EmailConfirmed, user.EmailConfirmed.GetType().Name);
 
                 // Generate JWT token
+                _logger.LogInformation("Step 4: Generating JWT token for user: {Email}", request.Email);
                 var token = _jwtService.GenerateToken(user);
-                var tokenExpiration = _jwtService.GetTokenExpiration();
+                _logger.LogInformation("Step 4: JWT token generated successfully");
 
+                _logger.LogInformation("Step 5: Getting token expiration");
+                var tokenExpiration = _jwtService.GetTokenExpiration();
+                _logger.LogInformation("Step 5: Token expiration: {TokenExpiration}", tokenExpiration);
+
+                _logger.LogInformation("Step 6: Creating LoginResponseDto");
                 var loginResponse = new LoginResponseDto
                 {
                     UserId = user.Id,
@@ -151,14 +171,17 @@ namespace CarPooling.Application.Services
                     IsVerified = user.IsVerified,
                     IsEmailConfirmed = user.EmailConfirmed
                 };
+                _logger.LogInformation("Step 6: LoginResponseDto created successfully");
 
                 _logger.LogInformation("User {Email} logged in successfully", request.Email);
+                _logger.LogInformation("=== LOGIN DEBUG END ===");
 
                 return ApiResponse<LoginResponseDto>.SuccessResponse(loginResponse, "Login successful");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred during user login");
+                _logger.LogError(ex, "Error occurred during user login at step: {Message}", ex.Message);
+                _logger.LogError("Stack trace: {StackTrace}", ex.StackTrace);
                 return ApiResponse<LoginResponseDto>.ErrorResponse("An error occurred during login");
             }
         }
