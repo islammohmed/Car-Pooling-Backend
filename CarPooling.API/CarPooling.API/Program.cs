@@ -57,14 +57,6 @@ builder.Services.AddSwaggerGen(c =>
 //connection string from appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Configure Entity Framework Core with SQL Server
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString, sqlOptions =>
-    {
-        sqlOptions.MigrationsAssembly("CarPooling.Data");
-        sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-    }));
-
 // Configure Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
@@ -131,6 +123,13 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
+
+// Ensure database is created and migrated
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated(); // This will create the database and tables if they don't exist
+}
 
 // Seed the database
 using (var scope = app.Services.CreateScope())

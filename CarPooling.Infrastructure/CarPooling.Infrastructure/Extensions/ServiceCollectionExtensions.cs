@@ -16,7 +16,7 @@ namespace CarPooling.Infrastructure.Extensions
 
            
             services.AddDbContext<AppDbContext>(options =>
-              options.UseSqlServer(connectionString));
+              options.UseSqlite(connectionString));
 
             services.AddScoped<ISeeder, Seeder>();
             services.AddScoped<ITripRepository, TripRepository>();
