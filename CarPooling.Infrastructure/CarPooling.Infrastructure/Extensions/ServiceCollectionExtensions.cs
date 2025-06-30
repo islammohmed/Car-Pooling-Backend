@@ -18,7 +18,7 @@ namespace CarPooling.Infrastructure.Extensions
             services.AddDbContext<AppDbContext>(options =>
               options.UseSqlServer(connectionString));
 
-            services.AddScoped<ISeeder, Seeder>();
+            //services.AddScoped<ISeeder, Seeder>();
             services.AddScoped<ITripRepository, TripRepository>();
         }
     }

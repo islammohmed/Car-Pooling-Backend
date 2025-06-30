@@ -5,6 +5,7 @@ namespace CarPooling.Application.Trips
 {
     public interface IBookTripService
     {
-        Task<TripParticipantDto> BookTripAsync(BookTripDto request);
+        Task<TripParticipantDto> BookTrip(BookTripDto request);
+         Task<bool> CancelTrip(CancelTripDto request);
     }
 }

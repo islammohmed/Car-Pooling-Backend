@@ -133,11 +133,11 @@ builder.Services.AddApplication();
 var app = builder.Build();
 
 // Seed the database
-using (var scope = app.Services.CreateScope())
-{
-    var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
-    await seeder.Seed();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
+//    await seeder.Seed();
+//}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

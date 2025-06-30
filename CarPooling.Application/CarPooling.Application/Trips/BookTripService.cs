@@ -19,12 +19,12 @@ namespace CarPooling.Application.Trips
             IMapper mapper,
             IValidator<BookTripDto> validator)
         {
-            _tripRepository = tripRepository ?? throw new ArgumentNullException(nameof(tripRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            _tripRepository = tripRepository ;
+            _mapper = mapper;
+            _validator = validator ;
         }
 
-        public async Task<TripParticipantDto> BookTripAsync(BookTripDto request)
+        public async Task<TripParticipantDto> BookTrip(BookTripDto request)
         {
             // Validate request using FluentValidation
             var validationResult = await _validator.ValidateAsync(request);
@@ -74,6 +74,36 @@ namespace CarPooling.Application.Trips
 
             // Return the mapped participant DTO
             return _mapper.Map<TripParticipantDto>(participant);
+        }
+
+        async Task<bool> IBookTripService.CancelTrip(CancelTripDto request) 
+        {
+            // Check if the user exists
+            bool userExists = await _tripRepository.UserExists(request.UserId);
+            if (!userExists)
+                throw TripBookingException.UserNotFound();
+
+            // Get the trip with its participants
+            var trip = await _tripRepository.GetTripWithParticipants(request.TripId);
+            if (trip == null)
+                throw TripBookingException.TripNotFound();
+
+            // Check if the user has already booked this trip
+            var participant = trip.Participants?.FirstOrDefault(tp => tp.UserId == request.UserId);
+            if (participant == null)
+                throw TripBookingException.BookingNotFound();
+
+            // Check if the booking is already cancelled
+            if (participant.Status == JoinStatus.Cancelled)
+                throw TripBookingException.AlreadyCancelled();
+
+            participant.Status = JoinStatus.Cancelled;
+            trip.AvailableSeats += participant.SeatCount;
+
+            // Save changes
+            await _tripRepository.UpdateTripAsync(trip);
+
+            return true;
         }
     }
 }
