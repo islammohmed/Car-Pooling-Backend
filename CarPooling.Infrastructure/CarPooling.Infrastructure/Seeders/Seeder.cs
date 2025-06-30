@@ -136,7 +136,8 @@ namespace CarPooling.Infrastructure.Seeders
                 EstimatedDuration = TimeSpan.FromHours(3),
                 Notes = "No smoking please",
                 GenderPreference = Gender.Female,  
-                TripDescription = "A comfortable ride from Cairo to Alexandria."
+                TripDescription = "A comfortable ride from Cairo to Alexandria.",
+                CreatedAt = DateTime.UtcNow
             };
 
             var trip2 = new Trip
@@ -151,7 +152,8 @@ namespace CarPooling.Infrastructure.Seeders
                 EstimatedDuration = TimeSpan.FromHours(2),
                 Notes = "No pets allowed please",
                 GenderPreference = Gender.Female,
-                TripDescription = "A comfortable ride from Cairo to Giza."
+                TripDescription = "A comfortable ride from Cairo to Giza.",
+                CreatedAt = DateTime.UtcNow
             };
 
             var trip3 = new Trip
@@ -166,7 +168,8 @@ namespace CarPooling.Infrastructure.Seeders
                 EstimatedDuration = TimeSpan.FromHours(10),
                 Notes = "Long journey, bring snacks",
                 GenderPreference = Gender.Female,
-                TripDescription = "Road trip to Aswan with stops at interesting locations."
+                TripDescription = "Road trip to Aswan with stops at interesting locations.",
+                CreatedAt = DateTime.UtcNow
             };
 
             var trip4 = new Trip
@@ -181,7 +184,8 @@ namespace CarPooling.Infrastructure.Seeders
                 EstimatedDuration = TimeSpan.FromHours(3.5),
                 Notes = "Return trip",
                 GenderPreference = Gender.Female,
-                TripDescription = "Return trip from Alexandria to Cairo."
+                TripDescription = "Return trip from Alexandria to Cairo.",
+                CreatedAt = DateTime.UtcNow
             };
 
             var trip5 = new Trip
@@ -196,7 +200,9 @@ namespace CarPooling.Infrastructure.Seeders
                 EstimatedDuration = TimeSpan.FromHours(6),
                 Notes = "Beach trip",
                 GenderPreference = Gender.Female,
-                TripDescription = "Weekend getaway to Hurghada."
+                TripDescription = "Weekend getaway to Hurghada.",
+                CreatedAt = DateTime.UtcNow
+
             };
 
             // Save users, cars and trips first to get IDs
