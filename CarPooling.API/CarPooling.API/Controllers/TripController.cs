@@ -33,8 +33,16 @@ namespace CarPooling.API.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookTrip([FromBody] BookTripDto dto)
         {
-                var result = await _bookTripService.BookTripAsync(dto);
+                var result = await _bookTripService.BookTrip(dto);
                 return Ok(result);
+
         }
+        [HttpPost("cancel")]
+        public async Task<IActionResult> CancelTrip(CancelTripDto dto)
+        {
+            var result = await _bookTripService.CancelTrip(dto);
+            return Ok(new { Success = result, Message = "Trip cancelled successfully" });
+        }
+
     }
 }

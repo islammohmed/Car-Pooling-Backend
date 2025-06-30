@@ -23,5 +23,10 @@ namespace CarPooling.Domain.Exceptions
 
         public static TripBookingException AlreadyBooked() => 
             new TripBookingException("You have already booked this trip.");
+        public static TripBookingException BookingNotFound() =>
+    new TripBookingException("No booking found for this trip and user.");
+
+        public static TripBookingException AlreadyCancelled() =>
+            new TripBookingException("This booking has already been cancelled.");
     }
 }

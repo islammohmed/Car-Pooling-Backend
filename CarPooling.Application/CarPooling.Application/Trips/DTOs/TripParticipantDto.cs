@@ -1,6 +1,4 @@
-﻿
-
-namespace CarPooling.Application.Trips.DTOs
+﻿namespace CarPooling.Application.Trips.DTOs
 {
     public class TripParticipantDto
     {
@@ -8,6 +6,6 @@ namespace CarPooling.Application.Trips.DTOs
         public string UserId { get; set; }
         public int SeatCount { get; set; }
         public string Status { get; set; }
-        public DateTime JoinedAt { get; set; }
+        public DateTime JoinedAt { get; set; }= DateTime.Now;
     }
 }
