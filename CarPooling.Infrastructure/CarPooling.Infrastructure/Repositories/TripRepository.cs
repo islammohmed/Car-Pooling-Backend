@@ -2,6 +2,7 @@
 using CarPooling.Infrastructure.Data;
 using CarPooling.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using CarPooling.Application.Trips.DTOs;
 
 namespace CarPooling.Infrastructure.Repositories
 {
@@ -39,7 +40,22 @@ namespace CarPooling.Infrastructure.Repositories
             return user?.Gender.ToString();
         }
 
+        public async Task<(IEnumerable<Trip> Items, int TotalCount)> GetAllTripsAsync(PaginationParams paginationParams)
+        {
+            var query = context.Trips
+                .Include(t => t.Driver)
+                .Include(t => t.Participants)
+                .OrderByDescending(t => t.StartTime)
+                .AsNoTracking();
 
+            var totalCount = await query.CountAsync();
 
+            var items = await query
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
     }
 }
