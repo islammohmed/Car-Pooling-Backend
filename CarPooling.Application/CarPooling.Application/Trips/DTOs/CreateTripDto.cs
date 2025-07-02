@@ -1,14 +1,8 @@
-﻿using CarPooling.Domain.Enums;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CarPooling.Domain.Enums;
 
-namespace CarPooling.Application.Trips.Commands.CreateRequest
+namespace CarPooling.Application.Trips.DTOs
 {
-    public class CreateTripCommand:IRequest<int>
+    public class CreateTripDto
     {
         public string DriverId { get; set; } = string.Empty;
         public decimal PricePerSeat { get; set; }
@@ -22,4 +16,4 @@ namespace CarPooling.Application.Trips.Commands.CreateRequest
         public string TripDescription { get; set; } = string.Empty;
         public Gender GenderPreference { get; set; }
     }
-}
+} 

@@ -1,7 +1,5 @@
 ﻿using CarPooling.Application.Trips;
-using CarPooling.Application.Trips.Commands.CreateRequest;
 using CarPooling.Application.Trips.DTOs;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarPooling.API.Controllers
@@ -10,13 +8,11 @@ namespace CarPooling.API.Controllers
     [ApiController]
     public class TripController : ControllerBase
     {
-        private readonly IMediator _mediator;
         private readonly IBookTripService _bookTripService;
         private readonly ITripService _tripService;
 
-        public TripController(IMediator mediator, IBookTripService bookTripService, ITripService tripService)
+        public TripController(IBookTripService bookTripService, ITripService tripService)
         {
-            _mediator = mediator;
             _bookTripService = bookTripService;
             _tripService = tripService;
         }
@@ -29,11 +25,10 @@ namespace CarPooling.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTrip([FromBody] CreateTripCommand command)
+        public async Task<IActionResult> CreateTrip([FromBody] CreateTripDto tripDto)
         {
-            int id = await _mediator.Send(command);
+            int id = await _tripService.CreateTripAsync(tripDto);
             return Ok(id);
-            // return CreatedAtAction(nameof(GetByID), new { id }, null);
         }
 
         //booking a trip
@@ -41,9 +36,8 @@ namespace CarPooling.API.Controllers
         [HttpPost("book")]
         public async Task<IActionResult> BookTrip([FromBody] BookTripDto dto)
         {
-                var result = await _bookTripService.BookTrip(dto);
-                return Ok(result);
-
+            var result = await _bookTripService.BookTrip(dto);
+            return Ok(result);
         }
         [HttpPost("cancel")]
         public async Task<IActionResult> CancelTrip(CancelTripDto dto)
