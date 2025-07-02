@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using CarPooling.Infrastructure.Seeders;
-using CarPooling.Application.Repositories;
+using CarPooling.Application.Interfaces.Repositories;
+using CarPooling.Application.Interfaces;
 
 namespace CarPooling.Infrastructure.Extensions
 {
@@ -20,6 +21,8 @@ namespace CarPooling.Infrastructure.Extensions
 
             services.AddScoped<ISeeder, Seeder>();
             services.AddScoped<ITripRepository, TripRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
     }
 }

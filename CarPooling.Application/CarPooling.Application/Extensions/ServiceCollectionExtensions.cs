@@ -1,5 +1,8 @@
 ﻿using CarPooling.Application.Trips;
 using CarPooling.Application.Trips.Validators;
+using CarPooling.Application.Interfaces;
+using CarPooling.Application.Services;
+using CarPooling.Application.Interfaces.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +23,9 @@ namespace CarPooling.Application.Extensions
             services.AddFluentValidationClientsideAdapters();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(appAssembly));
+
+            // Register User Service
+            services.AddScoped<IUserService, UserService>();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using CarPooling.Application.Repositories;
+﻿using CarPooling.Application.Interfaces.Repositories;
 using CarPooling.Infrastructure.Data;
 using CarPooling.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ namespace CarPooling.Infrastructure.Repositories
 {
     internal class TripRepository(AppDbContext context) : ITripRepository
     {
-        public async Task<int> create(Trip trip)
+        public async Task<int> CreateAsync(Trip trip)
         {
             context.Trips.Add(trip);
            // await context.SaveChangesAsync();

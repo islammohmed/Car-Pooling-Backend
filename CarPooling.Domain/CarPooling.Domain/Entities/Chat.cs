@@ -3,16 +3,16 @@
     public class Chat
     {
         public int Id { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime SentAt { get; set; }
         public bool IsRead { get; set; }
 
         public int TripId { get; set; }
-        public string SenderId { get; set; }
-        public string ReceiverId { get; set; }
+        public string SenderId { get; set; } = string.Empty;
+        public string ReceiverId { get; set; } = string.Empty;
 
-        public Trip Trip { get; set; }
-        public User Sender { get; set; }
-        public User Receiver { get; set; }
+        public Trip Trip { get; set; } = null!;
+        public User Sender { get; set; } = null!;
+        public User Receiver { get; set; } = null!;
     }
 }

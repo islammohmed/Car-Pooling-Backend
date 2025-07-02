@@ -183,11 +183,11 @@ namespace CarPooling.API.Controllers
         [Authorize]
         public ActionResult<ApiResponse<CurrentUserDto>> GetCurrentUser()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            var firstName = User.FindFirst(ClaimTypes.GivenName)?.Value;
-            var lastName = User.FindFirst(ClaimTypes.Surname)?.Value;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+            var firstName = User.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
+            var lastName = User.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty;
+            var role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
             var userInfo = new CurrentUserDto
             {

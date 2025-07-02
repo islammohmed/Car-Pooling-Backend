@@ -4,24 +4,25 @@ using CarPooling.Domain.Enums;
 using CarPooling.Domain.Exceptions;
 using AutoMapper;
 using FluentValidation;
-using CarPooling.Application.Repositories;
+using CarPooling.Application.Interfaces.Repositories;
+using CarPooling.Application.Interfaces;
 
 namespace CarPooling.Application.Trips
 {
     public class BookTripService : IBookTripService
     {
-        private readonly ITripRepository _tripRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<BookTripDto> _validator;
 
         public BookTripService(
-            ITripRepository tripRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<BookTripDto> validator)
         {
-            _tripRepository = tripRepository ?? throw new ArgumentNullException(nameof(tripRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<TripParticipantDto> BookTripAsync(BookTripDto request)
@@ -35,12 +36,12 @@ namespace CarPooling.Application.Trips
             }
 
             // Check if the user exists
-            bool userExists = await _tripRepository.UserExists(request.UserId);
-            if (!userExists)
+            var user = await _unitOfWork.Users.GetByIdAsync(request.UserId);
+            if (user == null)
                 throw TripBookingException.UserNotFound();
 
             // Get the trip with its participants
-            var trip = await _tripRepository.GetTripWithParticipants(request.TripId);
+            var trip = await _unitOfWork.Trips.GetTripWithParticipants(request.TripId);
             if (trip == null)
                 throw TripBookingException.TripNotFound();
 
@@ -70,7 +71,8 @@ namespace CarPooling.Application.Trips
             trip.AvailableSeats -= request.SeatCount;
 
             // Save changes
-            await _tripRepository.UpdateTripAsync(trip);
+            await _unitOfWork.Trips.UpdateTripAsync(trip);
+            await _unitOfWork.SaveChangesAsync();
 
             // Return the mapped participant DTO
             return _mapper.Map<TripParticipantDto>(participant);

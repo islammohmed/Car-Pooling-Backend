@@ -19,7 +19,7 @@ namespace CarPooling.Infrastructure.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<DeliveryRequest> DeliveryRequests { get; set; }
         public DbSet<DocumentVerification> DocumentVerifications { get; set; }
-        public DbSet<User> Users { get; set; }
+        public new DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

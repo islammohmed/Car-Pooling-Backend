@@ -11,10 +11,10 @@ namespace CarPooling.Domain.Entities
         public int TripId { get; set; }
 
         [Required]
-        public string DriverId { get; set; }
+        public string DriverId { get; set; } = string.Empty;
 
         [ForeignKey(nameof(DriverId))]
-        public User Driver { get; set; }
+        public User Driver { get; set; } = null!;
 
         [Required, Range(0, 10000)]
         public decimal PricePerSeat { get; set; }
@@ -34,10 +34,10 @@ namespace CarPooling.Domain.Entities
         public TripStatus Status { get; set; }
 
         [Required, StringLength(100)]
-        public string SourceLocation { get; set; }
+        public string SourceLocation { get; set; } = string.Empty;
 
         [Required, StringLength(100)]
-        public string Destination { get; set; }
+        public string Destination { get; set; } = string.Empty;
 
         [Required]
         public DateTime StartTime { get; set; }
@@ -46,6 +46,6 @@ namespace CarPooling.Domain.Entities
 
         public Gender? GenderPreference { get; set; }
 
-        public ICollection<TripParticipant> Participants { get; set; }
+        public ICollection<TripParticipant> Participants { get; set; } = new List<TripParticipant>();
     }
 }

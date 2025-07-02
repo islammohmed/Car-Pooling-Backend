@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using CarPooling.Application.Repositories;
+using CarPooling.Application.Interfaces;
+using CarPooling.Application.Interfaces.Repositories;
 using CarPooling.Domain.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -11,19 +12,28 @@ using System.Threading.Tasks;
 
 namespace CarPooling.Application.Trips.Commands.CreateRequest
 {
-    internal class CreateTripCommandHandler (
-        ILogger<CreateTripCommandValidator> logger,
-         IMapper mapper,
-         ITripRepository tripRepository)
-        : IRequestHandler<CreateTripCommand, int>
+    public class CreateTripCommandHandler : IRequestHandler<CreateTripCommand, int>
     {
-        public async Task<int> Handle(CreateTripCommand request, CancellationToken cancellationToken)
-    {
-            logger.LogInformation($"Creating a new trip");
-            var trip = mapper.Map<Trip>(request);
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        private readonly ILogger<CreateTripCommandHandler> _logger;
 
-            int id = await tripRepository.create( trip);
-            return id;
+        public CreateTripCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ILogger<CreateTripCommandHandler> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _logger = logger;
         }
-}
+
+        public async Task<int> Handle(CreateTripCommand request, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Creating a new trip");
+            var trip = _mapper.Map<Trip>(request);
+
+            await _unitOfWork.Trips.CreateAsync(trip);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return trip.TripId;
+        }
+    }
 }

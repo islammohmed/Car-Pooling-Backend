@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using CarPooling.Domain.Enums;
 
@@ -15,9 +14,9 @@ namespace CarPooling.Domain.Entities
 
 
         public int TripId { get; set; }
-        public string UserId { get; set; }
-        public Trip Trip { get; set; }
-        public User User { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public Trip Trip { get; set; } = null!;
+        public User User { get; set; } = null!;
   
     }
 }

@@ -11,25 +11,25 @@ namespace CarPooling.Application.DTOs
     public class RegisterRequestDto
     {
         [Required, EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required, StringLength(100, MinimumLength = 6)]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         [Required, StringLength(50)]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [Required, StringLength(50)]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [Required, Phone]
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
         [Required]
         public UserRole UserRole { get; set; }
 
         [Required, StringLength(14)]
-        public string SSN { get; set; }
+        public string SSN { get; set; } = string.Empty;
 
         public string? DrivingLicenseImage { get; set; }
         public string? NationalIDImage { get; set; }
