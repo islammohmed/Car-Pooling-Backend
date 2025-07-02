@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CarPooling.Application.Trips.DTOs
 {
@@ -9,7 +8,7 @@ namespace CarPooling.Application.Trips.DTOs
         public int TripId { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         public string? CancellationReason { get; set; }
     }

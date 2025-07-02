@@ -20,15 +20,9 @@ namespace CarPooling.Application.Trips
             IMapper mapper,
             IValidator<BookTripDto> validator)
         {
-<<<<<<< HEAD
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validator = validator;
-=======
-            _tripRepository = tripRepository ;
-            _mapper = mapper;
-            _validator = validator ;
->>>>>>> cfe46bee6df57510064209057ce19d1068710181
         }
 
         public async Task<TripParticipantDto> BookTrip(BookTripDto request)
@@ -87,12 +81,12 @@ namespace CarPooling.Application.Trips
         async Task<bool> IBookTripService.CancelTrip(CancelTripDto request) 
         {
             // Check if the user exists
-            bool userExists = await _tripRepository.UserExists(request.UserId);
-            if (!userExists)
+            var user = await _unitOfWork.Users.GetByIdAsync(request.UserId);
+            if (user == null)
                 throw TripBookingException.UserNotFound();
 
             // Get the trip with its participants
-            var trip = await _tripRepository.GetTripWithParticipants(request.TripId);
+            var trip = await _unitOfWork.Trips.GetTripWithParticipants(request.TripId);
             if (trip == null)
                 throw TripBookingException.TripNotFound();
 
@@ -109,7 +103,8 @@ namespace CarPooling.Application.Trips
             trip.AvailableSeats += participant.SeatCount;
 
             // Save changes
-            await _tripRepository.UpdateTripAsync(trip);
+            await _unitOfWork.Trips.UpdateTripAsync(trip);
+            await _unitOfWork.SaveChangesAsync();
 
             return true;
         }
