@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
     <Folder Include="Migrations\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
@@ -26,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CarPooling.Application\CarPooling.Application\CarPooling.Application.csproj" />
     <ProjectReference Include="..\..\CarPooling.Domain\CarPooling.Domain\CarPooling.Domain.csproj" />
   </ItemGroup>
 
