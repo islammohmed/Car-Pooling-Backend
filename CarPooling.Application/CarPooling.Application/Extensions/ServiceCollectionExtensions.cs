@@ -16,6 +16,7 @@ namespace CarPooling.Application.Extensions
             var appAssembly = typeof(ServiceCollectionExtensions).Assembly;
 
             services.AddScoped<IBookTripService, BookTripService>();
+            services.AddScoped<ITripService, TripService>();
             services.AddAutoMapper(typeof(ServiceCollectionExtensions));
 
             // Register validators
