@@ -10,14 +10,22 @@ namespace CarPooling.API.Controllers
     [ApiController]
     public class TripController : ControllerBase
     {
-        private IMediator _mediator;
-        private IBookTripService _bookTripService;
+        private readonly IMediator _mediator;
+        private readonly IBookTripService _bookTripService;
+        private readonly ITripService _tripService;
 
-        public TripController(IMediator mediator, IBookTripService bookTripService)
+        public TripController(IMediator mediator, IBookTripService bookTripService, ITripService tripService)
         {
             _mediator = mediator;
             _bookTripService = bookTripService;
+            _tripService = tripService;
+        }
 
+        [HttpGet]
+        public async Task<ActionResult<PaginatedResponse<TripListDto>>> GetAllTrips([FromQuery] PaginationParams paginationParams)
+        {
+            var result = await _tripService.GetAllTripsAsync(paginationParams);
+            return Ok(result);
         }
 
         [HttpPost]
