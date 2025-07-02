@@ -1,5 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
+<<<<<<< HEAD
 
+=======
+>>>>>>> cfe46bee6df57510064209057ce19d1068710181
 namespace CarPooling.Application.Trips.DTOs
 {
     public class BookTripDto
@@ -12,6 +15,8 @@ namespace CarPooling.Application.Trips.DTOs
    
         [Required(ErrorMessage = "SeatCount is required.")]
         public int SeatCount { get; set; }
+        public string Status { get; set; }
+        public DateTime JoinedAt { get; set; } = DateTime.Now;
     }
   
 }

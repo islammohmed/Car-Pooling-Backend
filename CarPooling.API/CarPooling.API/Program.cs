@@ -193,6 +193,7 @@ public class Program
             });
         }
 
+<<<<<<< HEAD
         app.UseHttpsRedirection();
         app.UseCors("AllowAngularApp");
         app.UseAuthentication();
@@ -200,6 +201,40 @@ public class Program
         app.MapControllers();
     }
 }
+=======
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // Angular dev server
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Important for authentication
+    });
+
+    // Alternative policy for development (less secure but works for testing)
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// Extension methods for Infrastructure and Application layers
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
+
+var app = builder.Build();
+
+// Seed the database
+//using (var scope = app.Services.CreateScope())
+//{
+//    var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
+//    await seeder.Seed();
+//}
+>>>>>>> cfe46bee6df57510064209057ce19d1068710181
 
 public class FileUploadOperationFilter : IOperationFilter
 {

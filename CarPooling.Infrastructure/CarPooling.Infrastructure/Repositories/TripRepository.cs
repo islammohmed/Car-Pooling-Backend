@@ -24,7 +24,7 @@ namespace CarPooling.Infrastructure.Repositories
         public async Task UpdateTripAsync(Trip trip)
         {
             context.Trips.Update(trip);
-         //   await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
         }
         public async Task<bool> UserExists(string userId)
