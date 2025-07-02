@@ -15,30 +15,51 @@ namespace CarPooling.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<User> GetByIdAsync(string userId)
+        public async Task<User?> GetByIdAsync(string id)
         {
-            return await _context.Users.FindAsync(userId);
+            return await _context.Users.FindAsync(id);
         }
 
-        public async Task UpdateAsync(User user)
+        public async Task<bool> UpdateAsync(User user)
         {
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
 
-        public async Task<bool> HasActiveNationalIdVerificationAsync(string userId, string nationalIdImage)
+        public async Task<bool> HasActiveNationalIdVerificationAsync(string userId, string nationalIdImageUrl)
         {
-            return await _context.DocumentVerifications.AnyAsync(dv =>
-                dv.UserId == userId &&
-                dv.DocumentType == "national id" &&
-                (dv.VerificationStatus == VerificationStatus.Pending || dv.VerificationStatus == VerificationStatus.Approved)
-            );
+            return await _context.DocumentVerifications
+                .AnyAsync(d => d.UserId == userId &&
+                              d.DocumentType == "NationalId" &&
+                              d.Status == VerificationStatus.Pending);
         }
 
-        public async Task AddDocumentVerificationAsync(DocumentVerification verification)
+        public async Task<bool> AddDocumentVerificationAsync(DocumentVerification documentVerification)
         {
-            _context.DocumentVerifications.Add(verification);
-            await _context.SaveChangesAsync();
+            await _context.DocumentVerifications.AddAsync(documentVerification);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<bool> AddCarAsync(Car car)
+        {
+            await _context.Cars.AddAsync(car);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
+        }
+
+        public async Task<Car?> GetUserCarAsync(string userId)
+        {
+            return await _context.Cars
+                .FirstOrDefaultAsync(c => c.DriverId == userId);
+        }
+
+        public async Task<bool> UpdateCarAsync(Car car)
+        {
+            _context.Cars.Update(car);
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
     }
 } 

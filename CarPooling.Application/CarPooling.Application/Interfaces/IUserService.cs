@@ -5,7 +5,8 @@ namespace CarPooling.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<ApiResponse<bool>> CompleteUserProfile(string userId, EditUserProfileDto profileDto, IFormFile? nationalIdFile = null);
-        Task<ApiResponse<bool>> UploadDrivingLicense(string userId, DrivingLicenseUploadDto uploadDto);
+        Task<ApiResponse<bool>> VerifyPassengerNationalId(string userId, PassengerVerificationDto verificationDto);
+        Task<ApiResponse<bool>> RegisterAsDriver(string userId, DriverRegistrationDto driverDto);
+        Task<ApiResponse<bool>> UpdateDocument(string userId, string documentType, IFormFile documentFile);
     }
 }

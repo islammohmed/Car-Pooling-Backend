@@ -55,10 +55,13 @@ public class Program
                 Description = "CarPooling API for managing carpooling services"
             });
 
-            // Add JWT Authentication to Swagger
+            // Configure Swagger to handle file uploads
+            c.OperationFilter<FileUploadOperationFilter>();
+
+            // Add JWT Authentication
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey,

@@ -18,9 +18,9 @@ namespace CarPooling.API.Controllers
             _userService = userService;
         }
 
-        [HttpPost("profile")]
-        public async Task<ActionResult<ApiResponse<bool>>> CompleteProfile(
-            [FromForm] EditUserProfileDto profileDto)
+        [HttpPost("passenger/verify")]
+        public async Task<ActionResult<ApiResponse<bool>>> VerifyPassengerNationalId(
+            [FromForm] PassengerVerificationDto verificationDto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
@@ -28,10 +28,36 @@ namespace CarPooling.API.Controllers
                 return Unauthorized();
             }
 
-            var result = await _userService.CompleteUserProfile(userId, profileDto, profileDto.NationalIdImageFile);
+            var result = await _userService.VerifyPassengerNationalId(userId, verificationDto);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-    
+        [HttpPost("document/update")]
+        public async Task<ActionResult<ApiResponse<bool>>> UpdateDocument(
+            [FromForm] UpdateDocumentDto updateDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.UpdateDocument(userId, updateDto.DocumentType, updateDto.DocumentFile);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("driver/register")]
+        public async Task<ActionResult<ApiResponse<bool>>> RegisterAsDriver(
+            [FromForm] DriverRegistrationDto driverDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.RegisterAsDriver(userId, driverDto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
     }
 }
