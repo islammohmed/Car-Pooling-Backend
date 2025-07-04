@@ -1,7 +1,6 @@
-﻿using CarPooling.Application.Trips.Commands.CreateRequest;
-using AutoMapper;
+﻿using AutoMapper;
 using CarPooling.Domain.Entities;
-
+using CarPooling.Application.DTOs;
 
 namespace CarPooling.Application.Trips.DTOs
 {
@@ -9,7 +8,7 @@ namespace CarPooling.Application.Trips.DTOs
     {
         public TripProfile()
         {
-            CreateMap<CreateTripCommand, Trip>();
+            CreateMap<CreateTripDto, Trip>();
             CreateMap<TripParticipant, TripParticipantDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
             CreateMap<Trip, TripListDto>()

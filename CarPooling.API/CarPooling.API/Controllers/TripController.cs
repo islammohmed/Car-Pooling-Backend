@@ -1,8 +1,7 @@
 ﻿using CarPooling.Application.Trips;
-using CarPooling.Application.Trips.Commands.CreateRequest;
 using CarPooling.Application.Trips.DTOs;
+using CarPooling.Application.DTOs;
 using CarPooling.Domain.Enums;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -14,13 +13,11 @@ namespace CarPooling.API.Controllers
     [Authorize]
     public class TripController : ControllerBase
     {
-        private readonly IMediator _mediator;
         private readonly IBookTripService _bookTripService;
         private readonly ITripService _tripService;
 
-        public TripController(IMediator mediator, IBookTripService bookTripService, ITripService tripService)
+        public TripController(IBookTripService bookTripService, ITripService tripService)
         {
-            _mediator = mediator;
             _bookTripService = bookTripService;
             _tripService = tripService;
         }
@@ -34,9 +31,16 @@ namespace CarPooling.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Driver")]
-        public async Task<ActionResult<TripListDto>> CreateTrip([FromBody] CreateTripCommand command)
+        public async Task<ActionResult<TripListDto>> CreateTrip([FromBody] CreateTripDto tripDto)
         {
-            var tripId = await _mediator.Send(command);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User not authenticated");
+            }
+            
+            tripDto.DriverId = userId;
+            var tripId = await _tripService.CreateTripAsync(tripDto);
             var trip = await _tripService.GetTripByIdAsync(tripId);
             
             if (trip == null)

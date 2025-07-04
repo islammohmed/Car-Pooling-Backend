@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using CarPooling.Application.Interfaces.Repositories;
 using CarPooling.Application.Interfaces;
+using CarPooling.Infrastructure.Services;
+using CarPooling.Domain.Interfaces;
 
 namespace CarPooling.Infrastructure.Extensions
 {
@@ -14,15 +16,18 @@ namespace CarPooling.Infrastructure.Extensions
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-           
             services.AddDbContext<AppDbContext>(options =>
               options.UseSqlServer(connectionString));
 
+            // Repository registrations
             services.AddScoped<ITripRepository, TripRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IDeliveryRequestRepository, DeliveryRequestRepository>();
             services.AddScoped<IFeedbackRepository, FeedbackRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Service registrations
+            services.AddScoped<IJwtService, JwtService>();
         }
     }
 }

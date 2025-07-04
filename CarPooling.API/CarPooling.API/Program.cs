@@ -15,7 +15,7 @@ using CarPooling.Domain.Interfaces;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using CarPooling.Infrastructure.Settings;
 using CarPooling.API.Middleware;
-using CarPooling.Application.Services;
+using CarPooling.API.Extensions;
 
 namespace CarPooling.API;
 
@@ -91,7 +91,7 @@ public class Program
             c.RequestBodyFilter<FileUploadRequestBodyFilter>();
         });
 
-        //connection string from appsettings.json
+        // Configure connection string from appsettings.json
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
         // Configure Entity Framework Core with SQL Server
@@ -169,9 +169,10 @@ public class Program
             });
         });
 
-        // Extension methods for Infrastructure and Application layers
+        // Extension methods for Infrastructure, Application, and API layers
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddApplication();
+        builder.Services.AddApiServices(builder.Configuration);
     }
 
     private static void ConfigureMiddleware(WebApplication app)
