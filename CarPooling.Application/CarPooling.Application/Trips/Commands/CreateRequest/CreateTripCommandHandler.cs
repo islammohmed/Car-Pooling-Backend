@@ -49,7 +49,7 @@ namespace CarPooling.Application.Trips.Commands.CreateRequest
             trip.CreatedAt = DateTime.UtcNow;
 
             await _unitOfWork.Trips.CreateAsync(trip);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync();
 
             return trip.TripId;
         }

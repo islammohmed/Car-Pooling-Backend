@@ -14,11 +14,6 @@ namespace CarPooling.Infrastructure.Extensions
     {
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-
-            services.AddDbContext<AppDbContext>(options =>
-              options.UseSqlServer(connectionString));
-
             // Repository registrations
             services.AddScoped<ITripRepository, TripRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

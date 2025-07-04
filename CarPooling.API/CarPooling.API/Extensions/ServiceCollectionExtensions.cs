@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using CarPooling.Infrastructure.Settings;
 using CarPooling.Domain.Interfaces;
 using CarPooling.Infrastructure.Services;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using CarPooling.Infrastructure.Data;
 
 namespace CarPooling.API.Extensions
 {
@@ -65,19 +67,6 @@ namespace CarPooling.API.Extensions
                 // Configure form data handling
                 c.RequestBodyFilter<FileUploadRequestBodyFilter>();
             });
-
-            // Configure Identity
-            services.AddIdentity<User, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequiredLength = 6;
-                options.User.RequireUniqueEmail = true;
-            })
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
 
             // JWT Authentication
             var jwtSettings = configuration.GetSection("JWT");
