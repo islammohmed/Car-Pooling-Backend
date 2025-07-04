@@ -35,7 +35,7 @@ namespace CarPooling.Infrastructure.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                new Claim("UserRole", user.UserRole.ToString()),
+                new Claim(ClaimTypes.Role, user.UserRole.ToString()),
                 new Claim("IsVerified", user.IsVerified.ToString())
             };
 

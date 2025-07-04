@@ -4,6 +4,6 @@ namespace CarPooling.Application.DTOs
 {
     public class PassengerVerificationDto
     {
-        public IFormFile? NationalIdImage { get; set; }
+        public required IFormFile NationalIdImage { get; set; }
     }
 } 

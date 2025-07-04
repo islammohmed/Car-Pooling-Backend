@@ -20,7 +20,12 @@ namespace CarPooling.Infrastructure.Repositories
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<bool> UpdateAsync(User user)
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
         {
             _context.Users.Update(user);
             var result = await _context.SaveChangesAsync();
@@ -32,14 +37,13 @@ namespace CarPooling.Infrastructure.Repositories
             return await _context.DocumentVerifications
                 .AnyAsync(d => d.UserId == userId &&
                               d.DocumentType == "NationalId" &&
-                              d.Status == VerificationStatus.Pending);
+                              d.VerificationStatus == VerificationStatus.Pending);
         }
 
-        public async Task<bool> AddDocumentVerificationAsync(DocumentVerification documentVerification)
+        public async Task AddDocumentVerificationAsync(DocumentVerification verification)
         {
-            await _context.DocumentVerifications.AddAsync(documentVerification);
-            var result = await _context.SaveChangesAsync();
-            return result > 0;
+            await _context.DocumentVerifications.AddAsync(verification);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> AddCarAsync(Car car)
@@ -51,15 +55,66 @@ namespace CarPooling.Infrastructure.Repositories
 
         public async Task<Car?> GetUserCarAsync(string userId)
         {
-            return await _context.Cars
-                .FirstOrDefaultAsync(c => c.DriverId == userId);
+            return await _context.Cars.FirstOrDefaultAsync(c => c.DriverId == userId);
         }
 
-        public async Task<bool> UpdateCarAsync(Car car)
+        public async Task UpdateCarAsync(Car car)
         {
             _context.Cars.Update(car);
-            var result = await _context.SaveChangesAsync();
-            return result > 0;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<DocumentVerification>> GetPendingDocumentVerificationsAsync()
+        {
+            return await _context.DocumentVerifications
+                .Include(d => d.User)
+                .Where(d => d.VerificationStatus == VerificationStatus.Pending)
+                .OrderBy(d => d.SubmissionDate)
+                .ToListAsync();
+        }
+
+        public async Task<DocumentVerification?> GetDocumentVerificationByIdAsync(int id)
+        {
+            return await _context.DocumentVerifications
+                .Include(d => d.User)
+                .FirstOrDefaultAsync(d => d.Id == id);
+        }
+
+        public async Task UpdateDocumentVerificationAsync(DocumentVerification verification)
+        {
+            _context.DocumentVerifications.Update(verification);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<DocumentVerification>> GetUserDocumentVerificationsAsync(string userId)
+        {
+            return await _context.DocumentVerifications
+                .Include(d => d.User)
+                .Where(d => d.UserId == userId)
+                .OrderByDescending(d => d.SubmissionDate)
+                .ToListAsync();
+        }
+
+        public async Task<DocumentVerification?> GetPendingNationalIdVerificationAsync(string userId)
+        {
+            return await _context.DocumentVerifications
+                .Include(d => d.User)
+                .FirstOrDefaultAsync(d => d.UserId == userId && 
+                                        d.DocumentType == "NationalId" && 
+                                        d.VerificationStatus == VerificationStatus.Pending);
+        }
+
+        public async Task<List<DocumentVerification>> GetPendingDriverVerificationsAsync(string userId)
+        {
+            return await _context.DocumentVerifications
+                .Include(d => d.User)
+                .Where(d => d.UserId == userId && 
+                           d.VerificationStatus == VerificationStatus.Pending &&
+                           (d.DocumentType == "NationalId" || 
+                            d.DocumentType == "DrivingLicense" || 
+                            d.DocumentType == "CarLicense"))
+                .OrderBy(d => d.SubmissionDate)
+                .ToListAsync();
         }
     }
 } 

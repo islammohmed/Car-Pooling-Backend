@@ -47,5 +47,13 @@ namespace CarPooling.Domain.Entities
         public Gender? GenderPreference { get; set; }
 
         public ICollection<TripParticipant> Participants { get; set; } = new List<TripParticipant>();
+
+        // Delivery-related properties
+        [Range(0, 100)]
+        public float? MaxDeliveryWeight { get; set; }
+
+        public bool AcceptsDeliveries { get; set; }
+
+        public ICollection<DeliveryRequest> Deliveries { get; set; } = new List<DeliveryRequest>();
     }
 }

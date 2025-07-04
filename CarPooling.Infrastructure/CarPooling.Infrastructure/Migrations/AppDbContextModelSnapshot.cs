@@ -30,6 +30,10 @@ namespace CarPooling.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CarLicenseImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Color")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -38,6 +42,9 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<string>("DriverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Model")
                         .IsRequired()
@@ -132,7 +139,10 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TripId")
+                    b.Property<int?>("TripId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TripId1")
                         .HasColumnType("int");
 
                     b.Property<float>("Weight")
@@ -143,6 +153,8 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasIndex("SenderId");
 
                     b.HasIndex("TripId");
+
+                    b.HasIndex("TripId1");
 
                     b.ToTable("DeliveryRequests");
                 });
@@ -156,7 +168,6 @@ namespace CarPooling.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdminId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DocumentImage")
@@ -170,9 +181,6 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<string>("RejectionReason")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("SubmissionDate")
                         .HasColumnType("datetime2");
 
@@ -180,10 +188,11 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("VerificationStatus")
-                        .HasColumnType("int");
+                    b.Property<string>("VerificationStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("VerifiedAt")
+                    b.Property<DateTime?>("VerifiedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -289,6 +298,9 @@ namespace CarPooling.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TripId"));
 
+                    b.Property<bool>("AcceptsDeliveries")
+                        .HasColumnType("bit");
+
                     b.Property<int>("AvailableSeats")
                         .HasColumnType("int");
 
@@ -310,6 +322,9 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<int?>("GenderPreference")
                         .HasColumnType("int");
 
+                    b.Property<float?>("MaxDeliveryWeight")
+                        .HasColumnType("real");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -326,8 +341,9 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TripDescription")
                         .HasMaxLength(500)
@@ -354,8 +370,9 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<int>("SeatCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TripId")
                         .HasColumnType("int");
@@ -660,8 +677,11 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
                         .WithMany()
                         .HasForeignKey("TripId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("CarPooling.Domain.Entities.Trip", null)
+                        .WithMany("Deliveries")
+                        .HasForeignKey("TripId1");
 
                     b.Navigation("Sender");
 
@@ -673,8 +693,7 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.User", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CarPooling.Domain.Entities.User", "User")
                         .WithMany()
@@ -824,6 +843,8 @@ namespace CarPooling.Infrastructure.Migrations
 
             modelBuilder.Entity("CarPooling.Domain.Entities.Trip", b =>
                 {
+                    b.Navigation("Deliveries");
+
                     b.Navigation("Participants");
                 });
 

@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using CarPooling.Application.DTOs;
 using CarPooling.Application.Interfaces;
+using CarPooling.Domain.DTOs;
+using CarPooling.Application.DTOs;
 
 namespace CarPooling.API.Controllers
 {

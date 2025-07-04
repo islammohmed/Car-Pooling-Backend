@@ -1,5 +1,6 @@
 using CarPooling.Application.DTOs;
 using Microsoft.AspNetCore.Http;
+using CarPooling.Domain.DTOs;
 
 namespace CarPooling.Application.Interfaces
 {
@@ -8,5 +9,6 @@ namespace CarPooling.Application.Interfaces
         Task<ApiResponse<bool>> VerifyPassengerNationalId(string userId, PassengerVerificationDto verificationDto);
         Task<ApiResponse<bool>> RegisterAsDriver(string userId, DriverRegistrationDto driverDto);
         Task<ApiResponse<bool>> UpdateDocument(string userId, string documentType, IFormFile documentFile);
+        Task<ApiResponse<List<DocumentVerificationDto>>> GetUserDocumentVerifications(string userId);
     }
 }

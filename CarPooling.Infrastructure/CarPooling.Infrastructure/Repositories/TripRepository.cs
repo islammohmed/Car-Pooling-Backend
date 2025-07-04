@@ -6,13 +6,27 @@ using CarPooling.Application.Trips.DTOs;
 
 namespace CarPooling.Infrastructure.Repositories
 {
-    internal class TripRepository(AppDbContext context) : ITripRepository
+    public class TripRepository : ITripRepository
     {
+        private readonly AppDbContext context;
+
+        public TripRepository(AppDbContext context)
+        {
+            this.context = context;
+        }
+
         public async Task<int> CreateAsync(Trip trip)
         {
             context.Trips.Add(trip);
            // await context.SaveChangesAsync();
             return trip.TripId;
+        }
+
+        public async Task<Trip?> GetByIdAsync(int id)
+        {
+            return await context.Trips
+                .Include(t => t.Driver)
+                .FirstOrDefaultAsync(t => t.TripId == id);
         }
 
         public async Task<Trip?> GetTripWithParticipants(int tripId)
@@ -26,12 +40,13 @@ namespace CarPooling.Infrastructure.Repositories
         {
             context.Trips.Update(trip);
             await context.SaveChangesAsync();
-
         }
+
         public async Task<bool> UserExists(string userId)
         {
             return await context.Users.AnyAsync(u => u.Id == userId);
         }
+
         public async Task<string> GetUserGender(string userId)
         {
             var user = await context.Users
@@ -56,6 +71,14 @@ namespace CarPooling.Infrastructure.Repositories
                 .ToListAsync();
 
             return (items, totalCount);
+        }
+
+        public async Task<Trip?> GetByIdWithParticipantsAsync(int id)
+        {
+            return await context.Trips
+                .Include(t => t.Participants)
+                    .ThenInclude(p => p.User)
+                .FirstOrDefaultAsync(t => t.TripId == id);
         }
     }
 }

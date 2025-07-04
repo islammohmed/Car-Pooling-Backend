@@ -19,9 +19,9 @@ namespace CarPooling.Domain.Entities
 
         [ForeignKey("Sender")]
         public string SenderId { get; set; } = string.Empty;
-        public int TripId { get; set; }
+        public int? TripId { get; set; }
         public User Sender { get; set; } = null!;
-        public Trip Trip { get; set; } = null!;
+        public Trip? Trip { get; set; }
     }
 
 }

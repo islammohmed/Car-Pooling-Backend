@@ -30,5 +30,11 @@ namespace CarPooling.Application.Trips
                 TotalPages = (int)Math.Ceiling(totalCount / (double)paginationParams.PageSize)
             };
         }
+
+        public async Task<TripListDto?> GetTripByIdAsync(int tripId)
+        {
+            var trip = await _unitOfWork.Trips.GetByIdAsync(tripId);
+            return trip == null ? null : _mapper.Map<TripListDto>(trip);
+        }
     }
 } 

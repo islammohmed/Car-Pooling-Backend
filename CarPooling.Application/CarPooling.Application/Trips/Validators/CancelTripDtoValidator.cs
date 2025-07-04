@@ -1,4 +1,5 @@
 using CarPooling.Application.Trips.DTOs;
+using CarPooling.Domain.Enums;
 using FluentValidation;
 
 namespace CarPooling.Application.Trips.Validators
@@ -16,8 +17,18 @@ namespace CarPooling.Application.Trips.Validators
                 .WithMessage("User ID is required.")
                 .Must(BeValidGuid)
                 .WithMessage("User ID must be a valid GUID format.");
+
+            RuleFor(dto => dto.Role)
+                .IsInEnum()
+                .WithMessage("Invalid user role.")
+                .Must(role => role == UserRole.Driver || role == UserRole.Passenger)
+                .WithMessage("Role must be either Driver or Passenger for trip cancellation.");
                 
             RuleFor(dto => dto.CancellationReason)
+                .NotEmpty()
+                .WithMessage("Cancellation reason is required.")
+                .MinimumLength(10)
+                .WithMessage("Cancellation reason must be at least 10 characters long.")
                 .MaximumLength(500)
                 .WithMessage("Cancellation reason cannot exceed 500 characters.");
         }

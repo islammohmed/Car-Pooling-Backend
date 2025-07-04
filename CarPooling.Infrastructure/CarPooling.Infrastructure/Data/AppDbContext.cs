@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using CarPooling.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using CarPooling.Domain.Enums;
 
 namespace CarPooling.Infrastructure.Data
 {
@@ -25,13 +26,25 @@ namespace CarPooling.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure enum storage - ADD THIS SECTION
+            // Configure enum storage
             modelBuilder.Entity<User>()
                 .Property(e => e.UserRole)
                 .HasConversion<string>();
 
             modelBuilder.Entity<User>()
                 .Property(e => e.Gender)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Trip>()
+                .Property(e => e.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<TripParticipant>()
+                .Property(e => e.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<DocumentVerification>()
+                .Property(e => e.VerificationStatus)
                 .HasConversion<string>();
 
             // Fix for DocumentVerification - prevent multiple cascade paths
@@ -45,6 +58,7 @@ namespace CarPooling.Infrastructure.Data
                 .HasOne(d => d.Admin)
                 .WithMany()
                 .HasForeignKey(d => d.AdminId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Fix for other similar references with potential cascade issues

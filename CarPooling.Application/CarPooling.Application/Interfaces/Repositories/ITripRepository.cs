@@ -11,5 +11,7 @@ namespace CarPooling.Application.Interfaces.Repositories
         Task<bool> UserExists(string userId);
         Task<string> GetUserGender(string userId);
         Task<(IEnumerable<Trip> Items, int TotalCount)> GetAllTripsAsync(PaginationParams paginationParams);
+        Task<Trip?> GetByIdAsync(int id);
+        Task<Trip?> GetByIdWithParticipantsAsync(int id);
     }
 }

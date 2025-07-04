@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using CarPooling.Application.DTOs;
 using CarPooling.Application.Interfaces;
 using System.Security.Claims;
-using CarPooling.Application.DTOs.AuthDto;
+using CarPooling.Domain.DTOs;
 
 namespace CarPooling.API.Controllers
 {
@@ -61,7 +60,7 @@ namespace CarPooling.API.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult<ApiResponse<string>>> RefreshToken([FromBody] RefreshTokenRequestDto request)
+        public async Task<ActionResult<ApiResponse<string>>> RefreshToken([FromBody] string token)
         {
             if (!ModelState.IsValid)
             {
@@ -72,7 +71,7 @@ namespace CarPooling.API.Controllers
                 return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
             }
 
-            var result = await _authService.RefreshTokenAsync(request.Token);
+            var result = await _authService.RefreshTokenAsync(token);
             if (result.Success)
             {
                 return Ok(result);
@@ -81,7 +80,7 @@ namespace CarPooling.API.Controllers
         }
 
         [HttpPost("confirm-email")]
-        public async Task<ActionResult<ApiResponse<string>>> ConfirmEmail([FromBody] ConfirmEmailRequestDto request)
+        public async Task<ActionResult<ApiResponse<string>>> ConfirmEmail([FromQuery] string userId, [FromQuery] string code)
         {
             if (!ModelState.IsValid)
             {
@@ -92,7 +91,7 @@ namespace CarPooling.API.Controllers
                 return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
             }
 
-            var result = await _authService.ConfirmEmailAsync(request.UserId, request.Code);
+            var result = await _authService.ConfirmEmailAsync(userId, code);
             if (result.Success)
             {
                 return Ok(result);
@@ -101,7 +100,7 @@ namespace CarPooling.API.Controllers
         }
 
         [HttpPost("resend-confirmation")]
-        public async Task<ActionResult<ApiResponse<string>>> ResendConfirmationCode([FromBody] ResendConfirmationRequestDto request)
+        public async Task<ActionResult<ApiResponse<string>>> ResendConfirmationCode([FromBody] string email)
         {
             if (!ModelState.IsValid)
             {
@@ -112,7 +111,7 @@ namespace CarPooling.API.Controllers
                 return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
             }
 
-            var result = await _authService.ResendConfirmationCodeAsync(request.Email);
+            var result = await _authService.ResendConfirmationCodeAsync(email);
             if (result.Success)
             {
                 return Ok(result);
@@ -121,7 +120,7 @@ namespace CarPooling.API.Controllers
         }
 
         [HttpPost("forgot-password")]
-        public async Task<ActionResult<ApiResponse<string>>> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+        public async Task<ActionResult<ApiResponse<string>>> ForgotPassword([FromBody] string email)
         {
             if (!ModelState.IsValid)
             {
@@ -132,7 +131,7 @@ namespace CarPooling.API.Controllers
                 return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
             }
 
-            var result = await _authService.ForgotPasswordAsync(request.Email);
+            var result = await _authService.ForgotPasswordAsync(email);
             if (result.Success)
             {
                 return Ok(result);
@@ -160,15 +159,14 @@ namespace CarPooling.API.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("logout")]
         [Authorize]
+        [HttpPost("logout")]
         public async Task<ActionResult<ApiResponse<bool>>> Logout()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
             if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest(ApiResponse<bool>.ErrorResponse("Invalid user token"));
+                return Unauthorized();
             }
 
             var result = await _authService.LogoutAsync(userId);

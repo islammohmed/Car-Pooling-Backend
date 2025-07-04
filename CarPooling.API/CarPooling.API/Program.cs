@@ -5,7 +5,6 @@ using CarPooling.Infrastructure.Data;
 using CarPooling.Application.Services;
 using CarPooling.Domain.Entities;
 using CarPooling.Application.Interfaces;
-using CarPooling.Infrastructure.Seeders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using CarPooling.Domain.Interfaces;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using CarPooling.Infrastructure.Settings;
+using CarPooling.API.Middleware;
+using CarPooling.Application.Services;
 
 namespace CarPooling.API;
 
@@ -27,13 +28,6 @@ public class Program
         ConfigureServices(builder);
 
         var app = builder.Build();
-
-        // Seed the database
-        using (var scope = app.Services.CreateScope())
-        {
-            var seeder = scope.ServiceProvider.GetRequiredService<ISeeder>();
-            await seeder.Seed();
-        }
 
         ConfigureMiddleware(app);
 
@@ -154,6 +148,7 @@ public class Program
         builder.Services.AddScoped<IJwtService, JwtService>();
         builder.Services.AddScoped<SignInManager<User>>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IAdminService, AdminService>();
 
         // Configure CORS
         builder.Services.AddCors(options =>
@@ -195,6 +190,9 @@ public class Program
                 c.RoutePrefix = "swagger";
             });
         }
+
+        // Add global exception handling middleware
+        app.UseExceptionMiddleware();
 
         app.UseHttpsRedirection();
         app.UseCors("AllowAngularApp");

@@ -3,20 +3,23 @@ using CarPooling.Application.Interfaces;
 using CarPooling.Application.Interfaces.Repositories;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
+using CarPooling.Domain.Exceptions;
 using CarPooling.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.IO;
+using CarPooling.Domain.DTOs;
 
 namespace CarPooling.Application.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IFileStorageService _fileStorage;
+        private readonly IFileStorageService _fileStorageService;
 
-        public UserService(IUserRepository userRepository, IFileStorageService fileStorage)
+        public UserService(IUserRepository userRepository, IFileStorageService fileStorageService)
         {
             _userRepository = userRepository;
-            _fileStorage = fileStorage;
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<ApiResponse<bool>> VerifyPassengerNationalId(string userId, PassengerVerificationDto verificationDto)
@@ -29,58 +32,161 @@ namespace CarPooling.Application.Services
                     return ApiResponse<bool>.ErrorResponse("User not found");
                 }
 
-                if (verificationDto.NationalIdImage == null)
+                if (user.UserRole != UserRole.Passenger)
                 {
-                    return ApiResponse<bool>.ErrorResponse("National ID image is required for passenger verification");
+                    return ApiResponse<bool>.ErrorResponse("Only passengers can submit national ID verification");
                 }
 
-                // Upload national ID image
-                string nationalIdImageUrl;
+                // Check if there's a pending verification
+                var existingVerification = await _userRepository.GetPendingNationalIdVerificationAsync(userId);
+                if (existingVerification != null)
+                {
+                    return ApiResponse<bool>.ErrorResponse("You already have a pending national ID verification request");
+                }
+
+                // Upload the document image
+                string imageUrl;
                 using (var stream = verificationDto.NationalIdImage.OpenReadStream())
                 {
-                    nationalIdImageUrl = await _fileStorage.UploadFileAsync(
-                        stream,
-                        $"national_id_{userId}_{Path.GetFileName(verificationDto.NationalIdImage.FileName)}"
-                    );
+                    imageUrl = await _fileStorageService.UploadFileAsync(stream, $"national_id_{userId}_{verificationDto.NationalIdImage.FileName}");
                 }
 
-                // Check if there's already an active verification for this national ID
-                var hasActiveVerification = await _userRepository.HasActiveNationalIdVerificationAsync(userId, nationalIdImageUrl);
-                if (hasActiveVerification)
-                {
-                    // Delete the uploaded image since we can't use it
-                    await _fileStorage.DeleteFileAsync(nationalIdImageUrl);
-                    return ApiResponse<bool>.ErrorResponse("There is already an active verification request for this national ID");
-                }
-
-                // Delete old national ID image if exists
-                if (!string.IsNullOrEmpty(user.NationalIdImage))
-                {
-                    await _fileStorage.DeleteFileAsync(user.NationalIdImage);
-                }
-
-                // Update user
-                user.NationalIdImage = nationalIdImageUrl;
-                user.UserRole = UserRole.Passenger;
-
-                // Create document verification
+                // Create new document verification
                 var documentVerification = new DocumentVerification
                 {
                     UserId = userId,
-                    DocumentImage = nationalIdImageUrl,
-                    Status = VerificationStatus.Pending,
-                    SubmissionDate = DateTime.UtcNow,
-                    DocumentType = "NationalId"
+                    DocumentType = "NationalId",
+                    DocumentImage = imageUrl,
+                    VerificationStatus = VerificationStatus.Pending,
+                    SubmissionDate = DateTime.UtcNow
                 };
 
                 await _userRepository.AddDocumentVerificationAsync(documentVerification);
-                await _userRepository.UpdateAsync(user);
 
-                return ApiResponse<bool>.SuccessResponse(true, "National ID submitted successfully. Waiting for admin verification.");
+                return ApiResponse<bool>.SuccessResponse(true, "National ID verification submitted successfully");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error submitting National ID: {ex.Message}");
+                return ApiResponse<bool>.ErrorResponse($"Error submitting national ID verification: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<bool>> VerifyDriverDocuments(string userId, DriverVerificationDto verificationDto)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                {
+                    return ApiResponse<bool>.ErrorResponse("User not found");
+                }
+
+                if (user.UserRole != UserRole.Driver)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Only drivers can submit these documents");
+                }
+
+                // Check if there are pending verifications
+                var pendingVerifications = await _userRepository.GetPendingDriverVerificationsAsync(userId);
+                if (pendingVerifications.Any())
+                {
+                    return ApiResponse<bool>.ErrorResponse("You already have pending document verification requests");
+                }
+
+                var documents = new List<DocumentVerification>();
+
+                // Process National ID
+                if (verificationDto.NationalIdImage != null)
+                {
+                    string nationalIdUrl;
+                    using (var stream = verificationDto.NationalIdImage.OpenReadStream())
+                    {
+                        nationalIdUrl = await _fileStorageService.UploadFileAsync(stream, $"national_id_{userId}_{verificationDto.NationalIdImage.FileName}");
+                    }
+                    documents.Add(new DocumentVerification
+                    {
+                        UserId = userId,
+                        DocumentType = "NationalId",
+                        DocumentImage = nationalIdUrl,
+                        VerificationStatus = VerificationStatus.Pending,
+                        SubmissionDate = DateTime.UtcNow
+                    });
+                }
+
+                // Process Driving License
+                if (verificationDto.DrivingLicenseImage != null)
+                {
+                    string drivingLicenseUrl;
+                    using (var stream = verificationDto.DrivingLicenseImage.OpenReadStream())
+                    {
+                        drivingLicenseUrl = await _fileStorageService.UploadFileAsync(stream, $"driving_license_{userId}_{verificationDto.DrivingLicenseImage.FileName}");
+                    }
+                    documents.Add(new DocumentVerification
+                    {
+                        UserId = userId,
+                        DocumentType = "DrivingLicense",
+                        DocumentImage = drivingLicenseUrl,
+                        VerificationStatus = VerificationStatus.Pending,
+                        SubmissionDate = DateTime.UtcNow
+                    });
+                }
+
+                // Process Car License
+                if (verificationDto.CarLicenseImage != null)
+                {
+                    string carLicenseUrl;
+                    using (var stream = verificationDto.CarLicenseImage.OpenReadStream())
+                    {
+                        carLicenseUrl = await _fileStorageService.UploadFileAsync(stream, $"car_license_{userId}_{verificationDto.CarLicenseImage.FileName}");
+                    }
+                    documents.Add(new DocumentVerification
+                    {
+                        UserId = userId,
+                        DocumentType = "CarLicense",
+                        DocumentImage = carLicenseUrl,
+                        VerificationStatus = VerificationStatus.Pending,
+                        SubmissionDate = DateTime.UtcNow
+                    });
+                }
+
+                if (!documents.Any())
+                {
+                    return ApiResponse<bool>.ErrorResponse("No documents provided for verification");
+                }
+
+                foreach (var doc in documents)
+                {
+                    await _userRepository.AddDocumentVerificationAsync(doc);
+                }
+
+                return ApiResponse<bool>.SuccessResponse(true, "Documents submitted for verification successfully");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.ErrorResponse($"Error submitting documents for verification: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<List<DocumentVerificationDto>>> GetUserDocumentVerifications(string userId)
+        {
+            try
+            {
+                var verifications = await _userRepository.GetUserDocumentVerificationsAsync(userId);
+                var dtos = verifications.Select(v => new DocumentVerificationDto
+                {
+                    Id = v.Id,
+                    UserId = v.UserId,
+                    DocumentType = v.DocumentType,
+                    DocumentImage = v.DocumentImage,
+                    Status = v.VerificationStatus,
+                    SubmissionDate = v.SubmissionDate
+                }).ToList();
+
+                return ApiResponse<List<DocumentVerificationDto>>.SuccessResponse(dtos);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<DocumentVerificationDto>>.ErrorResponse($"Error getting user verifications: {ex.Message}");
             }
         }
 
@@ -117,7 +223,7 @@ namespace CarPooling.Application.Services
                 string documentImageUrl;
                 using (var stream = documentFile.OpenReadStream())
                 {
-                    documentImageUrl = await _fileStorage.UploadFileAsync(
+                    documentImageUrl = await _fileStorageService.UploadFileAsync(
                         stream,
                         $"{documentType.ToLower()}_{userId}_{Path.GetFileName(documentFile.FileName)}"
                     );
@@ -134,7 +240,7 @@ namespace CarPooling.Application.Services
                     case "DrivingLicense":
                         if (user.UserRole != UserRole.Driver)
                         {
-                            await _fileStorage.DeleteFileAsync(documentImageUrl);
+                            await _fileStorageService.DeleteFileAsync(documentImageUrl);
                             return ApiResponse<bool>.ErrorResponse("Only drivers can update driving license");
                         }
                         oldImageUrl = user.DrivingLicenseImage;
@@ -143,13 +249,13 @@ namespace CarPooling.Application.Services
                     case "CarLicense":
                         if (user.UserRole != UserRole.Driver)
                         {
-                            await _fileStorage.DeleteFileAsync(documentImageUrl);
+                            await _fileStorageService.DeleteFileAsync(documentImageUrl);
                             return ApiResponse<bool>.ErrorResponse("Only drivers can update car license");
                         }
                         var car = await _userRepository.GetUserCarAsync(userId);
                         if (car == null)
                         {
-                            await _fileStorage.DeleteFileAsync(documentImageUrl);
+                            await _fileStorageService.DeleteFileAsync(documentImageUrl);
                             return ApiResponse<bool>.ErrorResponse("No car found for this driver");
                         }
                         oldImageUrl = car.CarLicenseImage;
@@ -157,14 +263,14 @@ namespace CarPooling.Application.Services
                         await _userRepository.UpdateCarAsync(car);
                         break;
                     default:
-                        await _fileStorage.DeleteFileAsync(documentImageUrl);
+                        await _fileStorageService.DeleteFileAsync(documentImageUrl);
                         return ApiResponse<bool>.ErrorResponse("Invalid document type");
                 }
 
                 // Delete old image if exists
                 if (!string.IsNullOrEmpty(oldImageUrl))
                 {
-                    await _fileStorage.DeleteFileAsync(oldImageUrl);
+                    await _fileStorageService.DeleteFileAsync(oldImageUrl);
                 }
 
                 // Create new document verification
@@ -172,13 +278,13 @@ namespace CarPooling.Application.Services
                 {
                     UserId = userId,
                     DocumentImage = documentImageUrl,
-                    Status = VerificationStatus.Pending,
+                    VerificationStatus = VerificationStatus.Pending,
                     SubmissionDate = DateTime.UtcNow,
                     DocumentType = documentType
                 };
 
                 await _userRepository.AddDocumentVerificationAsync(documentVerification);
-                await _userRepository.UpdateAsync(user);
+                await _userRepository.UpdateUserAsync(user);
 
                 return ApiResponse<bool>.SuccessResponse(true, $"{documentType} updated successfully. Waiting for admin verification.");
             }
@@ -198,6 +304,19 @@ namespace CarPooling.Application.Services
                     return ApiResponse<bool>.ErrorResponse("User not found");
                 }
 
+                // Check if user is already a driver
+                if (user.UserRole == UserRole.Driver)
+                {
+                    return ApiResponse<bool>.ErrorResponse("User is already registered as a driver");
+                }
+
+                // Check for pending driver verifications
+                var pendingVerifications = await _userRepository.GetPendingDriverVerificationsAsync(user.Id);
+                if (pendingVerifications.Any())
+                {
+                    return ApiResponse<bool>.ErrorResponse("You already have pending driver registration documents. Please wait for admin approval.");
+                }
+
                 // Validate required documents
                 if (driverDto.NationalIdImage == null || driverDto.DrivingLicenseImage == null || driverDto.CarLicenseImage == null)
                 {
@@ -208,7 +327,7 @@ namespace CarPooling.Application.Services
                 string nationalIdImageUrl;
                 using (var stream = driverDto.NationalIdImage.OpenReadStream())
                 {
-                    nationalIdImageUrl = await _fileStorage.UploadFileAsync(
+                    nationalIdImageUrl = await _fileStorageService.UploadFileAsync(
                         stream,
                         $"national_id_{userId}_{Path.GetFileName(driverDto.NationalIdImage.FileName)}"
                     );
@@ -218,7 +337,7 @@ namespace CarPooling.Application.Services
                 string drivingLicenseImageUrl;
                 using (var stream = driverDto.DrivingLicenseImage.OpenReadStream())
                 {
-                    drivingLicenseImageUrl = await _fileStorage.UploadFileAsync(
+                    drivingLicenseImageUrl = await _fileStorageService.UploadFileAsync(
                         stream,
                         $"driving_license_{userId}_{Path.GetFileName(driverDto.DrivingLicenseImage.FileName)}"
                     );
@@ -228,70 +347,65 @@ namespace CarPooling.Application.Services
                 string carLicenseImageUrl;
                 using (var stream = driverDto.CarLicenseImage.OpenReadStream())
                 {
-                    carLicenseImageUrl = await _fileStorage.UploadFileAsync(
+                    carLicenseImageUrl = await _fileStorageService.UploadFileAsync(
                         stream,
                         $"car_license_{userId}_{Path.GetFileName(driverDto.CarLicenseImage.FileName)}"
                     );
                 }
 
-                // Create car entity
-                var car = new Car
-                {
-                    Model = driverDto.Model,
-                    Color = driverDto.Color,
-                    PlateNumber = driverDto.PlateNumber,
-                    CarLicenseImage = carLicenseImageUrl,
-                    DriverId = userId
-                };
-
-                // Update user
-                user.NationalIdImage = nationalIdImageUrl;
-                user.DrivingLicenseImage = drivingLicenseImageUrl;
-                user.UserRole = UserRole.Driver;
-
-                // Create document verifications
-                var documentVerifications = new List<DocumentVerification>
+                // Create document verifications for admin approval
+                var documents = new List<DocumentVerification>
                 {
                     new DocumentVerification
                     {
                         UserId = userId,
+                        DocumentType = "NationalId",
                         DocumentImage = nationalIdImageUrl,
-                        Status = VerificationStatus.Pending,
-                        SubmissionDate = DateTime.UtcNow,
-                        DocumentType = "NationalId"
+                        VerificationStatus = VerificationStatus.Pending,
+                        SubmissionDate = DateTime.UtcNow
                     },
                     new DocumentVerification
                     {
                         UserId = userId,
+                        DocumentType = "DrivingLicense",
                         DocumentImage = drivingLicenseImageUrl,
-                        Status = VerificationStatus.Pending,
-                        SubmissionDate = DateTime.UtcNow,
-                        DocumentType = "DrivingLicense"
+                        VerificationStatus = VerificationStatus.Pending,
+                        SubmissionDate = DateTime.UtcNow
                     },
                     new DocumentVerification
                     {
                         UserId = userId,
+                        DocumentType = "CarLicense",
                         DocumentImage = carLicenseImageUrl,
-                        Status = VerificationStatus.Pending,
-                        SubmissionDate = DateTime.UtcNow,
-                        DocumentType = "CarLicense"
+                        VerificationStatus = VerificationStatus.Pending,
+                        SubmissionDate = DateTime.UtcNow
                     }
                 };
 
-                // Save all changes
-                foreach (var doc in documentVerifications)
+                // Add document verifications
+                foreach (var doc in documents)
                 {
                     await _userRepository.AddDocumentVerificationAsync(doc);
                 }
 
-                await _userRepository.AddCarAsync(car);
-                await _userRepository.UpdateAsync(user);
+                // Create car (but set as unverified)
+                var car = new Car
+                {
+                    DriverId = userId,
+                    CarLicenseImage = carLicenseImageUrl,
+                    IsVerified = false,
+                    Model = driverDto.Model,
+                    Color = driverDto.Color,
+                    PlateNumber = driverDto.PlateNumber
+                };
 
-                return ApiResponse<bool>.SuccessResponse(true, "Driver registration submitted successfully. Waiting for admin verification of documents.");
+                await _userRepository.AddCarAsync(car);
+
+                return ApiResponse<bool>.SuccessResponse(true, "Driver registration documents submitted successfully. Waiting for admin verification.");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error registering as driver: {ex.Message}");
+                return ApiResponse<bool>.ErrorResponse($"Error submitting driver documents: {ex.Message}");
             }
         }
     }

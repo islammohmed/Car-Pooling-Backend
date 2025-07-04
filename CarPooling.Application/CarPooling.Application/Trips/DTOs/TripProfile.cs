@@ -16,7 +16,9 @@ namespace CarPooling.Application.Trips.DTOs
                 .ForMember(dest => dest.DriverName, 
                     opt => opt.MapFrom(src => src.Driver.UserName))
                 .ForMember(dest => dest.ParticipantsCount, 
-                    opt => opt.MapFrom(src => src.Participants.Count));
+                    opt => opt.MapFrom(src => src.Participants.Count))
+                .ForMember(dest => dest.CreatedAt,
+                    opt => opt.MapFrom(src => src.CreatedAt));
         }
     }
 }
