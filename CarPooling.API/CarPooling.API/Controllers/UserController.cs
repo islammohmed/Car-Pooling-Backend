@@ -48,6 +48,19 @@ namespace CarPooling.API.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+        [HttpGet("documents/status")]
+        public async Task<ActionResult<ApiResponse<List<DocumentVerificationDto>>>> GetDocumentVerifications()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _userService.GetUserDocumentVerifications(userId);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
         [HttpPost("driver/register")]
         public async Task<ActionResult<ApiResponse<bool>>> RegisterAsDriver(
             [FromForm] DriverRegistrationDto driverDto)
