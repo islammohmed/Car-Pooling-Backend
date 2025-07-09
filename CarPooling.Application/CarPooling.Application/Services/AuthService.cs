@@ -16,19 +16,22 @@ namespace CarPooling.Application.Services
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthService> _logger;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
 
         public AuthService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IJwtService jwtService,
             ILogger<AuthService> logger,
-            IMapper mapper)
+            IMapper mapper,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtService = jwtService;
             _logger = logger;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
         public async Task<ApiResponse<RegisterResponseDto>> RegisterAsync(RegisterRequestDto request)
@@ -138,6 +141,16 @@ namespace CarPooling.Application.Services
                     return ApiResponse<LoginResponseDto>.ErrorResponse("Invalid email or password");
                 }
                 _logger.LogInformation("Step 2: Password check successful for user: {Email}", request.Email);
+
+                // Send first-login email if needed
+                if (!user.HasLoggedIn)
+                {
+                    var subject = "Welcome to Car Pooling App!";
+                    var body = $"Hello {user.FirstName},\n\nWelcome to Car Pooling App! We're glad to have you on board.";
+                    await _emailService.SendEmailAsync(user.Email, subject, body);
+                    user.HasLoggedIn = true;
+                    await _userManager.UpdateAsync(user);
+                }
 
                 // Debug user properties
                 _logger.LogInformation("Step 3: User properties debug:");
@@ -303,6 +316,11 @@ namespace CarPooling.Application.Services
                     var errors = result.Errors.Select(e => e.Description).ToList();
                     return ApiResponse<string>.ErrorResponse("Failed to generate new confirmation code", errors);
                 }
+
+                // Send confirmation code by email
+                var emailSubject = "Car Pooling App - Email Confirmation";
+                var emailBody = $"Hello {user.FirstName},\n\nYour new confirmation code is: {user.ConfirmNumber}\n\nPlease enter this code in the app to confirm your email address.";
+                await _emailService.SendEmailAsync(user.Email, emailSubject, emailBody);
 
                 _logger.LogInformation("New confirmation code generated for user {Email}", email);
 

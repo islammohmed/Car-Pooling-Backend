@@ -96,6 +96,8 @@ namespace CarPooling.API.Extensions
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
             services.AddScoped<IFileStorageService, CloudinaryService>();
 
+           
+
             // Configure CORS
             services.AddCors(options =>
             {

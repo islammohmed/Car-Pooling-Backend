@@ -23,6 +23,7 @@ namespace CarPooling.Domain.Entities
         public bool IsVerified { get; set; }
         [StringLength(10)]
         public string ConfirmNumber { get; set; } = string.Empty;
+        public bool HasLoggedIn { get; set; } = false;
         public ICollection<Car> Cars { get; set; } = new List<Car>();
         public ICollection<TripParticipant> TripParticipations { get; set; } = new List<TripParticipant>();
 

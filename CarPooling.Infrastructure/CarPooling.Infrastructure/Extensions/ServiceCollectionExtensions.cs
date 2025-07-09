@@ -20,6 +20,7 @@ namespace CarPooling.Infrastructure.Extensions
             services.AddScoped<IDeliveryRequestRepository, DeliveryRequestRepository>();
             services.AddScoped<IFeedbackRepository, FeedbackRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmailService, EmailService>();
 
             // Service registrations
             services.AddScoped<IJwtService, JwtService>();
