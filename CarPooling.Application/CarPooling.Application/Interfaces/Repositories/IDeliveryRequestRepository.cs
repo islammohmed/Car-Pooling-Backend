@@ -10,6 +10,7 @@ namespace CarPooling.Application.Interfaces.Repositories
         Task<List<DeliveryRequest>> GetPendingRequestsAsync();
         Task<List<DeliveryRequest>> GetUserRequestsAsync(string userId);
         Task<List<DeliveryRequest>> GetDriverDeliveriesAsync(string driverId);
+        Task<List<DeliveryRequest>> GetDeliveriesByStatusAndTripsAsync(string status, List<int> tripIds);
         Task<DeliveryRequest> UpdateAsync(DeliveryRequest request);
         Task<bool> DeleteAsync(int id);
     }

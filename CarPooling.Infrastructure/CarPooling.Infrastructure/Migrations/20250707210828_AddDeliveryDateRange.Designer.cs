@@ -4,6 +4,7 @@ using CarPooling.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarPooling.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250707210828_AddDeliveryDateRange")]
+    partial class AddDeliveryDateRange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,20 +114,8 @@ namespace CarPooling.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("AcceptedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeliveredAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime>("DeliveryEndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("DeliveryNotes")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DeliveryStartDate")
                         .HasColumnType("datetime2");
@@ -136,9 +127,6 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<string>("ItemDescription")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("PickedUpAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
@@ -448,9 +436,6 @@ namespace CarPooling.Infrastructure.Migrations
 
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("HasLoggedIn")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");

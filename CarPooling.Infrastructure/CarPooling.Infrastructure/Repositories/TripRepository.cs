@@ -18,7 +18,7 @@ namespace CarPooling.Infrastructure.Repositories
         public async Task<int> CreateAsync(Trip trip)
         {
             context.Trips.Add(trip);
-           // await context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return trip.TripId;
         }
 
@@ -76,9 +76,28 @@ namespace CarPooling.Infrastructure.Repositories
         public async Task<Trip?> GetByIdWithParticipantsAsync(int id)
         {
             return await context.Trips
+                .Include(t => t.Driver)
                 .Include(t => t.Participants)
                     .ThenInclude(p => p.User)
                 .FirstOrDefaultAsync(t => t.TripId == id);
+        }
+
+        public async Task<IEnumerable<Trip>> GetAllTripsWithParticipantsAsync()
+        {
+            return await context.Trips
+                .Include(t => t.Driver)
+                .Include(t => t.Participants)
+                    .ThenInclude(p => p.User)
+                .OrderByDescending(t => t.StartTime)
+                .ToListAsync();
+        }
+
+        public async Task<List<Trip>> GetDriverTripsAsync(string driverId)
+        {
+            return await context.Trips
+                .Include(t => t.Driver)
+                .Where(t => t.DriverId == driverId)
+                .ToListAsync();
         }
     }
 }

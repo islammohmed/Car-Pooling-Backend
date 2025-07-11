@@ -16,6 +16,13 @@ namespace CarPooling.Domain.Entities
         public string ItemDescription { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public string Status { get; set; } = string.Empty;
+        public DateTime DeliveryStartDate { get; set; }
+        public DateTime DeliveryEndDate { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? AcceptedAt { get; set; }
+        public DateTime? PickedUpAt { get; set; }
+        public DateTime? DeliveredAt { get; set; }
+        public string? DeliveryNotes { get; set; }
 
         [ForeignKey("Sender")]
         public string SenderId { get; set; } = string.Empty;

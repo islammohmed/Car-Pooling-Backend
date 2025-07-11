@@ -23,22 +23,48 @@ namespace CarPooling.Infrastructure.Repositories
 
         public async Task<DeliveryRequest?> GetByIdAsync(int id)
         {
-            return await _context.DeliveryRequests.Include(d => d.Sender).FirstOrDefaultAsync(d => d.Id == id);
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Include(d => d.Trip)
+                    .ThenInclude(t => t.Driver)
+                .FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public async Task<List<DeliveryRequest>> GetPendingRequestsAsync()
         {
-            return await _context.DeliveryRequests.Where(d => d.Status == "Pending").ToListAsync();
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Where(d => d.Status == "Pending")
+                .ToListAsync();
         }
 
         public async Task<List<DeliveryRequest>> GetUserRequestsAsync(string userId)
         {
-            return await _context.DeliveryRequests.Where(d => d.SenderId == userId).ToListAsync();
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Include(d => d.Trip)
+                    .ThenInclude(t => t.Driver)
+                .Where(d => d.SenderId == userId)
+                .ToListAsync();
         }
 
         public async Task<List<DeliveryRequest>> GetDriverDeliveriesAsync(string driverId)
         {
-            return await _context.DeliveryRequests.Where(d => d.Trip != null && d.Trip.DriverId == driverId).ToListAsync();
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Include(d => d.Trip)
+                .Where(d => d.Trip != null && d.Trip.DriverId == driverId)
+                .ToListAsync();
+        }
+
+        public async Task<List<DeliveryRequest>> GetDeliveriesByStatusAndTripsAsync(string status, List<int> tripIds)
+        {
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Include(d => d.Trip)
+                    .ThenInclude(t => t.Driver)
+                .Where(d => d.Status == status && d.TripId.HasValue && tripIds.Contains(d.TripId.Value))
+                .ToListAsync();
         }
 
         public async Task<DeliveryRequest> UpdateAsync(DeliveryRequest request)

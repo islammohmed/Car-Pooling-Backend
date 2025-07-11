@@ -11,9 +11,13 @@ namespace CarPooling.Application.Interfaces
         Task<ApiResponse<List<DeliveryRequestResponseDto>>> GetPendingRequestsAsync();
         Task<ApiResponse<List<DeliveryRequestResponseDto>>> GetUserRequestsAsync(string userId);
         Task<ApiResponse<List<DeliveryRequestResponseDto>>> GetDriverDeliveriesAsync(string driverId);
+        Task<ApiResponse<List<DeliveryRequestResponseDto>>> GetSelectedDeliveriesForDriverAsync(string driverId);
         Task<ApiResponse<DeliveryRequestResponseDto>> AcceptDeliveryAsync(string driverId, int requestId, int tripId);
+        Task<ApiResponse<DeliveryRequestResponseDto>> RejectDeliveryAsync(string driverId, int requestId);
         Task<ApiResponse<DeliveryRequestResponseDto>> UpdateDeliveryStatusAsync(string driverId, int requestId, UpdateDeliveryStatusDto updateDto);
         Task<ApiResponse<bool>> CancelRequestAsync(string userId, int requestId);
         Task<ApiResponse<List<TripListDto>>> GetMatchingTripsAsync(int requestId);
+        Task<int> HandleExpiredRequestsAsync();
+        Task<ApiResponse<DeliveryRequestResponseDto>> SelectTripForDeliveryAsync(string userId, int requestId, SelectTripForDeliveryDto selectTripDto);
     }
 } 

@@ -23,188 +23,268 @@ namespace CarPooling.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<ApiResponse<RegisterResponseDto>>> Register([FromBody] RegisterRequestDto request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(ApiResponse<RegisterResponseDto>.ErrorResponse("Validation failed", errors));
-            }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    return BadRequest(ApiResponse<RegisterResponseDto>.ErrorResponse("Validation failed", errors));
+                }
 
-            var result = await _authService.RegisterAsync(request);
-            if (result.Success)
-            {
-                return Ok(result);
+                var result = await _authService.RegisterAsync(request);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during user registration");
+                return StatusCode(500, ApiResponse<RegisterResponseDto>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<ApiResponse<LoginResponseDto>>> Login([FromBody] LoginRequestDto request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(ApiResponse<LoginResponseDto>.ErrorResponse("Validation failed", errors));
-            }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    return BadRequest(ApiResponse<LoginResponseDto>.ErrorResponse("Validation failed", errors));
+                }
 
-            var result = await _authService.LoginAsync(request);
-            if (result.Success)
-            {
-                return Ok(result);
+                var result = await _authService.LoginAsync(request);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during user login");
+                return StatusCode(500, ApiResponse<LoginResponseDto>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [HttpPost("refresh-token")]
         public async Task<ActionResult<ApiResponse<string>>> RefreshToken([FromBody] string token)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
-            }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
+                }
 
-            var result = await _authService.RefreshTokenAsync(token);
-            if (result.Success)
-            {
-                return Ok(result);
+                var result = await _authService.RefreshTokenAsync(token);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error refreshing token");
+                return StatusCode(500, ApiResponse<string>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [HttpPost("confirm-email")]
         public async Task<ActionResult<ApiResponse<string>>> ConfirmEmail([FromQuery] string userId, [FromQuery] string code)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
-            }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
+                }
 
-            var result = await _authService.ConfirmEmailAsync(userId, code);
-            if (result.Success)
-            {
-                return Ok(result);
+                var result = await _authService.ConfirmEmailAsync(userId, code);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error confirming email");
+                return StatusCode(500, ApiResponse<string>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [HttpPost("resend-confirmation")]
         public async Task<ActionResult<ApiResponse<string>>> ResendConfirmationCode([FromBody] string email)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
-            }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
+                }
 
-            var result = await _authService.ResendConfirmationCodeAsync(email);
-            if (result.Success)
-            {
-                return Ok(result);
+                var result = await _authService.ResendConfirmationCodeAsync(email);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resending confirmation code");
+                return StatusCode(500, ApiResponse<string>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [HttpPost("forgot-password")]
         public async Task<ActionResult<ApiResponse<string>>> ForgotPassword([FromBody] string email)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
-            }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
+                }
 
-            var result = await _authService.ForgotPasswordAsync(email);
-            if (result.Success)
-            {
-                return Ok(result);
+                var result = await _authService.ForgotPasswordAsync(email);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing forgot password request");
+                return StatusCode(500, ApiResponse<string>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [HttpPost("reset-password")]
         public async Task<ActionResult<ApiResponse<string>>> ResetPassword([FromBody] ResetPasswordRequestDto request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-                return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
-            }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
+                }
 
-            var result = await _authService.ResetPasswordAsync(request);
-            if (result.Success)
-            {
-                return Ok(result);
+                var result = await _authService.ResetPasswordAsync(request);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error resetting password");
+                return StatusCode(500, ApiResponse<string>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [Authorize]
         [HttpPost("logout")]
         public async Task<ActionResult<ApiResponse<bool>>> Logout()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
+            try
             {
-                return Unauthorized();
-            }
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(ApiResponse<bool>.ErrorResponse("User not authenticated"));
+                }
 
-            var result = await _authService.LogoutAsync(userId);
-            if (result.Success)
-            {
-                return Ok(result);
+                var result = await _authService.LogoutAsync(userId);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
             }
-            return BadRequest(result);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error logging out");
+                return StatusCode(500, ApiResponse<bool>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [HttpGet("me")]
         [Authorize]
         public ActionResult<ApiResponse<CurrentUserDto>> GetCurrentUser()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
-            var firstName = User.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
-            var lastName = User.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
-
-            var userInfo = new CurrentUserDto
+            try
             {
-                UserId = userId,
-                Email = email,
-                FirstName = firstName,
-                LastName = lastName,
-                Role = role
-            };
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+                var email = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+                var firstName = User.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
+                var lastName = User.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty;
+                var role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
 
-            return Ok(ApiResponse<CurrentUserDto>.SuccessResponse(userInfo, "User information retrieved successfully"));
+                var userInfo = new CurrentUserDto
+                {
+                    UserId = userId,
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Role = role
+                };
+
+                return Ok(ApiResponse<CurrentUserDto>.SuccessResponse(userInfo, "User information retrieved successfully"));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving current user info");
+                return StatusCode(500, ApiResponse<CurrentUserDto>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
 
         [HttpGet("validate-token")]
         [Authorize]
         public ActionResult<ApiResponse<bool>> ValidateToken()
         {
-            return Ok(ApiResponse<bool>.SuccessResponse(true, "Token is valid"));
+            try
+            {
+                return Ok(ApiResponse<bool>.SuccessResponse(true, "Token is valid"));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error validating token");
+                return StatusCode(500, ApiResponse<bool>.ErrorResponse($"An error occurred: {ex.Message}"));
+            }
         }
     }
 }

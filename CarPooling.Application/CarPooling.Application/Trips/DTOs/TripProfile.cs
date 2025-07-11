@@ -9,11 +9,21 @@ namespace CarPooling.Application.Trips.DTOs
         public TripProfile()
         {
             CreateMap<CreateTripDto, Trip>();
+            
             CreateMap<TripParticipant, TripParticipantDto>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.Rating, opt => opt.MapFrom(src => src.User.AvgRating))
+                .ForMember(dest => dest.ProfileImage, opt => opt.MapFrom(src => src.User.NationalIdImage))
+                .ForMember(dest => dest.UserRole, opt => opt.MapFrom(src => src.User.UserRole))
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.User.Gender))
+                .ForMember(dest => dest.IsDriver, opt => opt.MapFrom(src => false));
+                
             CreateMap<Trip, TripListDto>()
                 .ForMember(dest => dest.DriverName, 
-                    opt => opt.MapFrom(src => src.Driver.UserName))
+                    opt => opt.MapFrom(src => $"{src.Driver.FirstName} {src.Driver.LastName}"))
                 .ForMember(dest => dest.ParticipantsCount, 
                     opt => opt.MapFrom(src => src.Participants.Count))
                 .ForMember(dest => dest.CreatedAt,

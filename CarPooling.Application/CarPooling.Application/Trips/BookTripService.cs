@@ -2,6 +2,7 @@
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using CarPooling.Domain.Exceptions;
+using CarPooling.Domain.DTOs;
 using AutoMapper;
 using FluentValidation;
 using CarPooling.Application.Interfaces.Repositories;
@@ -26,6 +27,27 @@ namespace CarPooling.Application.Trips
             _mapper = mapper;
             _validator = validator;
             _cancelValidator = cancelValidator;
+        }
+
+        public async Task<ApiResponse<bool>> CanDriverBookTripAsync(string driverId, int tripId)
+        {
+            try
+            {
+                // Get the trip
+                var trip = await _unitOfWork.Trips.GetByIdAsync(tripId);
+                if (trip == null)
+                    return ApiResponse<bool>.ErrorResponse("Trip not found");
+
+                // Check if the user is the driver of this trip
+                if (trip.DriverId == driverId)
+                    return ApiResponse<bool>.ErrorResponse("Drivers cannot book their own trips");
+
+                return ApiResponse<bool>.SuccessResponse(true);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.ErrorResponse($"Error checking driver booking eligibility: {ex.Message}");
+            }
         }
 
         public async Task<TripParticipantDto> BookTrip(BookTripDto request)
@@ -68,6 +90,13 @@ namespace CarPooling.Application.Trips
             if (trip.GenderPreference.HasValue && user.Gender.HasValue && trip.GenderPreference != user.Gender)
                 throw TripBookingException.GenderPreferenceMismatch();
 
+            // If user is a driver, check if they can book this trip
+            if (user.UserRole == UserRole.Driver)
+            {
+                if (trip.DriverId == request.UserId)
+                    throw TripBookingException.DriverCannotBookOwnTrip();
+            }
+
             trip.Participants ??= new List<TripParticipant>();
 
             // Check if the user has already booked this trip
@@ -81,12 +110,19 @@ namespace CarPooling.Application.Trips
                 TripId = request.TripId,
                 UserId = request.UserId,
                 SeatCount = request.SeatCount,
-                Status = JoinStatus.Pending,
+                Status = JoinStatus.Confirmed, // Auto-confirm the booking
                 JoinedAt = DateTime.UtcNow
             };
 
             // Update the trip
             trip.Participants.Add(participant);
+            trip.AvailableSeats -= request.SeatCount;
+
+            // Check if trip is now full and update status if needed
+            if (trip.AvailableSeats <= 0 && trip.Status == TripStatus.Pending)
+            {
+                trip.Status = TripStatus.Confirmed;
+            }
 
             // Save changes
             await _unitOfWork.Trips.UpdateTripAsync(trip);
