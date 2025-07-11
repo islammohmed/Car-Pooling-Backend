@@ -231,7 +231,7 @@ namespace CarPooling.API.Controllers
         }
 
         [HttpPost("book")]
-        [Authorize(Roles = "Passenger")]
+        [Authorize(Roles = "Passenger,Driver")]
         public async Task<IActionResult> BookTrip([FromBody] BookTripDto dto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -247,49 +247,17 @@ namespace CarPooling.API.Controllers
 
             try
             {
-                var result = await _bookTripService.BookTrip(dto);
+                // If user is a driver, check if they can book this trip
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (userRole == UserRole.Driver.ToString())
+                {
+                    var canBookResult = await _bookTripService.CanDriverBookTripAsync(userId, dto.TripId);
+                    if (!canBookResult.Success)
+                    {
+                        return BadRequest(canBookResult);
+                    }
+                }
                 
-                // After booking, check if trip is now full and update status
-                await _tripService.UpdateTripStatusAsync(dto.TripId);
-                
-                return Ok(result);
-            }
-            catch (TripBookingException ex)
-            {
-                // Return a 400 Bad Request with the specific error message
-                return BadRequest(ApiResponse<object>.ErrorResponse(ex.Message));
-            }
-            catch (ValidationException ex)
-            {
-                // Handle validation errors
-                return BadRequest(ApiResponse<object>.ErrorResponse(ex.Message));
-            }
-        }
-        
-        [HttpPost("driver-book")]
-        [Authorize(Roles = "Driver")]
-        public async Task<IActionResult> DriverBookTrip([FromBody] BookTripDto dto)
-        {
-            var driverId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(driverId))
-            {
-                return Unauthorized("User not authenticated");
-            }
-            
-            // Check if driver can book this trip
-            var canBookResult = await _bookTripService.CanDriverBookTripAsync(driverId, dto.TripId);
-            if (!canBookResult.Success)
-            {
-                return BadRequest(canBookResult);
-            }
-            
-            // Check and update trip status
-            await _tripService.UpdateTripStatusAsync(dto.TripId);
-            
-            dto.UserId = driverId;
-
-            try
-            {
                 var result = await _bookTripService.BookTrip(dto);
                 
                 // After booking, check if trip is now full and update status
