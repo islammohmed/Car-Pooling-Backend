@@ -1,6 +1,6 @@
 ﻿using CarPooling.Application.Interfaces;
 using CarPooling.Application.Services;
-using CarPooling.Application.Trips;
+using CarPooling.Application.Trips.DTOs;
 using CarPooling.Application.Trips.Validators;
 using CarPooling.Application.DTOs;
 using FluentValidation;

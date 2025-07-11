@@ -54,24 +54,34 @@ namespace CarPooling.Application.Services
                     return ApiResponse<FeedbackResponseDto>.ErrorResponse("Cannot give feedback for a trip that is not completed");
                 }
 
-                // Verify that both users were participants in the trip
+                // Verify that sender was a participant in the trip
                 var senderParticipant = trip.Participants.FirstOrDefault(p => p.UserId == senderId);
+                
+                // Check if receiver is the driver or a participant
+                bool isReceiverDriver = trip.DriverId == createFeedbackDto.ReceiverId;
                 var receiverParticipant = trip.Participants.FirstOrDefault(p => p.UserId == createFeedbackDto.ReceiverId);
 
-                if (senderParticipant == null)
+                if (senderParticipant == null && senderId != trip.DriverId)
                 {
                     return ApiResponse<FeedbackResponseDto>.ErrorResponse("You were not a participant in this trip");
                 }
 
-                if (receiverParticipant == null)
+                // Check if receiver is either a participant or the driver
+                if (receiverParticipant == null && !isReceiverDriver)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("The receiver was not a participant in this trip");
+                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("The receiver was not a participant or driver in this trip");
                 }
 
-                // Verify that both participants' status was Confirmed
-                if (senderParticipant.Status != JoinStatus.Confirmed || receiverParticipant.Status != JoinStatus.Confirmed)
+                // Verify that sender's status was Confirmed if they were a passenger
+                if (senderParticipant != null && senderParticipant.Status != JoinStatus.Confirmed)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("Both users must have been confirmed participants in the trip");
+                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("You must have been a confirmed participant in the trip");
+                }
+
+                // Verify that receiver's status was Confirmed if they were a passenger
+                if (receiverParticipant != null && receiverParticipant.Status != JoinStatus.Confirmed)
+                {
+                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("The receiver must have been a confirmed participant in the trip");
                 }
 
                 // Check if user has already given feedback for this trip

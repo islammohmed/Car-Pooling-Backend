@@ -6,26 +6,30 @@ using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using CarPooling.Domain.DTOs;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CarPooling.Application.Trips
+namespace CarPooling.Application.Services
 {
     public class TripService : ITripService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateTripDto> _validator;
+        private readonly ILogger<TripService> _logger;
 
         public TripService(
             IUnitOfWork unitOfWork, 
             IMapper mapper,
-            IValidator<CreateTripDto> validator)
+            IValidator<CreateTripDto> validator,
+            ILogger<TripService> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _validator = validator;
+            _logger = logger;
         }
 
         public async Task<PaginatedResponse<TripListDto>> GetAllTripsAsync(PaginationParams paginationParams)
@@ -52,6 +56,8 @@ namespace CarPooling.Application.Trips
         
         public async Task<int> CreateTripAsync(CreateTripDto tripDto)
         {
+            _logger.LogInformation("Validating trip creation request");
+            
             // Validate the trip data
             var validationResult = await _validator.ValidateAsync(tripDto);
             if (!validationResult.IsValid)
@@ -60,16 +66,19 @@ namespace CarPooling.Application.Trips
                 throw new ValidationException($"Invalid trip creation request: {errors}");
             }
             
+            _logger.LogInformation("Creating a new trip");
+            
             // Map DTO to entity
             var trip = _mapper.Map<Trip>(tripDto);
             
             // Set CreatedAt to current UTC time
             trip.CreatedAt = DateTime.UtcNow;
             
-            // Save to database - TripRepository.CreateAsync already calls SaveChangesAsync
-            var tripId = await _unitOfWork.Trips.CreateAsync(trip);
+            // Save to database
+            await _unitOfWork.Trips.CreateAsync(trip);
+            await _unitOfWork.SaveChangesAsync();
             
-            return tripId;
+            return trip.TripId;
         }
 
         public async Task<IEnumerable<TripListDto>> GetUserBookingsAsync(string userId)
@@ -141,6 +150,7 @@ namespace CarPooling.Application.Trips
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error completing trip");
                 return ApiResponse<TripListDto>.ErrorResponse($"Error completing trip: {ex.Message}");
             }
         }
@@ -180,6 +190,7 @@ namespace CarPooling.Application.Trips
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error updating trip status");
                 return ApiResponse<bool>.ErrorResponse($"Error updating trip status: {ex.Message}");
             }
         }
@@ -257,6 +268,7 @@ namespace CarPooling.Application.Trips
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error checking user booking");
                 return ApiResponse<bool>.ErrorResponse($"Error checking user booking: {ex.Message}");
             }
         }

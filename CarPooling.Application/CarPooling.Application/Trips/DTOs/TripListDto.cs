@@ -6,6 +6,7 @@ namespace CarPooling.Application.Trips.DTOs
     public class TripListDto
     {
         public int TripId { get; set; }
+        public string DriverId { get; set; } = string.Empty;
         public string DriverName { get; set; } = string.Empty;
         public decimal PricePerSeat { get; set; }
         public TimeSpan EstimatedDuration { get; set; }

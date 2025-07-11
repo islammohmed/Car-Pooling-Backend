@@ -2,7 +2,7 @@ using CarPooling.Application.Trips.DTOs;
 using CarPooling.Application.DTOs;
 using CarPooling.Domain.DTOs;
 
-namespace CarPooling.Application.Trips
+namespace CarPooling.Application.Interfaces
 {
     public interface ITripService
     {

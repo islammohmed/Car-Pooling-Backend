@@ -21,6 +21,7 @@ namespace CarPooling.Domain.Entities
         [Range(1, 5)]
         public float AvgRating { get; set; }
         public bool IsVerified { get; set; }
+        public bool IsBlocked { get; set; } = false;
         [StringLength(10)]
         public string ConfirmNumber { get; set; } = string.Empty;
         public bool HasLoggedIn { get; set; } = false;

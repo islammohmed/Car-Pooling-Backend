@@ -7,6 +7,7 @@ namespace CarPooling.Application.Interfaces.Repositories
     {
         Task<User?> GetByIdAsync(string id);
         Task<User?> GetByEmailAsync(string email);
+        Task<List<User>> GetAllUsersAsync();
         Task<List<DocumentVerification>> GetPendingDocumentVerificationsAsync();
         Task<DocumentVerification?> GetDocumentVerificationByIdAsync(int id);
         Task<List<DocumentVerification>> GetUserDocumentVerificationsAsync(string userId);
@@ -18,5 +19,6 @@ namespace CarPooling.Application.Interfaces.Repositories
         Task UpdateCarAsync(Car car);
         Task<bool> UpdateUserAsync(User user);
         Task<bool> AddCarAsync(Car car);
+        Task<bool> DeleteUserAsync(string userId);
     }
 } 

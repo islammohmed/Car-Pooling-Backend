@@ -408,5 +408,182 @@ namespace CarPooling.Application.Services
                 return ApiResponse<bool>.ErrorResponse($"Error submitting driver documents: {ex.Message}");
             }
         }
+
+        public async Task<ApiResponse<List<UserDto>>> GetAllUsersAsync()
+        {
+            try
+            {
+                var users = await _userRepository.GetAllUsersAsync();
+                var userDtos = users.Select(MapUserToDto).ToList();
+                return ApiResponse<List<UserDto>>.SuccessResponse(userDtos);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<UserDto>>.ErrorResponse($"Error retrieving users: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<UserDto>> GetUserByIdAsync(string userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                {
+                    return ApiResponse<UserDto>.ErrorResponse("User not found");
+                }
+
+                var userDto = MapUserToDto(user);
+                return ApiResponse<UserDto>.SuccessResponse(userDto);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<UserDto>.ErrorResponse($"Error retrieving user: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<bool>> DeleteUserAsync(string userId, string adminId)
+        {
+            try
+            {
+                // Verify admin
+                var admin = await _userRepository.GetByIdAsync(adminId);
+                if (admin == null || admin.UserRole != UserRole.Admin)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Unauthorized: Only admins can delete users");
+                }
+
+                // Check if user exists
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                {
+                    return ApiResponse<bool>.ErrorResponse("User not found");
+                }
+
+                // Don't allow admins to delete other admins
+                if (user.UserRole == UserRole.Admin)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Cannot delete admin users");
+                }
+
+                // Delete the user
+                var result = await _userRepository.DeleteUserAsync(userId);
+                if (!result)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Failed to delete user");
+                }
+
+                return ApiResponse<bool>.SuccessResponse(true, "User deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.ErrorResponse($"Error deleting user: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<bool>> BlockUserAsync(string userId, string adminId)
+        {
+            try
+            {
+                // Verify admin
+                var admin = await _userRepository.GetByIdAsync(adminId);
+                if (admin == null || admin.UserRole != UserRole.Admin)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Unauthorized: Only admins can block users");
+                }
+
+                // Check if user exists
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                {
+                    return ApiResponse<bool>.ErrorResponse("User not found");
+                }
+
+                // Don't allow admins to block other admins
+                if (user.UserRole == UserRole.Admin)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Cannot block admin users");
+                }
+
+                // Check if user is already blocked
+                if (user.IsBlocked)
+                {
+                    return ApiResponse<bool>.ErrorResponse("User is already blocked");
+                }
+
+                // Block the user
+                user.IsBlocked = true;
+                var result = await _userRepository.UpdateUserAsync(user);
+                if (!result)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Failed to block user");
+                }
+
+                return ApiResponse<bool>.SuccessResponse(true, "User blocked successfully");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.ErrorResponse($"Error blocking user: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<bool>> UnblockUserAsync(string userId, string adminId)
+        {
+            try
+            {
+                // Verify admin
+                var admin = await _userRepository.GetByIdAsync(adminId);
+                if (admin == null || admin.UserRole != UserRole.Admin)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Unauthorized: Only admins can unblock users");
+                }
+
+                // Check if user exists
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                {
+                    return ApiResponse<bool>.ErrorResponse("User not found");
+                }
+
+                // Check if user is already unblocked
+                if (!user.IsBlocked)
+                {
+                    return ApiResponse<bool>.ErrorResponse("User is not blocked");
+                }
+
+                // Unblock the user
+                user.IsBlocked = false;
+                var result = await _userRepository.UpdateUserAsync(user);
+                if (!result)
+                {
+                    return ApiResponse<bool>.ErrorResponse("Failed to unblock user");
+                }
+
+                return ApiResponse<bool>.SuccessResponse(true, "User unblocked successfully");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.ErrorResponse($"Error unblocking user: {ex.Message}");
+            }
+        }
+
+        private UserDto MapUserToDto(User user)
+        {
+            return new UserDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                UserRole = user.UserRole,
+                Gender = user.Gender ?? Gender.Any, // Use Gender.Any as default
+                AvgRating = user.AvgRating,
+                ProfileImage = user.NationalIdImage,
+                HasLoggedIn = user.HasLoggedIn,
+                IsVerified = user.IsVerified,
+                IsBlocked = user.IsBlocked
+            };
+        }
     }
 }

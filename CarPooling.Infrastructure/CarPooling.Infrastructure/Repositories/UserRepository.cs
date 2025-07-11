@@ -25,6 +25,14 @@ namespace CarPooling.Infrastructure.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _context.Users
+                .OrderBy(u => u.FirstName)
+                .ThenBy(u => u.LastName)
+                .ToListAsync();
+        }
+
         public async Task<bool> UpdateUserAsync(User user)
         {
             _context.Users.Update(user);
@@ -115,6 +123,49 @@ namespace CarPooling.Infrastructure.Repositories
                             d.DocumentType == "CarLicense"))
                 .OrderBy(d => d.SubmissionDate)
                 .ToListAsync();
+        }
+
+        public async Task<bool> DeleteUserAsync(string userId)
+        {
+            try
+            {
+                // First, find the user
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return false;
+                }
+
+                // Delete related document verifications
+                var documentVerifications = await _context.DocumentVerifications
+                    .Where(d => d.UserId == userId)
+                    .ToListAsync();
+                
+                if (documentVerifications.Any())
+                {
+                    _context.DocumentVerifications.RemoveRange(documentVerifications);
+                }
+
+                // Delete related cars
+                var cars = await _context.Cars
+                    .Where(c => c.DriverId == userId)
+                    .ToListAsync();
+                
+                if (cars.Any())
+                {
+                    _context.Cars.RemoveRange(cars);
+                }
+
+                // Delete the user
+                _context.Users.Remove(user);
+                var result = await _context.SaveChangesAsync();
+                
+                return result > 0;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 } 

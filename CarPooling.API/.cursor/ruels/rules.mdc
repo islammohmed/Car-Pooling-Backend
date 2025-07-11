@@ -1,9 +1,6 @@
 ---
-description: 
-globs: 
 alwaysApply: true
 ---
-
 ### ✅ Task: Interactive Task Loop with User Feedback
 
 1. **Check if `userinput.py` exists** in the root directory.

@@ -1,4 +1,4 @@
-﻿using CarPooling.Application.Trips.DTOs;
+using CarPooling.Application.Trips.DTOs;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using CarPooling.Domain.Exceptions;
@@ -8,7 +8,7 @@ using FluentValidation;
 using CarPooling.Application.Interfaces.Repositories;
 using CarPooling.Application.Interfaces;
 
-namespace CarPooling.Application.Trips
+namespace CarPooling.Application.Services
 {
     public class BookTripService : IBookTripService
     {
@@ -207,4 +207,4 @@ namespace CarPooling.Application.Trips
             return true;
         }
     }
-}
+} 

@@ -22,6 +22,8 @@ namespace CarPooling.Application.Trips.DTOs
                 .ForMember(dest => dest.IsDriver, opt => opt.MapFrom(src => false));
                 
             CreateMap<Trip, TripListDto>()
+                .ForMember(dest => dest.DriverId, 
+                    opt => opt.MapFrom(src => src.DriverId))
                 .ForMember(dest => dest.DriverName, 
                     opt => opt.MapFrom(src => $"{src.Driver.FirstName} {src.Driver.LastName}"))
                 .ForMember(dest => dest.ParticipantsCount, 
