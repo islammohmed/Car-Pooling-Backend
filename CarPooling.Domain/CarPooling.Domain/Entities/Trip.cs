@@ -36,8 +36,21 @@ namespace CarPooling.Domain.Entities
         [Required, StringLength(100)]
         public string SourceLocation { get; set; } = string.Empty;
 
+        [Required]
+        public double SourceLatitude { get; set; }
+        [Required]
+        public double SourceLongitude { get; set; }
+        [Required, StringLength(25)]
+        public string SourceCity { get; set; } = string.Empty;
+
         [Required, StringLength(100)]
         public string Destination { get; set; } = string.Empty;
+        [Required, StringLength(25)]
+        public string DestinationCity { get; set; } = string.Empty;
+        [Required]
+        public double DestinationLatitude { get; set; }
+        [Required]
+        public double DestinationLongitude { get; set; }
 
         [Required]
         public DateTime StartTime { get; set; }
