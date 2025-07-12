@@ -37,7 +37,23 @@ namespace CarPooling.API.Controllers
                 // Check and update trip statuses
                 await _tripService.UpdateTripStatusAsync(0); // 0 means check all trips
                 
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                
                 var result = await _tripService.GetAllTripsAsync(paginationParams);
+                
+                // Add information about whether the current user is booked on each trip
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    foreach (var trip in result.Items)
+                    {
+                        var isBookedResponse = await _tripService.IsUserBookedOnTripAsync(userId, trip.TripId);
+                        if (isBookedResponse.Success)
+                        {
+                            trip.IsUserBooked = isBookedResponse.Data;
+                        }
+                    }
+                }
+                
                 return Ok(result);
             }
             catch (Exception ex)
@@ -220,8 +236,45 @@ namespace CarPooling.API.Controllers
                 {
                     return NotFound(ApiResponse<TripListDto>.ErrorResponse($"Trip with ID {id} was not found."));
                 }
+                
+                // Get trip participants
+                var participants = await _tripService.GetTripParticipantsAsync(id);
+                
+                // Get current user ID if authenticated
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                
+                // Check if current user is booked on this trip
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    var isBookedResponse = await _tripService.IsUserBookedOnTripAsync(userId, id);
+                    if (isBookedResponse.Success)
+                    {
+                        trip.IsUserBooked = isBookedResponse.Data;
+                    }
+                }
+                
+                // Get driver details
+                var driverDetailsResponse = await _userService.GetUserByIdAsync(trip.DriverId);
+                
+                // Create a response object with trip details, participants, and driver details
+                var responseData = new
+                {
+                    Trip = trip,
+                    Participants = participants,
+                    ParticipantCount = participants.Count,
+                    Driver = driverDetailsResponse.Success ? driverDetailsResponse.Data : null
+                };
 
-                return Ok(trip);
+                // Create the API response
+                var apiResponse = new
+                {
+                    Success = true,
+                    Message = "Trip details retrieved successfully",
+                    Data = responseData,
+                    Errors = (string[])null
+                };
+
+                return Ok(apiResponse);
             }
             catch (Exception ex)
             {
