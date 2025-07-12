@@ -4,6 +4,7 @@ using CarPooling.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarPooling.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250711205535_AddTripLocationColumns")]
+    partial class AddTripLocationColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,6 +166,9 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<int?>("TripId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TripId1")
+                        .HasColumnType("int");
+
                     b.Property<float>("Weight")
                         .HasColumnType("real");
 
@@ -171,6 +177,8 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasIndex("SenderId");
 
                     b.HasIndex("TripId");
+
+                    b.HasIndex("TripId1");
 
                     b.ToTable("DeliveryRequests");
                 });
@@ -255,6 +263,55 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasIndex("TripId");
 
                     b.ToTable("Feedbacks");
+                });
+
+            modelBuilder.Entity("CarPooling.Domain.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PayerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiveId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TransactionRef")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TripId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PayerId");
+
+                    b.HasIndex("ReceiveId");
+
+                    b.HasIndex("TripId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("CarPooling.Domain.Entities.Trip", b =>
@@ -370,16 +427,11 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("TripId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("TripParticipants");
                 });
@@ -650,7 +702,7 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
@@ -671,13 +723,17 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
-                        .WithMany("Deliveries")
+                        .WithMany()
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("CarPooling.Domain.Entities.Trip", null)
+                        .WithMany("Deliveries")
+                        .HasForeignKey("TripId1");
 
                     b.Navigation("Sender");
 
@@ -689,12 +745,12 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.User", "Admin")
                         .WithMany()
                         .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CarPooling.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Admin");
@@ -713,7 +769,7 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasOne("CarPooling.Domain.Entities.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
@@ -729,12 +785,39 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Navigation("Trip");
                 });
 
+            modelBuilder.Entity("CarPooling.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("CarPooling.Domain.Entities.User", "Payer")
+                        .WithMany()
+                        .HasForeignKey("PayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CarPooling.Domain.Entities.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiveId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
+                        .WithMany()
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Payer");
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Trip");
+                });
+
             modelBuilder.Entity("CarPooling.Domain.Entities.Trip", b =>
                 {
                     b.HasOne("CarPooling.Domain.Entities.User", "Driver")
                         .WithMany()
                         .HasForeignKey("DriverId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Driver");
@@ -749,14 +832,10 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("CarPooling.Domain.Entities.User", null)
                         .WithMany("TripParticipations")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Trip");
 
