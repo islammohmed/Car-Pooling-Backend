@@ -25,6 +25,7 @@ namespace CarPooling.Application.Extensions
             services.AddScoped<IFeedbackService, FeedbackService>();
             services.AddScoped<IAdminService, AdminService>();
 
+
             // Register AutoMapper
             services.AddAutoMapper(typeof(ServiceCollectionExtensions));
 

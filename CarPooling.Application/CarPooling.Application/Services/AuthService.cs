@@ -78,6 +78,11 @@ namespace CarPooling.Application.Services
                     return ApiResponse<RegisterResponseDto>.ErrorResponse("Registration failed", errors);
                 }
 
+                // Send confirmation code email after successful registration
+                var emailSubject = "Car Pooling App - Email Confirmation";
+                var emailBody = $"Hello {user.FirstName},\n\nYour confirmation code is: {user.ConfirmNumber}\n\nPlease enter this code in the app to confirm your email address.";
+                await _emailService.SendEmailAsync(user.Email, emailSubject, emailBody);
+
                 // Generate JWT token
                 var token = _jwtService.GenerateToken(user);
                 var tokenExpiration = _jwtService.GetTokenExpiration();
