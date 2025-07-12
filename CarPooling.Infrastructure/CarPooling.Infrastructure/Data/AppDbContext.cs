@@ -110,7 +110,7 @@ namespace CarPooling.Infrastructure.Data
             // Fix DeliveryRequests potential cascade issue
             modelBuilder.Entity<DeliveryRequest>()
                 .HasOne(dr => dr.Trip)
-                .WithMany()
+                .WithMany(t => t.Deliveries)
                 .HasForeignKey(dr => dr.TripId)
                 .OnDelete(DeleteBehavior.NoAction);
 

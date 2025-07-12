@@ -29,7 +29,7 @@ namespace CarPooling.Application.Trips.Validators
                 .MaximumLength(100)
                 .WithMessage("Source location is required and cannot exceed 100 characters.");
 
-            RuleFor(x => x.Destination)
+            RuleFor(x => x.DestinationLocation)
                 .NotEmpty()
                 .MaximumLength(100)
                 .WithMessage("Destination is required and cannot exceed 100 characters.");
