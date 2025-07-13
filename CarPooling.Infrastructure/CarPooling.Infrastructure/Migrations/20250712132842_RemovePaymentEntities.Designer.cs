@@ -4,6 +4,7 @@ using CarPooling.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarPooling.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250712132842_RemovePaymentEntities")]
+    partial class RemovePaymentEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,6 +166,9 @@ namespace CarPooling.Infrastructure.Migrations
                     b.Property<int?>("TripId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TripId1")
+                        .HasColumnType("int");
+
                     b.Property<float>("Weight")
                         .HasColumnType("real");
 
@@ -171,6 +177,8 @@ namespace CarPooling.Infrastructure.Migrations
                     b.HasIndex("SenderId");
 
                     b.HasIndex("TripId");
+
+                    b.HasIndex("TripId1");
 
                     b.ToTable("DeliveryRequests");
                 });
@@ -279,17 +287,6 @@ namespace CarPooling.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("DestinationCity")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<double>("DestinationLatitude")
-                        .HasColumnType("float");
-
-                    b.Property<double>("DestinationLongitude")
-                        .HasColumnType("float");
-
                     b.Property<string>("DriverId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -311,21 +308,10 @@ namespace CarPooling.Infrastructure.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("SourceCity")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)");
-
-                    b.Property<double>("SourceLatitude")
-                        .HasColumnType("float");
-
                     b.Property<string>("SourceLocation")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<double>("SourceLongitude")
-                        .HasColumnType("float");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
@@ -675,9 +661,13 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.Trip", "Trip")
-                        .WithMany("Deliveries")
+                        .WithMany()
                         .HasForeignKey("TripId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("CarPooling.Domain.Entities.Trip", null)
+                        .WithMany("Deliveries")
+                        .HasForeignKey("TripId1");
 
                     b.Navigation("Sender");
 

@@ -28,5 +28,6 @@ namespace CarPooling.Domain.Entities
         public ICollection<Car> Cars { get; set; } = new List<Car>();
         public ICollection<TripParticipant> TripParticipations { get; set; } = new List<TripParticipant>();
 
+
     }
 }

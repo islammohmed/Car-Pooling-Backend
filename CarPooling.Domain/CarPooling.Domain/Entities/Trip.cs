@@ -68,5 +68,7 @@ namespace CarPooling.Domain.Entities
         public bool AcceptsDeliveries { get; set; }
 
         public ICollection<DeliveryRequest> Deliveries { get; set; } = new List<DeliveryRequest>();
+
+
     }
 }
