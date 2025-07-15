@@ -1,7 +1,4 @@
 using CarPooling.Application.Extensions;
-using CarPooling.Infrastructure.Extensions;
-using CarPooling.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using CarPooling.API.Middleware;
 using CarPooling.API.Extensions;
 using CarPooling.Domain.Entities;
@@ -29,34 +26,24 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllers();
 
-        // Configure connection string from appsettings.json
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-        // Configure Entity Framework Core with SQL Server
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(connectionString, sqlOptions =>
-            {
-                sqlOptions.MigrationsAssembly("CarPooling.Infrastructure");
-                sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            }));
-
-        // Configure Identity
-        builder.Services.AddIdentity<User, IdentityRole>(options =>
-        {
-            options.Password.RequireDigit = true;
-            options.Password.RequireLowercase = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequiredLength = 6;
-            options.User.RequireUniqueEmail = true;
-        })
-        .AddEntityFrameworkStores<AppDbContext>()
-        .AddDefaultTokenProviders();
-
-        // Extension methods for Infrastructure, Application, and API layers
-        builder.Services.AddInfrastructure(builder.Configuration);
+        // Extension methods for Application and API layers
         builder.Services.AddApplication();
         builder.Services.AddApiServices(builder.Configuration);
+        
+        // Infrastructure layer is configured last to respect Clean Architecture
+        // This is done through a separate extension method in the Infrastructure project
+        // which is referenced by the API project at runtime
+        var infrastructureConfigMethod = Type.GetType("CarPooling.Infrastructure.Extensions.ServiceCollectionExtensions, CarPooling.Infrastructure")
+            ?.GetMethod("AddInfrastructure");
+        
+        if (infrastructureConfigMethod != null)
+        {
+            infrastructureConfigMethod.Invoke(null, new object[] { builder.Services, builder.Configuration });
+        }
+        else
+        {
+            throw new InvalidOperationException("Could not find Infrastructure configuration method. Make sure the Infrastructure assembly is referenced.");
+        }
     }
 
     private static void ConfigureMiddleware(WebApplication app)

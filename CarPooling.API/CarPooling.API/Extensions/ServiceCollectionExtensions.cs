@@ -4,11 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using CarPooling.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using CarPooling.Infrastructure.Settings;
-using CarPooling.Domain.Interfaces;
-using CarPooling.Infrastructure.Services;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using CarPooling.Infrastructure.Data;
 
 namespace CarPooling.API.Extensions
 {
@@ -92,11 +88,8 @@ namespace CarPooling.API.Extensions
                 };
             });
 
-            // Configure Cloudinary
+            // Configure Cloudinary settings from configuration
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
-            services.AddScoped<IFileStorageService, CloudinaryService>();
-
-           
 
             // Configure CORS
             services.AddCors(options =>
@@ -117,6 +110,14 @@ namespace CarPooling.API.Extensions
                 });
             });
         }
+    }
+
+    // Add CloudinarySettings class here to avoid dependency on Infrastructure
+    public class CloudinarySettings
+    {
+        public string CloudName { get; set; } = string.Empty;
+        public string ApiKey { get; set; } = string.Empty;
+        public string ApiSecret { get; set; } = string.Empty;
     }
 
     public class FileUploadOperationFilter : IOperationFilter
@@ -198,4 +199,4 @@ namespace CarPooling.API.Extensions
             }
         }
     }
-} 
+}

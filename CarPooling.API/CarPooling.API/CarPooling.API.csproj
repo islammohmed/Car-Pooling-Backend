@@ -21,6 +21,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\CarPooling.Application\CarPooling.Application\CarPooling.Application.csproj" />
-		<ProjectReference Include="..\..\CarPooling.Infrastructure\CarPooling.Infrastructure\CarPooling.Infrastructure.csproj" />
+		<ProjectReference Include="..\..\CarPooling.Infrastructure\CarPooling.Infrastructure\CarPooling.Infrastructure.csproj">
+			<Private>true</Private>
+		</ProjectReference>
 	</ItemGroup>
 </Project>

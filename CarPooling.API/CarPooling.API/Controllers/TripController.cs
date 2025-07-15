@@ -30,6 +30,7 @@ namespace CarPooling.API.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous] // Temporarily allow anonymous access for testing
         public async Task<ActionResult<PaginatedResponse<TripListDto>>> GetAllTrips([FromQuery] PaginationParams paginationParams)
         {
             try
@@ -187,17 +188,17 @@ namespace CarPooling.API.Controllers
                 var documentVerifications = documentVerificationsResult.Data;
                 
                 // Check if all required documents are verified
-                bool hasVerifiedNationalId = documentVerifications.Any(
+                bool hasVerifiedNationalId = documentVerifications?.Any(
                     doc => doc.DocumentType == "NationalId" && doc.Status == VerificationStatus.Approved
-                );
+                ) ?? false;
                 
-                bool hasVerifiedDrivingLicense = documentVerifications.Any(
+                bool hasVerifiedDrivingLicense = documentVerifications?.Any(
                     doc => doc.DocumentType == "DrivingLicense" && doc.Status == VerificationStatus.Approved
-                );
+                ) ?? false;
                 
-                bool hasVerifiedCarLicense = documentVerifications.Any(
+                bool hasVerifiedCarLicense = documentVerifications?.Any(
                     doc => doc.DocumentType == "CarLicense" && doc.Status == VerificationStatus.Approved
-                );
+                ) ?? false;
                 
                 if (!hasVerifiedNationalId || !hasVerifiedDrivingLicense || !hasVerifiedCarLicense)
                 {
@@ -271,7 +272,7 @@ namespace CarPooling.API.Controllers
                     Success = true,
                     Message = "Trip details retrieved successfully",
                     Data = responseData,
-                    Errors = (string[])null
+                    Errors = Array.Empty<string>()
                 };
 
                 return Ok(apiResponse);
