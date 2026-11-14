@@ -8,7 +8,8 @@ namespace CarPooling.Application.Trips.DTOs
     {
         public TripProfile()
         {
-            CreateMap<CreateTripDto, Trip>();
+            CreateMap<CreateTripDto, Trip>()
+                .ForMember(dest => dest.Destination, opt => opt.MapFrom(src => src.DestinationLocation));
             
             CreateMap<TripParticipant, TripParticipantDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
@@ -29,7 +30,9 @@ namespace CarPooling.Application.Trips.DTOs
                 .ForMember(dest => dest.ParticipantsCount, 
                     opt => opt.MapFrom(src => src.Participants.Count))
                 .ForMember(dest => dest.CreatedAt,
-                    opt => opt.MapFrom(src => src.CreatedAt));
+                    opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.Destination,
+                    opt => opt.MapFrom(src => src.Destination));
         }
     }
 }

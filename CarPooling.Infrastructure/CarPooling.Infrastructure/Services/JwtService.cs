@@ -1,87 +1,95 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CarPooling.Application.Interfaces;
+using CarPooling.Domain.Entities;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-using CarPooling.Domain.Entities;
 using System.Security.Cryptography;
-using CarPooling.Application.Interfaces;
+using System.Text;
 
 namespace CarPooling.Infrastructure.Services
 {
     public class JwtService : IJwtService
     {
         private readonly IConfiguration _configuration;
-        private readonly string _secretKey;
-        private readonly string _issuer;
-        private readonly string _audience;
-        private readonly int _expirationMinutes;
 
         public JwtService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _secretKey = _configuration["JWT:SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is missing");
-            _issuer = _configuration["JWT:Issuer"] ?? throw new InvalidOperationException("JWT Issuer is missing");
-            _audience = _configuration["JWT:Audience"] ?? throw new InvalidOperationException("JWT Audience is missing");
-            _expirationMinutes = int.Parse(_configuration["JWT:ExpirationMinutes"] ?? "60");
         }
 
         public string GenerateToken(User user)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_secretKey);
+            var jwtSettings = _configuration.GetSection("JWT");
+            var secretKey = jwtSettings["SecretKey"];
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
+            var expiryInMinutes = Convert.ToDouble(jwtSettings["ExpiryInMinutes"]);
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
             var claims = new List<Claim>
             {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.Role, user.UserRole.ToString()),
-                new Claim("IsVerified", user.IsVerified.ToString())
+                new Claim(ClaimTypes.Role, user.UserRole.ToString())
             };
 
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(_expirationMinutes),
-                Issuer = _issuer,
-                Audience = _audience,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(expiryInMinutes),
+                signingCredentials: credentials
+            );
 
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public ClaimsPrincipal? ValidateToken(string token)
+        public bool ValidateToken(string token)
         {
+            if (string.IsNullOrEmpty(token))
+                return false;
+
+            var jwtSettings = _configuration.GetSection("JWT");
+            var secretKey = jwtSettings["SecretKey"];
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(secretKey);
+
             try
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_secretKey);
-                var validationParameters = new TokenValidationParameters
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidIssuer = _issuer,
+                    ValidIssuer = issuer,
                     ValidateAudience = true,
-                    ValidAudience = _audience,
+                    ValidAudience = audience,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
-                };
+                }, out SecurityToken validatedToken);
 
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-                return principal;
+                return true;
             }
             catch
             {
-                return null;
+                return false;
             }
         }
 
         public DateTime GetTokenExpiration()
         {
-            return DateTime.UtcNow.AddMinutes(_expirationMinutes);
+            var jwtSettings = _configuration.GetSection("JWT");
+            var expiryInMinutes = Convert.ToDouble(jwtSettings["ExpiryInMinutes"]);
+            return DateTime.UtcNow.AddMinutes(expiryInMinutes);
         }
 
         public string GenerateRefreshToken()
@@ -90,6 +98,41 @@ namespace CarPooling.Infrastructure.Services
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
+        }
+
+        public ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+                return null;
+
+            var jwtSettings = _configuration.GetSection("JWT");
+            var secretKey = jwtSettings["SecretKey"];
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(secretKey);
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = true,
+                    ValidAudience = audience,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                return principal;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

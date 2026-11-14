@@ -1,10 +1,17 @@
 using CarPooling.Application.DTOs;
 using CarPooling.Application.Interfaces;
-using CarPooling.Application.Interfaces.Repositories;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
-using CarPooling.Application.Trips.DTOs;
 using CarPooling.Domain.DTOs;
+using CarPooling.Domain.Interfaces;
+using CarPooling.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+using CarPooling.Application.Trips.DTOs;
+using System.Text.RegularExpressions;
 
 namespace CarPooling.Application.Services
 {
@@ -13,15 +20,18 @@ namespace CarPooling.Application.Services
         private readonly IDeliveryRequestRepository _deliveryRepository;
         private readonly IUserRepository _userRepository;
         private readonly ITripRepository _tripRepository;
+        private readonly ILogger<DeliveryService> _logger;
 
         public DeliveryService(
             IDeliveryRequestRepository deliveryRepository,
             IUserRepository userRepository,
-            ITripRepository tripRepository)
+            ITripRepository tripRepository,
+            ILogger<DeliveryService> logger)
         {
             _deliveryRepository = deliveryRepository;
             _userRepository = userRepository;
             _tripRepository = tripRepository;
+            _logger = logger;
         }
 
         public async Task<ApiResponse<DeliveryRequestResponseDto>> CreateRequestAsync(string userId, CreateDeliveryRequestDto requestDto)
@@ -403,15 +413,13 @@ namespace CarPooling.Application.Services
                     return ApiResponse<List<TripListDto>>.ErrorResponse($"Cannot find matching trips for a request with status: {request.Status}");
                 }
 
-                // Get all trips that:
-                // 1. Accept deliveries
-                // 2. Have matching source/destination
-                // 3. Have sufficient weight capacity
-                // 4. Are in Pending or Confirmed status
-                // 5. Haven't started yet
-                // 6. Trip start time falls within the delivery date range
-                var allTrips = await _tripRepository.GetAllTripsAsync(new PaginationParams { PageSize = 100, PageNumber = 1 });
-                var matchingTrips = allTrips.Items
+                _logger.LogInformation($"Finding matching trips for delivery request {requestId} from {request.SourceLocation} to {request.DropoffLocation}");
+
+                // Get all trips
+                var (trips, _) = await _tripRepository.GetAllTripsAsync(1, 1000);
+                
+                // Filter trips that match our criteria
+                var matchingTrips = trips
                     .Where(t => t.AcceptsDeliveries &&
                                IsLocationMatch(t.SourceLocation, request.SourceLocation) &&
                                IsLocationMatch(t.Destination, request.DropoffLocation) &&
@@ -422,27 +430,32 @@ namespace CarPooling.Application.Services
                                t.StartTime <= request.DeliveryEndDate)
                     .ToList();
 
+                _logger.LogInformation($"Found {matchingTrips.Count} matching trips for delivery request {requestId}");
+
+                // Map the trips to DTOs
                 var tripDtos = matchingTrips.Select(trip => new TripListDto
                 {
                     TripId = trip.TripId,
-                    DriverName = $"{trip.Driver.FirstName} {trip.Driver.LastName}",
+                    DriverId = trip.DriverId,
+                    DriverName = $"{trip.Driver?.FirstName ?? "Unknown"} {trip.Driver?.LastName ?? "Driver"}",
                     PricePerSeat = trip.PricePerSeat,
                     EstimatedDuration = trip.EstimatedDuration,
                     AvailableSeats = trip.AvailableSeats,
-                    TripDescription = trip.TripDescription,
+                    TripDescription = trip.TripDescription ?? string.Empty,
                     Status = trip.Status,
                     SourceLocation = trip.SourceLocation,
                     Destination = trip.Destination,
                     StartTime = trip.StartTime,
                     CreatedAt = trip.CreatedAt,
                     GenderPreference = trip.GenderPreference,
-                    ParticipantsCount = trip.Participants.Count
+                    ParticipantsCount = trip.Participants?.Count ?? 0
                 }).ToList();
 
                 return ApiResponse<List<TripListDto>>.SuccessResponse(tripDtos);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error finding matching trips for delivery request {RequestId}: {Message}", requestId, ex.Message);
                 return ApiResponse<List<TripListDto>>.ErrorResponse($"Error finding matching trips: {ex.Message}");
             }
         }
@@ -784,7 +797,93 @@ namespace CarPooling.Application.Services
 
         private bool IsLocationMatch(string location1, string location2)
         {
-            return location1.Trim().Equals(location2.Trim(), StringComparison.OrdinalIgnoreCase);
+            if (string.IsNullOrWhiteSpace(location1) || string.IsNullOrWhiteSpace(location2))
+                return false;
+
+            // Normalize strings: trim, lowercase, and remove extra spaces
+            string normalized1 = NormalizeString(location1);
+            string normalized2 = NormalizeString(location2);
+
+            // 1. Exact match after normalization
+            if (normalized1 == normalized2)
+                return true;
+
+            // 2. Check if one contains the other
+            if (normalized1.Contains(normalized2) || normalized2.Contains(normalized1))
+                return true;
+
+            // 3. Check for common words (useful for addresses with multiple parts)
+            var words1 = normalized1.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var words2 = normalized2.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            
+            // If locations share at least 2 significant words, consider them a match
+            int commonWords = words1.Intersect(words2).Count();
+            if (commonWords >= 2)
+                return true;
+
+            // 4. Check for similar words using Levenshtein distance
+            // This helps with misspellings
+            foreach (var word1 in words1)
+            {
+                if (word1.Length <= 3) continue; // Skip short words
+                
+                foreach (var word2 in words2)
+                {
+                    if (word2.Length <= 3) continue; // Skip short words
+                    
+                    if (LevenshteinDistance(word1, word2) <= 2)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        private string NormalizeString(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            // Convert to lowercase
+            string result = input.ToLowerInvariant();
+            
+            // Remove punctuation
+            result = Regex.Replace(result, @"[^\w\s]", " ");
+            
+            // Replace multiple spaces with a single space
+            result = Regex.Replace(result, @"\s+", " ");
+            
+            // Trim leading and trailing spaces
+            return result.Trim();
+        }
+
+        private int LevenshteinDistance(string s, string t)
+        {
+            // Levenshtein distance algorithm to calculate edit distance between strings
+            // This helps identify similar strings with typos
+            
+            int n = s.Length;
+            int m = t.Length;
+            int[,] d = new int[n + 1, m + 1];
+
+            if (n == 0) return m;
+            if (m == 0) return n;
+
+            for (int i = 0; i <= n; i++) d[i, 0] = i;
+            for (int j = 0; j <= m; j++) d[0, j] = j;
+
+            for (int i = 1; i <= n; i++)
+            {
+                for (int j = 1; j <= m; j++)
+                {
+                    int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
+                    d[i, j] = Math.Min(
+                        Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
+                        d[i - 1, j - 1] + cost);
+                }
+            }
+
+            return d[n, m];
         }
     }
 } 

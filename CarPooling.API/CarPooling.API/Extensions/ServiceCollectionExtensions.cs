@@ -2,8 +2,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using CarPooling.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace CarPooling.API.Extensions

@@ -1,9 +1,14 @@
 using CarPooling.Application.DTOs;
 using CarPooling.Application.Interfaces;
-using CarPooling.Application.Interfaces.Repositories;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using CarPooling.Domain.DTOs;
+using CarPooling.Domain.Interfaces;
+using CarPooling.Domain.Interfaces.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace CarPooling.Application.Services
 {

@@ -1,6 +1,6 @@
-using CarPooling.Application.Interfaces.Repositories;
+using CarPooling.Domain.Interfaces.Repositories;
 
-namespace CarPooling.Application.Interfaces
+namespace CarPooling.Domain.Interfaces
 {
     public interface IUnitOfWork
     {

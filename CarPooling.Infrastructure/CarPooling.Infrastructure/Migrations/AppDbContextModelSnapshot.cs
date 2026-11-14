@@ -370,16 +370,11 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("TripId");
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("TripParticipants");
                 });
@@ -749,14 +744,10 @@ namespace CarPooling.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("CarPooling.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("TripParticipations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("CarPooling.Domain.Entities.User", null)
-                        .WithMany("TripParticipations")
-                        .HasForeignKey("UserId1");
 
                     b.Navigation("Trip");
 

@@ -1,8 +1,10 @@
+using CarPooling.Application.Interfaces;
+using CarPooling.Infrastructure.Settings;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Options;
-using CarPooling.Domain.Interfaces;
-using CarPooling.Infrastructure.Settings;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace CarPooling.Infrastructure.Services
 {
@@ -12,51 +14,73 @@ namespace CarPooling.Infrastructure.Services
 
         public CloudinaryService(IOptions<CloudinarySettings> config)
         {
-            var acc = new Account(
+            var account = new Account(
                 config.Value.CloudName,
                 config.Value.ApiKey,
                 config.Value.ApiSecret
             );
 
-            _cloudinary = new Cloudinary(acc);
+            _cloudinary = new Cloudinary(account);
         }
 
         public async Task<string> UploadFileAsync(Stream fileStream, string fileName)
         {
-            var uploadParams = new ImageUploadParams()
+            var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(fileName, fileStream),
-                Folder = "carpooling/documents" // Organizing user documents in a specific folder
+                Transformation = new Transformation().Width(500).Height(500).Crop("fill")
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-
-            if (uploadResult.Error != null)
-            {
-                throw new Exception($"Failed to upload image: {uploadResult.Error.Message}");
-            }
 
             return uploadResult.SecureUrl.ToString();
         }
 
         public async Task<bool> DeleteFileAsync(string fileUrl)
         {
+            // Extract public ID from URL
+            var publicId = GetPublicIdFromUrl(fileUrl);
+
+            if (string.IsNullOrEmpty(publicId))
+                return false;
+
+            var deleteParams = new DeletionParams(publicId);
+            var result = await _cloudinary.DestroyAsync(deleteParams);
+
+            return result.Result == "ok";
+        }
+
+        private string GetPublicIdFromUrl(string fileUrl)
+        {
             try
             {
-                // Extract public ID from the URL (including folder)
+                // Extract public ID from Cloudinary URL
                 var uri = new Uri(fileUrl);
-                var pathSegments = uri.Segments;
-                var publicId = string.Join("", pathSegments.Skip(pathSegments.Length - 2)).TrimEnd('/');
-                publicId = publicId.Split('.')[0]; // Remove file extension
-
-                var deleteParams = new DeletionParams(publicId);
-                var result = await _cloudinary.DestroyAsync(deleteParams);
-
-                return result.Result == "ok";
+                var pathSegments = uri.AbsolutePath.Split('/');
+                
+                // The public ID is typically after /upload/ and before the file extension
+                var uploadIndex = Array.IndexOf(pathSegments, "upload");
+                if (uploadIndex >= 0 && pathSegments.Length > uploadIndex + 1)
+                {
+                    var fileName = pathSegments[pathSegments.Length - 1];
+                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                    
+                    // Construct the public ID from the path segments between "upload" and the file name
+                    var publicIdParts = new List<string>();
+                    for (int i = uploadIndex + 1; i < pathSegments.Length - 1; i++)
+                    {
+                        publicIdParts.Add(pathSegments[i]);
+                    }
+                    publicIdParts.Add(fileNameWithoutExtension);
+                    
+                    return string.Join("/", publicIdParts);
+                }
+                
+                return string.Empty;
             }
             catch
             {
-                return false;
+                return string.Empty;
             }
         }
     }

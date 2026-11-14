@@ -54,9 +54,10 @@ namespace CarPooling.Infrastructure.Data
                 .HasForeignKey(t => t.DriverId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // Fix the TripParticipant to User relationship
             modelBuilder.Entity<TripParticipant>()
                 .HasOne(tp => tp.User)
-                .WithMany()
+                .WithMany(u => u.TripParticipations)
                 .HasForeignKey(tp => tp.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 

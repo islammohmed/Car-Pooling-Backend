@@ -1,5 +1,5 @@
-using CarPooling.Application.Interfaces;
-using CarPooling.Application.Interfaces.Repositories;
+using CarPooling.Domain.Interfaces;
+using CarPooling.Domain.Interfaces.Repositories;
 
 namespace CarPooling.Infrastructure.Data
 {

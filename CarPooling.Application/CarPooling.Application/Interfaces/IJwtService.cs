@@ -11,8 +11,9 @@ namespace CarPooling.Application.Interfaces
     public interface IJwtService
     {
         string GenerateToken(User user);
-        ClaimsPrincipal? ValidateToken(string token);
+        bool ValidateToken(string token);
         DateTime GetTokenExpiration();
         string GenerateRefreshToken();
+        ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token);
     }
 }

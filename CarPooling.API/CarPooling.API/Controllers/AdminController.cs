@@ -25,7 +25,6 @@ namespace CarPooling.API.Controllers
         }
 
         [HttpGet("documents/pending")]
-        [AllowAnonymous] // Temporarily allow anonymous access for testing
         public async Task<ActionResult<ApiResponse<List<DocumentVerificationDto>>>> GetPendingDocuments()
         {
             var result = await _adminService.GetPendingDocumentVerifications();

@@ -1,12 +1,16 @@
 using CarPooling.Application.Trips.DTOs;
+using CarPooling.Application.Interfaces;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using CarPooling.Domain.Exceptions;
 using CarPooling.Domain.DTOs;
+using CarPooling.Domain.Interfaces;
+using CarPooling.Domain.Interfaces.Repositories;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
-using CarPooling.Application.Interfaces.Repositories;
-using CarPooling.Application.Interfaces;
 
 namespace CarPooling.Application.Services
 {

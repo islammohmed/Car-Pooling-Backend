@@ -5,6 +5,7 @@ using CarPooling.Application.DTOs;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using CarPooling.Domain.DTOs;
+using CarPooling.Domain.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using System;
@@ -34,7 +35,7 @@ namespace CarPooling.Application.Services
 
         public async Task<PaginatedResponse<TripListDto>> GetAllTripsAsync(PaginationParams paginationParams)
         {
-            var (trips, totalCount) = await _unitOfWork.Trips.GetAllTripsAsync(paginationParams);
+            var (trips, totalCount) = await _unitOfWork.Trips.GetAllTripsAsync(paginationParams.PageNumber, paginationParams.PageSize);
             
             var tripDtos = _mapper.Map<IEnumerable<TripListDto>>(trips);
 
@@ -97,10 +98,10 @@ namespace CarPooling.Application.Services
         public async Task<IEnumerable<TripListDto>> GetUserTripsAsync(string userId)
         {
             // Get all trips
-            var trips = await _unitOfWork.Trips.GetAllTripsAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 });
+            var (trips, _) = await _unitOfWork.Trips.GetAllTripsAsync(1, 1000);
             
             // Filter trips where the user is the driver
-            var userTrips = trips.Items
+            var userTrips = trips
                 .Where(t => t.Driver?.Id == userId)
                 .ToList();
             
@@ -109,15 +110,33 @@ namespace CarPooling.Application.Services
 
         public async Task<IEnumerable<TripListDto>> SearchTripsAsync(string source, string destination, DateTime date)
         {
-            var (trips, totalCount) = await _unitOfWork.Trips.GetAllTripsAsync(new PaginationParams { PageNumber = 1, PageSize = 1000 });
-
-            var filteredTrips = trips
-                .Where(t => t.SourceLocation.Contains(source, StringComparison.OrdinalIgnoreCase) &&
-                            t.Destination.Contains(destination, StringComparison.OrdinalIgnoreCase) &&
-                            t.StartTime.Date == date.Date)
-                .ToList();
-            
-            return _mapper.Map<IEnumerable<TripListDto>>(filteredTrips);
+            try
+            {
+                // Use raw SQL query to avoid the UserId1 column issue
+                var trips = await _unitOfWork.Trips.SearchTripsAsync(source, destination, date);
+                var tripDtos = _mapper.Map<IEnumerable<TripListDto>>(trips);
+                
+                // Make sure the destination is correctly mapped
+                foreach (var tripDto in tripDtos)
+                {
+                    if (string.IsNullOrEmpty(tripDto.Destination))
+                    {
+                        // Find the corresponding trip to get the destination
+                        var trip = trips.FirstOrDefault(t => t.TripId == tripDto.TripId);
+                        if (trip != null)
+                        {
+                            tripDto.Destination = trip.Destination;
+                        }
+                    }
+                }
+                
+                return tripDtos;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching trips: {Message}", ex.Message);
+                return new List<TripListDto>();
+            }
         }
 
         public async Task<ApiResponse<TripListDto>> CompleteTripAsync(int tripId, string driverId)
@@ -162,8 +181,7 @@ namespace CarPooling.Application.Services
                 // If tripId is 0, check all trips
                 if (tripId == 0)
                 {
-                    var paginationParams = new PaginationParams { PageNumber = 1, PageSize = 1000 };
-                    var (trips, _) = await _unitOfWork.Trips.GetAllTripsAsync(paginationParams);
+                    var (trips, _) = await _unitOfWork.Trips.GetAllTripsAsync(1, 1000);
                     
                     int updatedCount = 0;
                     foreach (var trip in trips)

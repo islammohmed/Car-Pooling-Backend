@@ -1,5 +1,6 @@
-using CarPooling.Application.Interfaces.Repositories;
+using CarPooling.Domain.Interfaces.Repositories;
 using CarPooling.Domain.Entities;
+using CarPooling.Domain.Enums;
 using CarPooling.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +31,7 @@ namespace CarPooling.Infrastructure.Repositories
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public async Task<List<DeliveryRequest>> GetPendingRequestsAsync()
+        public async Task<IEnumerable<DeliveryRequest>> GetPendingRequestsAsync()
         {
             return await _context.DeliveryRequests
                 .Include(d => d.Sender)
@@ -38,7 +39,7 @@ namespace CarPooling.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<DeliveryRequest>> GetUserRequestsAsync(string userId)
+        public async Task<IEnumerable<DeliveryRequest>> GetUserRequestsAsync(string userId)
         {
             return await _context.DeliveryRequests
                 .Include(d => d.Sender)
@@ -48,7 +49,7 @@ namespace CarPooling.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<DeliveryRequest>> GetDriverDeliveriesAsync(string driverId)
+        public async Task<IEnumerable<DeliveryRequest>> GetDriverDeliveriesAsync(string driverId)
         {
             return await _context.DeliveryRequests
                 .Include(d => d.Sender)
@@ -57,7 +58,7 @@ namespace CarPooling.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<DeliveryRequest>> GetDeliveriesByStatusAndTripsAsync(string status, List<int> tripIds)
+        public async Task<IEnumerable<DeliveryRequest>> GetDeliveriesByStatusAndTripsAsync(string status, IEnumerable<int> tripIds)
         {
             return await _context.DeliveryRequests
                 .Include(d => d.Sender)
@@ -74,13 +75,40 @@ namespace CarPooling.Infrastructure.Repositories
             return request;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<IEnumerable<DeliveryRequest>> GetBySenderIdAsync(string senderId)
         {
-            var entity = await _context.DeliveryRequests.FindAsync(id);
-            if (entity == null) return false;
-            _context.DeliveryRequests.Remove(entity);
-            await _context.SaveChangesAsync();
-            return true;
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Include(d => d.Trip)
+                .Where(d => d.SenderId == senderId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<DeliveryRequest>> GetByTripIdAsync(int tripId)
+        {
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Include(d => d.Trip)
+                .Where(d => d.TripId == tripId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<DeliveryRequest>> GetByStatusAsync(DeliveryStatus status)
+        {
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Include(d => d.Trip)
+                .Where(d => d.Status == status.ToString())
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<DeliveryRequest>> GetPendingDeliveriesAsync()
+        {
+            return await _context.DeliveryRequests
+                .Include(d => d.Sender)
+                .Include(d => d.Trip)
+                .Where(d => d.Status == DeliveryStatus.Pending.ToString())
+                .ToListAsync();
         }
     }
 } 

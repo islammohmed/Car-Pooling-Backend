@@ -25,5 +25,7 @@ namespace CarPooling.Application.Trips.DTOs
         public Gender? GenderPreference { get; set; }
         
         public int ParticipantsCount { get; set; }
+        
+        public bool IsUserBooked { get; set; }
     }
 } 

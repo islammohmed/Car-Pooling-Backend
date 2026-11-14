@@ -5,7 +5,6 @@ using AutoMapper;
 using CarPooling.Application.Interfaces;
 using System.Security.Claims;
 using CarPooling.Domain.DTOs;
-using Microsoft.Extensions.Configuration;
 
 namespace CarPooling.Application.Services
 {
@@ -208,7 +207,7 @@ namespace CarPooling.Application.Services
         {
             try
             {
-                var principal = _jwtService.ValidateToken(token);
+                var principal = _jwtService.ValidateTokenAndGetPrincipal(token);
                 if (principal == null)
                 {
                     return ApiResponse<string>.ErrorResponse("Invalid token");

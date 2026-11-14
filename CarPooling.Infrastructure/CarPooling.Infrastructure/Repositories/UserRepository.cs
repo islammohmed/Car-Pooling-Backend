@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using CarPooling.Application.Interfaces.Repositories;
+using CarPooling.Domain.Interfaces.Repositories;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
 using CarPooling.Infrastructure.Data;
@@ -25,7 +25,7 @@ namespace CarPooling.Infrastructure.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public async Task<List<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
             return await _context.Users
                 .OrderBy(u => u.FirstName)
@@ -48,10 +48,11 @@ namespace CarPooling.Infrastructure.Repositories
                               d.VerificationStatus == VerificationStatus.Pending);
         }
 
-        public async Task AddDocumentVerificationAsync(DocumentVerification verification)
+        public async Task<bool> AddDocumentVerificationAsync(DocumentVerification verification)
         {
             await _context.DocumentVerifications.AddAsync(verification);
-            await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
 
         public async Task<bool> AddCarAsync(Car car)
@@ -66,13 +67,14 @@ namespace CarPooling.Infrastructure.Repositories
             return await _context.Cars.FirstOrDefaultAsync(c => c.DriverId == userId);
         }
 
-        public async Task UpdateCarAsync(Car car)
+        public async Task<bool> UpdateCarAsync(Car car)
         {
             _context.Cars.Update(car);
-            await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
 
-        public async Task<List<DocumentVerification>> GetPendingDocumentVerificationsAsync()
+        public async Task<IEnumerable<DocumentVerification>> GetPendingDocumentVerificationsAsync()
         {
             return await _context.DocumentVerifications
                 .Include(d => d.User)
@@ -88,13 +90,14 @@ namespace CarPooling.Infrastructure.Repositories
                 .FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public async Task UpdateDocumentVerificationAsync(DocumentVerification verification)
+        public async Task<bool> UpdateDocumentVerificationAsync(DocumentVerification verification)
         {
             _context.DocumentVerifications.Update(verification);
-            await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync();
+            return result > 0;
         }
 
-        public async Task<List<DocumentVerification>> GetUserDocumentVerificationsAsync(string userId)
+        public async Task<IEnumerable<DocumentVerification>> GetUserDocumentVerificationsAsync(string userId)
         {
             return await _context.DocumentVerifications
                 .Include(d => d.User)
@@ -112,7 +115,7 @@ namespace CarPooling.Infrastructure.Repositories
                                         d.VerificationStatus == VerificationStatus.Pending);
         }
 
-        public async Task<List<DocumentVerification>> GetPendingDriverVerificationsAsync(string userId)
+        public async Task<IEnumerable<DocumentVerification>> GetPendingDriverVerificationsAsync(string userId)
         {
             return await _context.DocumentVerifications
                 .Include(d => d.User)

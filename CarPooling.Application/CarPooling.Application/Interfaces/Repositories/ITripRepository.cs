@@ -15,5 +15,6 @@ namespace CarPooling.Application.Interfaces.Repositories
         Task<Trip?> GetByIdWithParticipantsAsync(int id);
         Task<IEnumerable<Trip>> GetAllTripsWithParticipantsAsync();
         Task<List<Trip>> GetDriverTripsAsync(string driverId);
+        Task<List<Trip>> SearchTripsAsync(string source, string destination, DateTime date);
     }
 }

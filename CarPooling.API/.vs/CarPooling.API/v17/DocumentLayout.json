@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\ITI\\design pattern\\CarPooling\\car pooling\\CarPooling.API\\",
+  "WorkspaceRootPath": "D:\\ITI\\Graduation Project\\BackendRepo\\CarPooling.API\\",
   "Documents": [],
   "DocumentGroupContainers": [
     {
@@ -26,7 +26,7 @@
           ]
         },
         {
-          "DockedWidth": 1498,
+          "DockedWidth": 1055,
           "SelectedChildIndex": -1,
           "Children": [
             {
