@@ -5,6 +5,7 @@ using CarPooling.Application.Interfaces;
 using CarPooling.Domain.DTOs;
 using CarPooling.Application.DTOs;
 using CarPooling.Domain.Enums;
+using CarPooling.API.Extensions;
 
 namespace CarPooling.API.Controllers
 {
@@ -29,7 +30,8 @@ namespace CarPooling.API.Controllers
             try
             {
                 var result = await _userService.GetAllUsersAsync();
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return response.Success ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -44,7 +46,8 @@ namespace CarPooling.API.Controllers
             try
             {
                 var result = await _userService.GetUserByIdAsync(id);
-                return result.Success ? Ok(result) : NotFound(result);
+                var response = result.ToApiResponse();
+                return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
@@ -67,7 +70,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _userService.VerifyPassengerNationalId(userId, verificationDto);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return response.Success ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -89,7 +93,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _userService.UpdateDocument(userId, updateDto.DocumentType, updateDto.DocumentFile);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return response.Success ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -110,7 +115,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _userService.GetUserDocumentVerifications(userId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return response.Success ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -132,7 +138,7 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _userService.GetUserDocumentVerifications(userId);
-                if (!result.Success)
+                if (!result.IsSuccess)
                 {
                     return BadRequest(result);
                 }
@@ -178,7 +184,7 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _userService.RegisterAsDriver(userId, driverDto);
-                return result.Success ? Ok(result) : BadRequest(result);
+                return result.IsSuccess ? Ok(result) : BadRequest(result);
             }
             catch (Exception ex)
             {

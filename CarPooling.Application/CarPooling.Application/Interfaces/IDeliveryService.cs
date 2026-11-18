@@ -1,23 +1,23 @@
+using CarPooling.Application.Common.Results;
 using CarPooling.Application.DTOs;
 using CarPooling.Application.Trips.DTOs;
-using CarPooling.Domain.DTOs;
 
 namespace CarPooling.Application.Interfaces
 {
     public interface IDeliveryService
     {
-        Task<ApiResponse<DeliveryRequestResponseDto>> CreateRequestAsync(string userId, CreateDeliveryRequestDto requestDto);
-        Task<ApiResponse<DeliveryRequestResponseDto>> GetRequestByIdAsync(int id);
-        Task<ApiResponse<List<DeliveryRequestResponseDto>>> GetPendingRequestsAsync();
-        Task<ApiResponse<List<DeliveryRequestResponseDto>>> GetUserRequestsAsync(string userId);
-        Task<ApiResponse<List<DeliveryRequestResponseDto>>> GetDriverDeliveriesAsync(string driverId);
-        Task<ApiResponse<List<DeliveryRequestResponseDto>>> GetSelectedDeliveriesForDriverAsync(string driverId);
-        Task<ApiResponse<DeliveryRequestResponseDto>> AcceptDeliveryAsync(string driverId, int requestId, int tripId);
-        Task<ApiResponse<DeliveryRequestResponseDto>> RejectDeliveryAsync(string driverId, int requestId);
-        Task<ApiResponse<DeliveryRequestResponseDto>> UpdateDeliveryStatusAsync(string driverId, int requestId, UpdateDeliveryStatusDto updateDto);
-        Task<ApiResponse<bool>> CancelRequestAsync(string userId, int requestId);
-        Task<ApiResponse<List<TripListDto>>> GetMatchingTripsAsync(int requestId);
-        Task<int> HandleExpiredRequestsAsync();
-        Task<ApiResponse<DeliveryRequestResponseDto>> SelectTripForDeliveryAsync(string userId, int requestId, SelectTripForDeliveryDto selectTripDto);
+        Task<Result<DeliveryRequestResponseDto>> CreateRequestAsync(string userId, CreateDeliveryRequestDto requestDto);
+        Task<Result<DeliveryRequestResponseDto>> GetRequestByIdAsync(int id);
+        Task<Result<List<DeliveryRequestResponseDto>>> GetPendingRequestsAsync();
+        Task<Result<List<DeliveryRequestResponseDto>>> GetUserRequestsAsync(string userId);
+        Task<Result<List<DeliveryRequestResponseDto>>> GetDriverDeliveriesAsync(string driverId);
+        Task<Result<List<DeliveryRequestResponseDto>>> GetSelectedDeliveriesForDriverAsync(string driverId);
+        Task<Result<DeliveryRequestResponseDto>> AcceptDeliveryAsync(string driverId, int requestId, int tripId);
+        Task<Result<DeliveryRequestResponseDto>> RejectDeliveryAsync(string driverId, int requestId);
+        Task<Result<DeliveryRequestResponseDto>> UpdateDeliveryStatusAsync(string driverId, int requestId, UpdateDeliveryStatusDto updateDto);
+        Task<Result<bool>> CancelRequestAsync(string userId, int requestId);
+        Task<Result<List<TripListDto>>> GetMatchingTripsAsync(int requestId);
+        Task<Result<int>> HandleExpiredRequestsAsync();
+        Task<Result<DeliveryRequestResponseDto>> SelectTripForDeliveryAsync(string userId, int requestId, SelectTripForDeliveryDto selectTripDto);
     }
-} 
+}

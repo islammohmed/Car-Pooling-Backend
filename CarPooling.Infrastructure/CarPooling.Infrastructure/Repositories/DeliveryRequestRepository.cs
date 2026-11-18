@@ -35,7 +35,7 @@ namespace CarPooling.Infrastructure.Repositories
         {
             return await _context.DeliveryRequests
                 .Include(d => d.Sender)
-                .Where(d => d.Status == "Pending")
+                .Where(d => d.Status == DeliveryStatus.Pending)
                 .ToListAsync();
         }
 
@@ -58,7 +58,7 @@ namespace CarPooling.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<DeliveryRequest>> GetDeliveriesByStatusAndTripsAsync(string status, IEnumerable<int> tripIds)
+        public async Task<IEnumerable<DeliveryRequest>> GetDeliveriesByStatusAndTripsAsync(DeliveryStatus status, IEnumerable<int> tripIds)
         {
             return await _context.DeliveryRequests
                 .Include(d => d.Sender)
@@ -98,7 +98,7 @@ namespace CarPooling.Infrastructure.Repositories
             return await _context.DeliveryRequests
                 .Include(d => d.Sender)
                 .Include(d => d.Trip)
-                .Where(d => d.Status == status.ToString())
+                .Where(d => d.Status == status)
                 .ToListAsync();
         }
 
@@ -107,7 +107,7 @@ namespace CarPooling.Infrastructure.Repositories
             return await _context.DeliveryRequests
                 .Include(d => d.Sender)
                 .Include(d => d.Trip)
-                .Where(d => d.Status == DeliveryStatus.Pending.ToString())
+                .Where(d => d.Status == DeliveryStatus.Pending)
                 .ToListAsync();
         }
     }

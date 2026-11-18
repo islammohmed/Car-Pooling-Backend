@@ -1,13 +1,10 @@
+using CarPooling.Application.Common.Results;
 using CarPooling.Application.DTOs;
 using CarPooling.Application.Interfaces;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
-using CarPooling.Domain.Exceptions;
-using CarPooling.Domain.Interfaces;
 using CarPooling.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using CarPooling.Domain.DTOs;
 
 namespace CarPooling.Application.Services
 {
@@ -22,26 +19,26 @@ namespace CarPooling.Application.Services
             _fileStorageService = fileStorageService;
         }
 
-        public async Task<ApiResponse<bool>> VerifyPassengerNationalId(string userId, PassengerVerificationDto verificationDto)
+        public async Task<Result<bool>> VerifyPassengerNationalId(string userId, PassengerVerificationDto verificationDto)
         {
             try
             {
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 if (user.UserRole != UserRole.Passenger)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Only passengers can submit national ID verification");
+                    return Result<bool>.Failure("Only passengers can submit national ID verification");
                 }
 
                 // Check if there's a pending verification
                 var existingVerification = await _userRepository.GetPendingNationalIdVerificationAsync(userId);
                 if (existingVerification != null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("You already have a pending national ID verification request");
+                    return Result<bool>.Failure("You already have a pending national ID verification request");
                 }
 
                 // Upload the document image
@@ -63,34 +60,34 @@ namespace CarPooling.Application.Services
 
                 await _userRepository.AddDocumentVerificationAsync(documentVerification);
 
-                return ApiResponse<bool>.SuccessResponse(true, "National ID verification submitted successfully");
+                return Result<bool>.Success(true, "National ID verification submitted successfully");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error submitting national ID verification: {ex.Message}");
+                return Result<bool>.Failure($"Error submitting national ID verification: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<bool>> VerifyDriverDocuments(string userId, DriverVerificationDto verificationDto)
+        public async Task<Result<bool>> VerifyDriverDocuments(string userId, DriverVerificationDto verificationDto)
         {
             try
             {
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 if (user.UserRole != UserRole.Driver)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Only drivers can submit these documents");
+                    return Result<bool>.Failure("Only drivers can submit these documents");
                 }
 
                 // Check if there are pending verifications
                 var pendingVerifications = await _userRepository.GetPendingDriverVerificationsAsync(userId);
                 if (pendingVerifications.Any())
                 {
-                    return ApiResponse<bool>.ErrorResponse("You already have pending document verification requests");
+                    return Result<bool>.Failure("You already have pending document verification requests");
                 }
 
                 var documents = new List<DocumentVerification>();
@@ -151,7 +148,7 @@ namespace CarPooling.Application.Services
 
                 if (!documents.Any())
                 {
-                    return ApiResponse<bool>.ErrorResponse("No documents provided for verification");
+                    return Result<bool>.Failure("No documents provided for verification");
                 }
 
                 foreach (var doc in documents)
@@ -159,15 +156,15 @@ namespace CarPooling.Application.Services
                     await _userRepository.AddDocumentVerificationAsync(doc);
                 }
 
-                return ApiResponse<bool>.SuccessResponse(true, "Documents submitted for verification successfully");
+                return Result<bool>.Success(true, "Documents submitted for verification successfully");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error submitting documents for verification: {ex.Message}");
+                return Result<bool>.Failure($"Error submitting documents for verification: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<List<DocumentVerificationDto>>> GetUserDocumentVerifications(string userId)
+        public async Task<Result<List<DocumentVerificationDto>>> GetUserDocumentVerifications(string userId)
         {
             try
             {
@@ -182,33 +179,33 @@ namespace CarPooling.Application.Services
                     SubmissionDate = v.SubmissionDate
                 }).ToList();
 
-                return ApiResponse<List<DocumentVerificationDto>>.SuccessResponse(dtos);
+                return Result<List<DocumentVerificationDto>>.Success(dtos);
             }
             catch (Exception ex)
             {
-                return ApiResponse<List<DocumentVerificationDto>>.ErrorResponse($"Error getting user verifications: {ex.Message}");
+                return Result<List<DocumentVerificationDto>>.Failure($"Error getting user verifications: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<bool>> UpdateDocument(string userId, string documentType, IFormFile documentFile)
+        public async Task<Result<bool>> UpdateDocument(string userId, string documentType, IFormFile documentFile)
         {
             try
             {
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 if (documentFile == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Document file is required");
+                    return Result<bool>.Failure("Document file is required");
                 }
 
                 // Validate document type based on user role
                 if (user.UserRole == UserRole.Passenger && documentType != "NationalId")
                 {
-                    return ApiResponse<bool>.ErrorResponse("Passengers can only update National ID");
+                    return Result<bool>.Failure("Passengers can only update National ID");
                 }
 
                 if (user.UserRole == UserRole.Driver && 
@@ -216,7 +213,7 @@ namespace CarPooling.Application.Services
                     documentType != "DrivingLicense" && 
                     documentType != "CarLicense")
                 {
-                    return ApiResponse<bool>.ErrorResponse("Invalid document type for driver");
+                    return Result<bool>.Failure("Invalid document type for driver");
                 }
 
                 // Upload new document
@@ -241,7 +238,7 @@ namespace CarPooling.Application.Services
                         if (user.UserRole != UserRole.Driver)
                         {
                             await _fileStorageService.DeleteFileAsync(documentImageUrl);
-                            return ApiResponse<bool>.ErrorResponse("Only drivers can update driving license");
+                            return Result<bool>.Failure("Only drivers can update driving license");
                         }
                         oldImageUrl = user.DrivingLicenseImage;
                         user.DrivingLicenseImage = documentImageUrl;
@@ -250,13 +247,13 @@ namespace CarPooling.Application.Services
                         if (user.UserRole != UserRole.Driver)
                         {
                             await _fileStorageService.DeleteFileAsync(documentImageUrl);
-                            return ApiResponse<bool>.ErrorResponse("Only drivers can update car license");
+                            return Result<bool>.Failure("Only drivers can update car license");
                         }
                         var car = await _userRepository.GetUserCarAsync(userId);
                         if (car == null)
                         {
                             await _fileStorageService.DeleteFileAsync(documentImageUrl);
-                            return ApiResponse<bool>.ErrorResponse("No car found for this driver");
+                            return Result<bool>.Failure("No car found for this driver");
                         }
                         oldImageUrl = car.CarLicenseImage;
                         car.CarLicenseImage = documentImageUrl;
@@ -264,7 +261,7 @@ namespace CarPooling.Application.Services
                         break;
                     default:
                         await _fileStorageService.DeleteFileAsync(documentImageUrl);
-                        return ApiResponse<bool>.ErrorResponse("Invalid document type");
+                        return Result<bool>.Failure("Invalid document type");
                 }
 
                 // Delete old image if exists
@@ -286,41 +283,41 @@ namespace CarPooling.Application.Services
                 await _userRepository.AddDocumentVerificationAsync(documentVerification);
                 await _userRepository.UpdateUserAsync(user);
 
-                return ApiResponse<bool>.SuccessResponse(true, $"{documentType} updated successfully. Waiting for admin verification.");
+                return Result<bool>.Success(true, $"{documentType} updated successfully. Waiting for admin verification.");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error updating document: {ex.Message}");
+                return Result<bool>.Failure($"Error updating document: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<bool>> RegisterAsDriver(string userId, DriverRegistrationDto driverDto)
+        public async Task<Result<bool>> RegisterAsDriver(string userId, DriverRegistrationDto driverDto)
         {
             try
             {
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 // Check if user is already a driver
                 if (user.UserRole == UserRole.Driver)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User is already registered as a driver");
+                    return Result<bool>.Failure("User is already registered as a driver");
                 }
 
                 // Check for pending driver verifications
                 var pendingVerifications = await _userRepository.GetPendingDriverVerificationsAsync(user.Id);
                 if (pendingVerifications.Any())
                 {
-                    return ApiResponse<bool>.ErrorResponse("You already have pending driver registration documents. Please wait for admin approval.");
+                    return Result<bool>.Failure("You already have pending driver registration documents. Please wait for admin approval.");
                 }
 
                 // Validate required documents
                 if (driverDto.NationalIdImage == null || driverDto.DrivingLicenseImage == null || driverDto.CarLicenseImage == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("All documents (National ID, Driving License, and Car License) are required");
+                    return Result<bool>.Failure("All documents (National ID, Driving License, and Car License) are required");
                 }
 
                 // Upload National ID
@@ -401,48 +398,48 @@ namespace CarPooling.Application.Services
 
                 await _userRepository.AddCarAsync(car);
 
-                return ApiResponse<bool>.SuccessResponse(true, "Driver registration documents submitted successfully. Waiting for admin verification.");
+                return Result<bool>.Success(true, "Driver registration documents submitted successfully. Waiting for admin verification.");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error submitting driver documents: {ex.Message}");
+                return Result<bool>.Failure($"Error submitting driver documents: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<List<UserDto>>> GetAllUsersAsync()
+        public async Task<Result<List<UserDto>>> GetAllUsersAsync()
         {
             try
             {
                 var users = await _userRepository.GetAllUsersAsync();
                 var userDtos = users.Select(MapUserToDto).ToList();
-                return ApiResponse<List<UserDto>>.SuccessResponse(userDtos);
+                return Result<List<UserDto>>.Success(userDtos);
             }
             catch (Exception ex)
             {
-                return ApiResponse<List<UserDto>>.ErrorResponse($"Error retrieving users: {ex.Message}");
+                return Result<List<UserDto>>.Failure($"Error retrieving users: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<UserDto>> GetUserByIdAsync(string userId)
+        public async Task<Result<UserDto>> GetUserByIdAsync(string userId)
         {
             try
             {
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<UserDto>.ErrorResponse("User not found");
+                    return Result<UserDto>.Failure("User not found");
                 }
 
                 var userDto = MapUserToDto(user);
-                return ApiResponse<UserDto>.SuccessResponse(userDto);
+                return Result<UserDto>.Success(userDto);
             }
             catch (Exception ex)
             {
-                return ApiResponse<UserDto>.ErrorResponse($"Error retrieving user: {ex.Message}");
+                return Result<UserDto>.Failure($"Error retrieving user: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<bool>> DeleteUserAsync(string userId, string adminId)
+        public async Task<Result<bool>> DeleteUserAsync(string userId, string adminId)
         {
             try
             {
@@ -450,38 +447,38 @@ namespace CarPooling.Application.Services
                 var admin = await _userRepository.GetByIdAsync(adminId);
                 if (admin == null || admin.UserRole != UserRole.Admin)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Unauthorized: Only admins can delete users");
+                    return Result<bool>.Failure("Unauthorized: Only admins can delete users");
                 }
 
                 // Check if user exists
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 // Don't allow admins to delete other admins
                 if (user.UserRole == UserRole.Admin)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Cannot delete admin users");
+                    return Result<bool>.Failure("Cannot delete admin users");
                 }
 
                 // Delete the user
                 var result = await _userRepository.DeleteUserAsync(userId);
                 if (!result)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Failed to delete user");
+                    return Result<bool>.Failure("Failed to delete user");
                 }
 
-                return ApiResponse<bool>.SuccessResponse(true, "User deleted successfully");
+                return Result<bool>.Success(true, "User deleted successfully");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error deleting user: {ex.Message}");
+                return Result<bool>.Failure($"Error deleting user: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<bool>> BlockUserAsync(string userId, string adminId)
+        public async Task<Result<bool>> BlockUserAsync(string userId, string adminId)
         {
             try
             {
@@ -489,26 +486,26 @@ namespace CarPooling.Application.Services
                 var admin = await _userRepository.GetByIdAsync(adminId);
                 if (admin == null || admin.UserRole != UserRole.Admin)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Unauthorized: Only admins can block users");
+                    return Result<bool>.Failure("Unauthorized: Only admins can block users");
                 }
 
                 // Check if user exists
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 // Don't allow admins to block other admins
                 if (user.UserRole == UserRole.Admin)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Cannot block admin users");
+                    return Result<bool>.Failure("Cannot block admin users");
                 }
 
                 // Check if user is already blocked
                 if (user.IsBlocked)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User is already blocked");
+                    return Result<bool>.Failure("User is already blocked");
                 }
 
                 // Block the user
@@ -516,18 +513,18 @@ namespace CarPooling.Application.Services
                 var result = await _userRepository.UpdateUserAsync(user);
                 if (!result)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Failed to block user");
+                    return Result<bool>.Failure("Failed to block user");
                 }
 
-                return ApiResponse<bool>.SuccessResponse(true, "User blocked successfully");
+                return Result<bool>.Success(true, "User blocked successfully");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error blocking user: {ex.Message}");
+                return Result<bool>.Failure($"Error blocking user: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<bool>> UnblockUserAsync(string userId, string adminId)
+        public async Task<Result<bool>> UnblockUserAsync(string userId, string adminId)
         {
             try
             {
@@ -535,20 +532,20 @@ namespace CarPooling.Application.Services
                 var admin = await _userRepository.GetByIdAsync(adminId);
                 if (admin == null || admin.UserRole != UserRole.Admin)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Unauthorized: Only admins can unblock users");
+                    return Result<bool>.Failure("Unauthorized: Only admins can unblock users");
                 }
 
                 // Check if user exists
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 // Check if user is already unblocked
                 if (!user.IsBlocked)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User is not blocked");
+                    return Result<bool>.Failure("User is not blocked");
                 }
 
                 // Unblock the user
@@ -556,14 +553,14 @@ namespace CarPooling.Application.Services
                 var result = await _userRepository.UpdateUserAsync(user);
                 if (!result)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Failed to unblock user");
+                    return Result<bool>.Failure("Failed to unblock user");
                 }
 
-                return ApiResponse<bool>.SuccessResponse(true, "User unblocked successfully");
+                return Result<bool>.Success(true, "User unblocked successfully");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error unblocking user: {ex.Message}");
+                return Result<bool>.Failure($"Error unblocking user: {ex.Message}");
             }
         }
 

@@ -5,6 +5,7 @@ using CarPooling.Application.Interfaces;
 using CarPooling.Domain.DTOs;
 using CarPooling.Application.DTOs;
 using CarPooling.Domain.Enums;
+using CarPooling.API.Extensions;
 
 namespace CarPooling.API.Controllers
 {
@@ -28,14 +29,20 @@ namespace CarPooling.API.Controllers
         public async Task<ActionResult<ApiResponse<List<DocumentVerificationDto>>>> GetPendingDocuments()
         {
             var result = await _adminService.GetPendingDocumentVerifications();
-            return result.Success ? Ok(result) : BadRequest(result);
+
+            var response = result.ToApiResponse();
+
+            return result.IsSuccess
+                ? Ok(response)
+                : BadRequest(response); 
         }
 
         [HttpGet("documents/user/{userId}")]
         public async Task<ActionResult<ApiResponse<List<DocumentVerificationDto>>>> GetUserDocuments(string userId)
         {
             var result = await _adminService.GetUserDocumentVerifications(userId);
-            return result.Success ? Ok(result) : BadRequest(result);
+            var response = result.ToApiResponse();
+            return result.IsSuccess ? Ok(response) : BadRequest(response);
         }
 
         [HttpPost("documents/verify")]
@@ -49,7 +56,8 @@ namespace CarPooling.API.Controllers
             }
 
             var result = await _adminService.HandleDocumentVerification(adminId, actionDto);
-            return result.Success ? Ok(result) : BadRequest(result);
+            var response = result.ToApiResponse();
+            return result.IsSuccess ? Ok(response) : BadRequest(response);
         }
 
         [HttpDelete("users/{userId}")]
@@ -64,7 +72,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _userService.DeleteUserAsync(userId, adminId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -85,7 +94,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _userService.BlockUserAsync(userId, adminId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -106,7 +116,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _userService.UnblockUserAsync(userId, adminId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {

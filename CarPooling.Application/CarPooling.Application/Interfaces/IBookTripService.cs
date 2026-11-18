@@ -1,12 +1,14 @@
 using CarPooling.Application.Trips.DTOs;
 using CarPooling.Domain.DTOs;
 
+using CarPooling.Application.Common.Results;
+
 namespace CarPooling.Application.Interfaces
 {
     public interface IBookTripService
     {
-        Task<TripParticipantDto> BookTrip(BookTripDto request);
-        Task<bool> CancelTrip(CancelTripDto request);
-        Task<ApiResponse<bool>> CanDriverBookTripAsync(string driverId, int tripId);
+        Task<Result<TripParticipantDto>> BookTrip(BookTripDto request);
+        Task<Result<bool>> CancelTrip(CancelTripDto request);
+        Task<Result<bool>> CanDriverBookTripAsync(string driverId, int tripId);
     }
 } 

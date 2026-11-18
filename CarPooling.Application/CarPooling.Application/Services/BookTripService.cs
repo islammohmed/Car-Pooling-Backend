@@ -11,6 +11,7 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using CarPooling.Application.Common.Results;
 
 namespace CarPooling.Application.Services
 {
@@ -33,28 +34,28 @@ namespace CarPooling.Application.Services
             _cancelValidator = cancelValidator;
         }
 
-        public async Task<ApiResponse<bool>> CanDriverBookTripAsync(string driverId, int tripId)
+        public async Task<Result<bool>> CanDriverBookTripAsync(string driverId, int tripId)
         {
             try
             {
                 // Get the trip
                 var trip = await _unitOfWork.Trips.GetByIdAsync(tripId);
                 if (trip == null)
-                    return ApiResponse<bool>.ErrorResponse("Trip not found");
+                    return Result<bool>.Failure("Trip not found");
 
                 // Check if the user is the driver of this trip
                 if (trip.DriverId == driverId)
-                    return ApiResponse<bool>.ErrorResponse("Drivers cannot book their own trips");
+                    return Result<bool>.Failure("Drivers cannot book their own trips");
 
-                return ApiResponse<bool>.SuccessResponse(true);
+                return Result<bool>.Success(true);
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error checking driver booking eligibility: {ex.Message}");
+                return Result<bool>.Failure($"Error checking driver booking eligibility: {ex.Message}");
             }
         }
 
-        public async Task<TripParticipantDto> BookTrip(BookTripDto request)
+        public async Task<Result<TripParticipantDto>> BookTrip(BookTripDto request)
         {
             // Validate request using FluentValidation
             var validationResult = await _validator.ValidateAsync(request);
@@ -133,10 +134,10 @@ namespace CarPooling.Application.Services
             await _unitOfWork.SaveChangesAsync();
 
             // Return the mapped participant DTO
-            return _mapper.Map<TripParticipantDto>(participant);
+            return Result<TripParticipantDto>.Success(_mapper.Map<TripParticipantDto>(participant), "Trip booked successfully");
         }
 
-        public async Task<bool> CancelTrip(CancelTripDto request)
+        public async Task<Result<bool>> CancelTrip(CancelTripDto request)
         {
             // Validate request
             var validationResult = await _cancelValidator.ValidateAsync(request);
@@ -208,7 +209,7 @@ namespace CarPooling.Application.Services
             await _unitOfWork.Trips.UpdateTripAsync(trip);
             await _unitOfWork.SaveChangesAsync();
 
-            return true;
+            return Result<bool>.Success(true, "Trip cancelled successfully")    ;
         }
     }
 } 

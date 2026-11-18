@@ -1,4 +1,5 @@
 using CarPooling.Application.DTOs;
+using CarPooling.Application.Common.Results;
 using CarPooling.Application.Interfaces;
 using CarPooling.Domain.Entities;
 using CarPooling.Domain.DTOs;
@@ -29,7 +30,7 @@ namespace CarPooling.Application.Services
             _tripRepository = tripRepository;
         }
 
-        public async Task<ApiResponse<FeedbackResponseDto>> CreateFeedbackAsync(string senderId, CreateFeedbackDto createFeedbackDto)
+        public async Task<Result<FeedbackResponseDto>> CreateFeedbackAsync(string senderId, CreateFeedbackDto createFeedbackDto)
         {
             try
             {
@@ -37,70 +38,70 @@ namespace CarPooling.Application.Services
                 var sender = await _userRepository.GetByIdAsync(senderId);
                 if (sender == null)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("Sender not found");
+                    return Result<FeedbackResponseDto>.Failure("Sender not found");
                 }
 
                 // Validate receiver exists
                 var receiver = await _userRepository.GetByIdAsync(createFeedbackDto.ReceiverId);
                 if (receiver == null)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("Receiver not found");
+                    return Result<FeedbackResponseDto>.Failure("Receiver not found");
                 }
 
                 // Validate trip exists and is completed
                 var trip = await _tripRepository.GetByIdWithParticipantsAsync(createFeedbackDto.TripId);
                 if (trip == null)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("Trip not found");
+                    return Result<FeedbackResponseDto>.Failure("Trip not found");
                 }
 
                 // Check if trip is completed
                 if (trip.Status != TripStatus.Completed)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("Cannot give feedback for a trip that is not completed");
+                    return Result<FeedbackResponseDto>.Failure("Cannot give feedback for a trip that is not completed");
                 }
 
                 // Verify that sender was a participant in the trip
                 var senderParticipant = trip.Participants.FirstOrDefault(p => p.UserId == senderId);
-                
+
                 // Check if receiver is the driver or a participant
                 bool isReceiverDriver = trip.DriverId == createFeedbackDto.ReceiverId;
                 var receiverParticipant = trip.Participants.FirstOrDefault(p => p.UserId == createFeedbackDto.ReceiverId);
 
                 if (senderParticipant == null && senderId != trip.DriverId)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("You were not a participant in this trip");
+                    return Result<FeedbackResponseDto>.Failure("You were not a participant in this trip");
                 }
 
                 // Check if receiver is either a participant or the driver
                 if (receiverParticipant == null && !isReceiverDriver)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("The receiver was not a participant or driver in this trip");
+                    return Result<FeedbackResponseDto>.Failure("The receiver was not a participant or driver in this trip");
                 }
 
                 // Verify that sender's status was Confirmed if they were a passenger
                 if (senderParticipant != null && senderParticipant.Status != JoinStatus.Confirmed)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("You must have been a confirmed participant in the trip");
+                    return Result<FeedbackResponseDto>.Failure("You must have been a confirmed participant in the trip");
                 }
 
                 // Verify that receiver's status was Confirmed if they were a passenger
                 if (receiverParticipant != null && receiverParticipant.Status != JoinStatus.Confirmed)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("The receiver must have been a confirmed participant in the trip");
+                    return Result<FeedbackResponseDto>.Failure("The receiver must have been a confirmed participant in the trip");
                 }
 
                 // Check if user has already given feedback for this trip
                 var hasExistingFeedback = await _feedbackRepository.HasUserFeedbackForTripAsync(senderId, createFeedbackDto.TripId);
                 if (hasExistingFeedback)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("You have already provided feedback for this trip");
+                    return Result<FeedbackResponseDto>.Failure("You have already provided feedback for this trip");
                 }
 
                 // Validate rating range
                 if (createFeedbackDto.Rating < 1 || createFeedbackDto.Rating > 5)
                 {
-                    return ApiResponse<FeedbackResponseDto>.ErrorResponse("Rating must be between 1 and 5");
+                    return Result<FeedbackResponseDto>.Failure("Rating must be between 1 and 5");
                 }
 
                 var feedback = new Feedback
@@ -134,15 +135,15 @@ namespace CarPooling.Application.Services
                     TripStartTime = trip.StartTime
                 };
 
-                return ApiResponse<FeedbackResponseDto>.SuccessResponse(response);
+                return Result<FeedbackResponseDto>.Success(response);
             }
             catch (Exception ex)
             {
-                return ApiResponse<FeedbackResponseDto>.ErrorResponse($"Error creating feedback: {ex.Message}");
+                return Result<FeedbackResponseDto>.Failure($"Error creating feedback: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<List<FeedbackResponseDto>>> GetTripFeedbacksAsync(int tripId)
+        public async Task<Result<List<FeedbackResponseDto>>> GetTripFeedbacksAsync(int tripId)
         {
             try
             {
@@ -162,22 +163,22 @@ namespace CarPooling.Application.Services
                     TripStartTime = f.Trip.StartTime
                 }).ToList();
 
-                return ApiResponse<List<FeedbackResponseDto>>.SuccessResponse(response);
+                return Result<List<FeedbackResponseDto>>.Success(response);
             }
             catch (Exception ex)
             {
-                return ApiResponse<List<FeedbackResponseDto>>.ErrorResponse($"Error getting trip feedbacks: {ex.Message}");
+                return Result<List<FeedbackResponseDto>>.Failure($"Error getting trip feedbacks: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<UserFeedbackSummaryDto>> GetUserFeedbackSummaryAsync(string userId)
+        public async Task<Result<UserFeedbackSummaryDto>> GetUserFeedbackSummaryAsync(string userId)
         {
             try
             {
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<UserFeedbackSummaryDto>.ErrorResponse("User not found");
+                    return Result<UserFeedbackSummaryDto>.Failure("User not found");
                 }
 
                 var feedbacks = await _feedbackRepository.GetUserReceivedFeedbacksAsync(userId);
@@ -208,11 +209,11 @@ namespace CarPooling.Application.Services
                     RecentFeedbacks = recentFeedbacks
                 };
 
-                return ApiResponse<UserFeedbackSummaryDto>.SuccessResponse(response);
+                return Result<UserFeedbackSummaryDto>.Success(response);
             }
             catch (Exception ex)
             {
-                return ApiResponse<UserFeedbackSummaryDto>.ErrorResponse($"Error getting user feedback summary: {ex.Message}");
+                return Result<UserFeedbackSummaryDto>.Failure($"Error getting user feedback summary: {ex.Message}");
             }
         }
     }

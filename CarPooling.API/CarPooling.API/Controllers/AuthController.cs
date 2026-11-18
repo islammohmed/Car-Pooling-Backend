@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using CarPooling.Application.Interfaces;
 using System.Security.Claims;
 using CarPooling.Domain.DTOs;
+using CarPooling.API.Extensions;
 
 namespace CarPooling.API.Controllers
 {
@@ -35,11 +36,12 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _authService.RegisterAsync(request);
-                if (result.Success)
+                var response = result.ToApiResponse();
+                if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
-                return BadRequest(result);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -63,11 +65,12 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _authService.LoginAsync(request);
-                if (result.Success)
+                var response = result.ToApiResponse();
+                if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
-                return BadRequest(result);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -91,11 +94,12 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _authService.RefreshTokenAsync(token);
-                if (result.Success)
+                var response = result.ToApiResponse();
+                if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
-                return BadRequest(result);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -117,13 +121,14 @@ namespace CarPooling.API.Controllers
                         .ToList();
                     return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
                 }
-
                 var result = await _authService.ConfirmEmailAsync(userId, code);
-                if (result.Success)
+                var response = result.ToApiResponse();
+
+                if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
-                return BadRequest(result);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -145,13 +150,14 @@ namespace CarPooling.API.Controllers
                         .ToList();
                     return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
                 }
-
                 var result = await _authService.ResendConfirmationCodeAsync(email);
-                if (result.Success)
+                var response = result.ToApiResponse();
+
+                if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
-                return BadRequest(result);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -173,13 +179,13 @@ namespace CarPooling.API.Controllers
                         .ToList();
                     return BadRequest(ApiResponse<string>.ErrorResponse("Validation failed", errors));
                 }
-
                 var result = await _authService.ForgotPasswordAsync(email);
-                if (result.Success)
+                var response = result.ToApiResponse();
+                if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
-                return BadRequest(result);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -203,11 +209,12 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _authService.ResetPasswordAsync(request);
-                if (result.Success)
+                var response = result.ToApiResponse();
+                if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
-                return BadRequest(result);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -227,13 +234,13 @@ namespace CarPooling.API.Controllers
                 {
                     return Unauthorized(ApiResponse<bool>.ErrorResponse("User not authenticated"));
                 }
-
                 var result = await _authService.LogoutAsync(userId);
-                if (result.Success)
+                var response = result.ToApiResponse();
+                if (result.IsSuccess)
                 {
-                    return Ok(result);
+                    return Ok(response);
                 }
-                return BadRequest(result);
+                return BadRequest(response);
             }
             catch (Exception ex)
             {

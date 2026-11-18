@@ -12,7 +12,7 @@ namespace CarPooling.Domain.Interfaces.Repositories
         Task<IEnumerable<DeliveryRequest>> GetByTripIdAsync(int tripId);
         Task<IEnumerable<DeliveryRequest>> GetByStatusAsync(DeliveryStatus status);
         Task<IEnumerable<DeliveryRequest>> GetPendingDeliveriesAsync();
-        Task<IEnumerable<DeliveryRequest>> GetDeliveriesByStatusAndTripsAsync(string status, IEnumerable<int> tripIds);
+        Task<IEnumerable<DeliveryRequest>> GetDeliveriesByStatusAndTripsAsync(DeliveryStatus status, IEnumerable<int> tripIds);
         Task<IEnumerable<DeliveryRequest>> GetPendingRequestsAsync();
         Task<IEnumerable<DeliveryRequest>> GetUserRequestsAsync(string userId);
         Task<IEnumerable<DeliveryRequest>> GetDriverDeliveriesAsync(string driverId);

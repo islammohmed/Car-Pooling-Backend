@@ -4,6 +4,7 @@ using CarPooling.Application.Interfaces;
 using System.Security.Claims;
 using CarPooling.Domain.DTOs;
 using CarPooling.Application.DTOs;
+using CarPooling.API.Extensions;
 
 namespace CarPooling.API.Controllers
 {
@@ -29,21 +30,24 @@ namespace CarPooling.API.Controllers
             }
 
             var result = await _feedbackService.CreateFeedbackAsync(userId, createFeedbackDto);
-            return result.Success ? Ok(result) : BadRequest(result);
+            var response = result.ToApiResponse();
+            return result.IsSuccess ? Ok(response) : BadRequest(response);
         }
 
         [HttpGet("trip/{tripId}")]
         public async Task<ActionResult<ApiResponse<List<FeedbackResponseDto>>>> GetTripFeedbacks(int tripId)
         {
             var result = await _feedbackService.GetTripFeedbacksAsync(tripId);
-            return result.Success ? Ok(result) : BadRequest(result);
+            var response = result.ToApiResponse();
+            return result.IsSuccess ? Ok(response) : BadRequest(response);
         }
 
         [HttpGet("user/{userId}")]
         public async Task<ActionResult<ApiResponse<UserFeedbackSummaryDto>>> GetUserFeedbackSummary(string userId)
         {
             var result = await _feedbackService.GetUserFeedbackSummaryAsync(userId);
-            return result.Success ? Ok(result) : BadRequest(result);
+            var response = result.ToApiResponse();
+            return result.IsSuccess ? Ok(response) : BadRequest(response);
         }
     }
 } 

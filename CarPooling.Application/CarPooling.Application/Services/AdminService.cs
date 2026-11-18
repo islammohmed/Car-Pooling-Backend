@@ -1,14 +1,8 @@
+using CarPooling.Application.Common.Results;
 using CarPooling.Application.DTOs;
 using CarPooling.Application.Interfaces;
-using CarPooling.Domain.Entities;
 using CarPooling.Domain.Enums;
-using CarPooling.Domain.DTOs;
-using CarPooling.Domain.Interfaces;
 using CarPooling.Domain.Interfaces.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace CarPooling.Application.Services
 {
@@ -21,7 +15,7 @@ namespace CarPooling.Application.Services
             _userRepository = userRepository;
         }
 
-        public async Task<ApiResponse<List<DocumentVerificationDto>>> GetPendingDocumentVerifications()
+        public async Task<Result<List<DocumentVerificationDto>>> GetPendingDocumentVerifications()
         {
             try
             {
@@ -37,28 +31,28 @@ namespace CarPooling.Application.Services
                     SubmissionDate = v.SubmissionDate
                 }).ToList();
 
-                return ApiResponse<List<DocumentVerificationDto>>.SuccessResponse(dtos);
+                return Result<List<DocumentVerificationDto>>.Success(dtos);
             }
             catch (Exception ex)
             {
-                return ApiResponse<List<DocumentVerificationDto>>.ErrorResponse($"Error getting pending verifications: {ex.Message}");
+                return Result<List<DocumentVerificationDto>>.Failure($"Error getting pending verifications: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<bool>> HandleDocumentVerification(string adminId, DocumentVerificationActionDto actionDto)
+        public async Task<Result<bool>> HandleDocumentVerification(string adminId, DocumentVerificationActionDto actionDto)
         {
             try
             {
                 var verification = await _userRepository.GetDocumentVerificationByIdAsync(actionDto.DocumentId);
                 if (verification == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("Document verification not found");
+                    return Result<bool>.Failure("Document verification not found");
                 }
 
                 var user = await _userRepository.GetByIdAsync(verification.UserId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 string message = "Document verification updated successfully";
@@ -73,7 +67,7 @@ namespace CarPooling.Application.Services
                 if (actionDto.NewStatus == VerificationStatus.Rejected)
                 {
                     await _userRepository.UpdateDocumentVerificationAsync(verification);
-                    return ApiResponse<bool>.SuccessResponse(true, "Document verification rejected");
+                    return Result<bool>.Success(true, "Document verification rejected");
                 }
 
                 // For approved documents, check if all required documents are approved
@@ -115,15 +109,15 @@ namespace CarPooling.Application.Services
                 // Update the current verification
                 await _userRepository.UpdateDocumentVerificationAsync(verification);
                 
-                return ApiResponse<bool>.SuccessResponse(true, message);
+                return Result<bool>.Success(true, message);
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.ErrorResponse($"Error handling document verification: {ex.Message}");
+                return Result<bool>.Failure($"Error handling document verification: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<List<DocumentVerificationDto>>> GetUserDocumentVerifications(string userId)
+        public async Task<Result<List<DocumentVerificationDto>>> GetUserDocumentVerifications(string userId)
         {
             try
             {
@@ -139,11 +133,11 @@ namespace CarPooling.Application.Services
                     SubmissionDate = v.SubmissionDate
                 }).ToList();
 
-                return ApiResponse<List<DocumentVerificationDto>>.SuccessResponse(dtos);
+                return Result<List<DocumentVerificationDto>>.Success(dtos);
             }
             catch (Exception ex)
             {
-                return ApiResponse<List<DocumentVerificationDto>>.ErrorResponse($"Error getting user verifications: {ex.Message}");
+                return Result<List<DocumentVerificationDto>>.Failure($"Error getting user verifications: {ex.Message}");
             }
         }
     }

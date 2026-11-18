@@ -8,6 +8,7 @@ using CarPooling.Application.Interfaces;
 using CarPooling.Domain.DTOs;
 using CarPooling.Domain.Exceptions;
 using FluentValidation;
+using CarPooling.API.Extensions;
 
 namespace CarPooling.API.Controllers
 {
@@ -45,10 +46,11 @@ namespace CarPooling.API.Controllers
                 // Add information about whether the current user is booked on each trip
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    foreach (var trip in result.Items)
+                    foreach (var trip in result.Data.Items)
                     {
                         var isBookedResponse = await _tripService.IsUserBookedOnTripAsync(userId, trip.TripId);
-                        if (isBookedResponse.Success)
+                        var response = isBookedResponse.ToApiResponse();
+                        if (isBookedResponse.IsSuccess)
                         {
                             trip.IsUserBooked = isBookedResponse.Data;
                         }
@@ -180,7 +182,7 @@ namespace CarPooling.API.Controllers
                 
                 // Check if driver's documents are verified
                 var documentVerificationsResult = await _userService.GetUserDocumentVerifications(userId);
-                if (!documentVerificationsResult.Success)
+                if (!documentVerificationsResult.IsSuccess)
                 {
                     return BadRequest(documentVerificationsResult.Message);
                 }
@@ -207,7 +209,7 @@ namespace CarPooling.API.Controllers
                 
                 tripDto.DriverId = userId;
                 var tripId = await _tripService.CreateTripAsync(tripDto);
-                var trip = await _tripService.GetTripByIdAsync(tripId);
+                var trip = await _tripService.GetTripByIdAsync(tripId.Data);
                 
                 if (trip == null)
                 {
@@ -243,27 +245,27 @@ namespace CarPooling.API.Controllers
                 
                 // Get current user ID if authenticated
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                
+
                 // Check if current user is booked on this trip
                 if (!string.IsNullOrEmpty(userId))
                 {
                     var isBookedResponse = await _tripService.IsUserBookedOnTripAsync(userId, id);
-                    if (isBookedResponse.Success)
+                    if (isBookedResponse.IsSuccess)
                     {
-                        trip.IsUserBooked = isBookedResponse.Data;
+                        trip.Data.IsUserBooked = isBookedResponse.IsSuccess;
                     }
                 }
-                
+
                 // Get driver details
-                var driverDetailsResponse = await _userService.GetUserByIdAsync(trip.DriverId);
+                var driverDetailsResponse = await _userService.GetUserByIdAsync(trip.Data.DriverId);
                 
                 // Create a response object with trip details, participants, and driver details
                 var responseData = new
                 {
                     Trip = trip,
                     Participants = participants,
-                    ParticipantCount = participants.Count,
-                    Driver = driverDetailsResponse.Success ? driverDetailsResponse.Data : null
+                    ParticipantCount = participants.Data.Capacity,
+                    Driver = driverDetailsResponse.IsSuccess ? driverDetailsResponse.Data : null
                 };
 
                 // Create the API response
@@ -303,15 +305,23 @@ namespace CarPooling.API.Controllers
             {
                 // If user is a driver, check if they can book this trip
                 var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+
                 if (userRole == UserRole.Driver.ToString())
                 {
                     var canBookResult = await _bookTripService.CanDriverBookTripAsync(userId, dto.TripId);
-                    if (!canBookResult.Success)
+
+                    if (!canBookResult.IsSuccess)
                     {
-                        return BadRequest(canBookResult);
+                        return BadRequest(canBookResult.ToApiResponse());
+                    }
+
+                    if (!canBookResult.Data)
+                    {
+                        return BadRequest(canBookResult.ToApiResponse());
                     }
                 }
-                
+
                 var result = await _bookTripService.BookTrip(dto);
                 
                 // After booking, check if trip is now full and update status
@@ -406,9 +416,10 @@ namespace CarPooling.API.Controllers
                 {
                     return Unauthorized(ApiResponse<TripListDto>.ErrorResponse("User not authenticated"));
                 }
-                
+
                 var result = await _tripService.CompleteTripAsync(tripId, driverId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -423,7 +434,8 @@ namespace CarPooling.API.Controllers
             try
             {
                 var result = await _tripService.UpdateTripStatusAsync(tripId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -452,8 +464,8 @@ namespace CarPooling.API.Controllers
                 
                 // Get participants for the trip
                 var participants = await _tripService.GetTripParticipantsAsync(tripId);
-                
-                return Ok(ApiResponse<List<TripParticipantDto>>.SuccessResponse(participants));
+                var response = participants.ToApiResponse();
+                return Ok(response);
             }
             catch (Exception ex)
             {

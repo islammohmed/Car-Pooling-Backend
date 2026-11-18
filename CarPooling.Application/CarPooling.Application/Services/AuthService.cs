@@ -5,6 +5,7 @@ using AutoMapper;
 using CarPooling.Application.Interfaces;
 using System.Security.Claims;
 using CarPooling.Domain.DTOs;
+using CarPooling.Application.Common.Results;
 
 namespace CarPooling.Application.Services
 {
@@ -33,7 +34,7 @@ namespace CarPooling.Application.Services
             _emailService = emailService;
         }
 
-        public async Task<ApiResponse<RegisterResponseDto>> RegisterAsync(RegisterRequestDto request)
+        public async Task<Result<RegisterResponseDto>> RegisterAsync(RegisterRequestDto request)
         {
             try
             {
@@ -41,14 +42,14 @@ namespace CarPooling.Application.Services
                 var existingUser = await _userManager.FindByEmailAsync(request.Email);
                 if (existingUser != null)
                 {
-                    return ApiResponse<RegisterResponseDto>.ErrorResponse("User with this email already exists");
+                    return Result<RegisterResponseDto>.Failure("User with this email already exists");
                 }
 
                 // Check if SSN already exists
                 var existingSSN = _userManager.Users.FirstOrDefault(u => u.SSN == request.SSN);
                 if (existingSSN != null)
                 {
-                    return ApiResponse<RegisterResponseDto>.ErrorResponse("User with this SSN already exists");
+                    return Result<RegisterResponseDto>.Failure("User with this SSN already exists");
                 }
 
                 // Create new user
@@ -74,7 +75,7 @@ namespace CarPooling.Application.Services
                 if (!result.Succeeded)
                 {
                     var errors = result.Errors.Select(e => e.Description).ToList();
-                    return ApiResponse<RegisterResponseDto>.ErrorResponse("Registration failed", errors);
+                    return Result<RegisterResponseDto>.FailureWithErrors(errors,"Registration failed");
                 }
 
                 // Send confirmation code email after successful registration
@@ -100,16 +101,16 @@ namespace CarPooling.Application.Services
 
                 _logger.LogInformation("User {Email} registered successfully", request.Email);
 
-                return ApiResponse<RegisterResponseDto>.SuccessResponse(response, "Registration successful");
+                return Result<RegisterResponseDto>.Success(response, "Registration successful");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during user registration");
-                return ApiResponse<RegisterResponseDto>.ErrorResponse("An error occurred during registration");
+                return Result<RegisterResponseDto>.Failure("An error occurred during registration");
             }
         }
 
-        public async Task<ApiResponse<LoginResponseDto>> LoginAsync(LoginRequestDto request)
+        public async Task<Result<LoginResponseDto>> LoginAsync(LoginRequestDto request)
         {
             try
             {
@@ -121,7 +122,7 @@ namespace CarPooling.Application.Services
                 if (user == null)
                 {
                     _logger.LogWarning("Step 1: User not found for email: {Email}", request.Email);
-                    return ApiResponse<LoginResponseDto>.ErrorResponse("Invalid email or password");
+                    return Result<LoginResponseDto>.Failure("Invalid email or password");
                 }
                 _logger.LogInformation("Step 1: User found - ID: {UserId}, Email: {Email}", user.Id, user.Email);
 
@@ -132,17 +133,17 @@ namespace CarPooling.Application.Services
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User {Email} account locked out", request.Email);
-                    return ApiResponse<LoginResponseDto>.ErrorResponse("Account is locked out due to multiple failed attempts");
+                    return Result<LoginResponseDto>.Failure("Account is locked out due to multiple failed attempts");
                 }
                 if (result.IsNotAllowed)
                 {
                     _logger.LogWarning("User {Email} not allowed to sign in", request.Email);
-                    return ApiResponse<LoginResponseDto>.ErrorResponse("Account is not allowed to sign in");
+                    return Result<LoginResponseDto>.Failure("Account is not allowed to sign in");
                 }
                 if (!result.Succeeded)
                 {
                     _logger.LogWarning("Failed login attempt for user {Email}", request.Email);
-                    return ApiResponse<LoginResponseDto>.ErrorResponse("Invalid email or password");
+                    return Result<LoginResponseDto>.Failure("Invalid email or password");
                 }
                 _logger.LogInformation("Step 2: Password check successful for user: {Email}", request.Email);
 
@@ -193,56 +194,56 @@ namespace CarPooling.Application.Services
                 _logger.LogInformation("User {Email} logged in successfully", request.Email);
                 _logger.LogInformation("=== LOGIN DEBUG END ===");
 
-                return ApiResponse<LoginResponseDto>.SuccessResponse(loginResponse, "Login successful");
+                return Result<LoginResponseDto>.Success(loginResponse, "Login successful");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during user login at step: {Message}", ex.Message);
                 _logger.LogError("Stack trace: {StackTrace}", ex.StackTrace);
-                return ApiResponse<LoginResponseDto>.ErrorResponse("An error occurred during login");
+                return Result<LoginResponseDto>.Failure("An error occurred during login");
             }
         }
 
-        public async Task<ApiResponse<string>> RefreshTokenAsync(string token)
+        public async Task<Result<string>> RefreshTokenAsync(string token)
         {
             try
             {
                 var principal = _jwtService.ValidateTokenAndGetPrincipal(token);
                 if (principal == null)
                 {
-                    return ApiResponse<string>.ErrorResponse("Invalid token");
+                    return Result<string>.Failure("Invalid token");
                 }
 
                 var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userId))
                 {
-                    return ApiResponse<string>.ErrorResponse("Invalid token claims");
+                    return Result<string>.Failure("Invalid token claims");
                 }
 
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<string>.ErrorResponse("User not found");
+                    return Result<string>.Failure("User not found");
                 }
 
                 var newToken = _jwtService.GenerateToken(user);
-                return ApiResponse<string>.SuccessResponse(newToken, "Token refreshed successfully");
+                return Result<string>.Success(newToken, "Token refreshed successfully");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during token refresh");
-                return ApiResponse<string>.ErrorResponse("An error occurred during token refresh");
+                return Result<string>.Failure("An error occurred during token refresh");
             }
         }
 
-        public async Task<ApiResponse<bool>> LogoutAsync(string userId)
+        public async Task<Result<bool>> LogoutAsync(string userId)
         {
             try
             {
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<bool>.ErrorResponse("User not found");
+                    return Result<bool>.Failure("User not found");
                 }
 
                 // Sign out the user
@@ -250,29 +251,29 @@ namespace CarPooling.Application.Services
 
                 _logger.LogInformation("User {UserId} logged out successfully", userId);
 
-                return ApiResponse<bool>.SuccessResponse(true, "Logout successful");
+                return Result<bool>.Success(true, "Logout successful");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during user logout");
-                return ApiResponse<bool>.ErrorResponse("An error occurred during logout");
+                return Result<bool>.Failure("An error occurred during logout");
             }
         }
 
-        public async Task<ApiResponse<string>> ConfirmEmailAsync(string userId, string code)
+        public async Task<Result<string>> ConfirmEmailAsync(string userId, string code)
         {
             try
             {
                 var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
-                    return ApiResponse<string>.ErrorResponse("User not found");
+                    return Result<string>.Failure("User not found");
                 }
 
                 // Check if the confirmation number matches
                 if (user.ConfirmNumber != code)
                 {
-                    return ApiResponse<string>.ErrorResponse("Invalid confirmation code");
+                    return Result<string>.Failure("Invalid confirmation code");
                 }
 
                 // Confirm the email
@@ -282,33 +283,33 @@ namespace CarPooling.Application.Services
                 if (!result.Succeeded)
                 {
                     var errors = result.Errors.Select(e => e.Description).ToList();
-                    return ApiResponse<string>.ErrorResponse("Failed to confirm email", errors);
+                    return Result<string>.FailureWithErrors(errors, "Failed to confirm email");
                 }
 
                 _logger.LogInformation("Email confirmed for user {UserId}", userId);
 
-                return ApiResponse<string>.SuccessResponse("Email confirmed successfully", "Email confirmation successful");
+                return Result<string>.Success("Email confirmed successfully", "Email confirmation successful");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during email confirmation");
-                return ApiResponse<string>.ErrorResponse("An error occurred during email confirmation");
+                return Result<string>.Failure("An error occurred during email confirmation");
             }
         }
 
-        public async Task<ApiResponse<string>> ResendConfirmationCodeAsync(string email)
+        public async Task<Result<string>> ResendConfirmationCodeAsync(string email)
         {
             try
             {
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null)
                 {
-                    return ApiResponse<string>.ErrorResponse("User not found");
+                    return Result<string>.Failure("User not found");
                 }
 
                 if (user.EmailConfirmed)
                 {
-                    return ApiResponse<string>.ErrorResponse("Email is already confirmed");
+                    return Result<string>.Failure("Email is already confirmed");
                 }
 
                 // Generate new confirmation number
@@ -318,7 +319,7 @@ namespace CarPooling.Application.Services
                 if (!result.Succeeded)
                 {
                     var errors = result.Errors.Select(e => e.Description).ToList();
-                    return ApiResponse<string>.ErrorResponse("Failed to generate new confirmation code", errors);
+                    return Result<string>.FailureWithErrors(errors, "Failed to generate new confirmation code");
                 }
 
                 // Send confirmation code by email
@@ -328,16 +329,16 @@ namespace CarPooling.Application.Services
 
                 _logger.LogInformation("New confirmation code generated for user {Email}", email);
 
-                return ApiResponse<string>.SuccessResponse(user.ConfirmNumber, "New confirmation code generated");
+                return Result<string>.Success(user.ConfirmNumber, "New confirmation code generated");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while resending confirmation code");
-                return ApiResponse<string>.ErrorResponse("An error occurred while resending confirmation code");
+                return Result<string>.Failure("An error occurred while resending confirmation code");
             }
         }
 
-        public async Task<ApiResponse<string>> ForgotPasswordAsync(string email)
+        public async Task<Result<string>> ForgotPasswordAsync(string email)
         {
             try
             {
@@ -345,7 +346,7 @@ namespace CarPooling.Application.Services
                 if (user == null)
                 {
                     // Don't reveal that the user doesn't exist for security reasons
-                    return ApiResponse<string>.SuccessResponse("If your email is registered, you will receive a password reset code", "Password reset code sent");
+                    return Result<string>.Success("If your email is registered, you will receive a password reset code", "Password reset code sent");
                 }
 
                 // Generate password reset token
@@ -355,40 +356,40 @@ namespace CarPooling.Application.Services
                 // For now, we'll return it directly
                 _logger.LogInformation("Password reset token generated for user {Email}", email);
 
-                return ApiResponse<string>.SuccessResponse(resetToken, "Password reset token generated");
+                return Result<string>.Success(resetToken, "Password reset token generated");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during forgot password");
-                return ApiResponse<string>.ErrorResponse("An error occurred while processing your request");
+                return Result<string>.Failure("An error occurred while processing your request");
             }
         }
 
-        public async Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordRequestDto request)
+        public async Task<Result<string>> ResetPasswordAsync(ResetPasswordRequestDto request)
         {
             try
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user == null)
                 {
-                    return ApiResponse<string>.ErrorResponse("User not found");
+                    return Result<string>.Failure("User not found");
                 }
 
                 var result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
                 if (!result.Succeeded)
                 {
                     var errors = result.Errors.Select(e => e.Description).ToList();
-                    return ApiResponse<string>.ErrorResponse("Failed to reset password", errors);
+                    return Result<string>.FailureWithErrors(errors, "Failed to reset password");
                 }
 
                 _logger.LogInformation("Password reset successful for user {Email}", request.Email);
 
-                return ApiResponse<string>.SuccessResponse("Password reset successful", "Password has been reset successfully");
+                return Result<string>.Success("Password reset successful", "Password has been reset successfully");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred during password reset");
-                return ApiResponse<string>.ErrorResponse("An error occurred during password reset");
+                return Result<string>.Failure("An error occurred during password reset");
             }
         }
 

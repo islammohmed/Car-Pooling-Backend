@@ -6,6 +6,7 @@ using CarPooling.Domain.DTOs;
 using CarPooling.Application.DTOs;
 using CarPooling.Application.Trips.DTOs;
 using CarPooling.Application.Trips;
+using CarPooling.API.Extensions;
 
 namespace CarPooling.API.Controllers
 {
@@ -43,7 +44,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _deliveryService.CreateRequestAsync(userId, requestDto);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -64,7 +66,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _deliveryService.GetMatchingTripsAsync(requestId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -84,7 +87,8 @@ namespace CarPooling.API.Controllers
                 
                 // Then get the valid pending requests
                 var result = await _deliveryService.GetPendingRequestsAsync();
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -103,12 +107,9 @@ namespace CarPooling.API.Controllers
                 {
                     return Unauthorized(ApiResponse<List<DeliveryRequestResponseDto>>.ErrorResponse("User not authenticated"));
                 }
-
-                // Check for expired requests first
-                await _deliveryService.HandleExpiredRequestsAsync();
-
                 var result = await _deliveryService.GetUserRequestsAsync(userId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -130,7 +131,7 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _deliveryService.GetDriverDeliveriesAsync(driverId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                return result.IsSuccess ? Ok(result) : BadRequest(result);
             }
             catch (Exception ex)
             {
@@ -153,9 +154,8 @@ namespace CarPooling.API.Controllers
 
                 // Check for expired requests first
                 await _deliveryService.HandleExpiredRequestsAsync();
-
-                var result = await _deliveryService.GetSelectedDeliveriesForDriverAsync(driverId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = await _deliveryService.GetSelectedDeliveriesForDriverAsync(driverId);
+                return response.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -178,9 +178,8 @@ namespace CarPooling.API.Controllers
 
                 // Check if request is expired before accepting
                 await _deliveryService.HandleExpiredRequestsAsync();
-
-                var result = await _deliveryService.AcceptDeliveryAsync(driverId, requestId, tripId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = await _deliveryService.AcceptDeliveryAsync(driverId, requestId, tripId);
+                return response.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -203,9 +202,8 @@ namespace CarPooling.API.Controllers
 
                 // Check if request is expired before rejecting
                 await _deliveryService.HandleExpiredRequestsAsync();
-
-                var result = await _deliveryService.RejectDeliveryAsync(driverId, requestId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = await _deliveryService.RejectDeliveryAsync(driverId, requestId);
+                return response.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -229,7 +227,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _deliveryService.UpdateDeliveryStatusAsync(driverId, requestId, updateDto);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -250,7 +249,8 @@ namespace CarPooling.API.Controllers
                 }
 
                 var result = await _deliveryService.CancelRequestAsync(userId, requestId);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -265,7 +265,8 @@ namespace CarPooling.API.Controllers
             try
             {
                 var result = await _deliveryService.GetRequestByIdAsync(id);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -289,7 +290,8 @@ namespace CarPooling.API.Controllers
                 await _deliveryService.HandleExpiredRequestsAsync();
 
                 var result = await _deliveryService.SelectTripForDeliveryAsync(userId, requestId, selectTripDto);
-                return result.Success ? Ok(result) : BadRequest(result);
+                var response = result.ToApiResponse();
+                return result.IsSuccess ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -305,7 +307,8 @@ namespace CarPooling.API.Controllers
             try
             {
                 var count = await _deliveryService.HandleExpiredRequestsAsync();
-                return Ok(ApiResponse<int>.SuccessResponse(count, "Successfully processed expired delivery requests"));
+                var response = count.ToApiResponse();
+                return Ok(response);
             }
             catch (Exception ex)
             {
